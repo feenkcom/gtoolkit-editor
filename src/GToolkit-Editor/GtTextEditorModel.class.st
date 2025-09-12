@@ -30,11 +30,6 @@ GtTextEditorModel class >> primRelease: aHandle [
 ]
 
 { #category : #'as yet unclassified' }
-GtTextEditorModel >> ffiLibrary [
-	^ self class ffiLibrary
-]
-
-{ #category : #'as yet unclassified' }
 GtTextEditorModel >> height [
 	^ self primGetHeight
 ]

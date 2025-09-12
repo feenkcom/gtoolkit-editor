@@ -1,0 +1,47 @@
+Class {
+	#name : #GtTextEditorFlattenedReplacementRuns,
+	#superclass : #GtBoxerValueBox,
+	#category : #'GToolkit-Editor-Model'
+}
+
+{ #category : #'as yet unclassified' }
+GtTextEditorFlattenedReplacementRuns class >> ffiLibrary [
+	^ GtTextEditorLibrary uniqueInstance
+]
+
+{ #category : #'as yet unclassified' }
+GtTextEditorFlattenedReplacementRuns class >> primRelease: aHandle [
+	
+	"Plain pointers must be deleted using delete(), all users must implement a specific method"
+	self ffiCall: #(void flatten_replacement_runs_release(void* aHandle))
+]
+
+{ #category : #'as yet unclassified' }
+GtTextEditorFlattenedReplacementRuns >> asArray [
+	^ Array streamContents: [ :s |
+		| next |
+		[ next := self nextOrNil ]
+			whileNotNil: [
+				s nextPut: next ] ]
+]
+
+{ #category : #'as yet unclassified' }
+GtTextEditorFlattenedReplacementRuns >> nextOrNil [
+	| next |
+	
+	next := self primNext.
+	next isNull ifTrue: [ ^ nil ].
+	
+	^ GtTextEditorExternalReplacementRun
+		fromNativeHandle: next
+		during: [ :run | 
+			GtTextEditorReplacementRun new
+				start: run start;
+				end: run end;
+				attribute: run takeAttribute ]
+]
+
+{ #category : #'as yet unclassified' }
+GtTextEditorFlattenedReplacementRuns >> primNext [
+	^ self ffiCall: #(void* flatten_replacement_runs_next(self))
+]

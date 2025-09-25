@@ -23,10 +23,11 @@ GtTextEditorRunTree class >> primRelease: aHandle [
 
 { #category : #'as yet unclassified' }
 GtTextEditorRunTree >> addAttribute: anEditorAttribute start: aStart end: anEnd [
-	self
-		primAddAttribute: anEditorAttribute
-		start: aStart
-		end: anEnd
+	anEditorAttribute asAttributeDuring: [ :attr |
+		self
+			primAddAttribute: attr
+			start: aStart
+			end: anEnd ]
 ]
 
 { #category : #'as yet unclassified' }

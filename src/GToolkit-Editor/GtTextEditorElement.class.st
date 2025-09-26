@@ -51,6 +51,9 @@ GtTextEditorElement >> initialize [
 				
 	self addShortcut: (BlShortcutWithAction new combination: BlKeyCombination arrowRight;
 				action: [ self moveCursorRight ]).
+				
+	self addShortcut: (BlShortcutWithAction new combination: BlKeyCombination primaryV;
+				action: [ self pasteString ]).
 ]
 
 { #category : #'as yet unclassified' }
@@ -165,6 +168,11 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 		bounds: self invalidationBounds
 		compositing: BlCompositingSeparateLayerMode uniqueInstance
 		thenPaint: [ :aNewPainter :aNewOffset |  ]
+]
+
+{ #category : #'as yet unclassified' }
+GtTextEditorElement >> pasteString [
+	editorModel insertStringAtCursor: Clipboard clipboardText asString
 ]
 
 { #category : #'as yet unclassified' }

@@ -11,7 +11,7 @@ GtTextEditorEmbedder class >> ffiLibrary [
 
 { #category : #'as yet unclassified' }
 GtTextEditorEmbedder class >> forSemaphoreIndex: semaphoreIndex during: aBlock [
-	| renderThreadCallout renderThread semaphoreSignaller redrawRequestor |
+	| renderThreadCallout renderThread semaphoreSignaller redrawRequestor measurer|
 	
 	renderThreadCallout := FFIBackend current
 		loadSymbol: #winit_application_call_function
@@ -24,6 +24,21 @@ GtTextEditorEmbedder class >> forSemaphoreIndex: semaphoreIndex during: aBlock [
 
 	semaphoreSignaller := self primitiveGetSemaphoreSignaller.
 	semaphoreSignaller isNull ifTrue: [ self error: 'Primitive is missing' ].
+	
+	measurer := FFICallback
+		signature:  #(void (size_t id, float64 width))
+		block: [ :id :width |
+			NonInteractiveTranscript stdout
+				nextPutAll: 'measure adornment: ';
+				nextPutAll: id asString;
+				nextPutAll: ' width: ';
+				nextPutAll: width asString;
+				cr.
+		].
+		
+	NonInteractiveTranscript stdout
+		nextPutAll: measurer getHandle printString;
+		cr.
 
 	^ self
 		fromNativeHandle: (self
@@ -32,19 +47,21 @@ GtTextEditorEmbedder class >> forSemaphoreIndex: semaphoreIndex during: aBlock [
 				redrawRequestor: redrawRequestor
 				semaphoreSignaller: semaphoreSignaller
 				index: semaphoreIndex
-				thunk: ExternalAddress null)
+				thunk: ExternalAddress null
+				adornmentsMeasurer: measurer getHandle)
 		during: aBlock
 ]
 
 { #category : #'as yet unclassified' }
-GtTextEditorEmbedder class >> primNewRenderThread: renderThread callout: renderThreadCallout redrawRequestor: redrawRequestor  semaphoreSignaller: semaphoreSignaller index: semaphoreIndex thunk: semaphoreThunk [
+GtTextEditorEmbedder class >> primNewRenderThread: renderThread callout: renderThreadCallout redrawRequestor: redrawRequestor  semaphoreSignaller: semaphoreSignaller index: semaphoreIndex thunk: semaphoreThunk adornmentsMeasurer: aCallback [
 	^ self ffiCall: #(void* editor_embedder_new(
 		void* renderThread,
 		void* renderThreadCallout,
 		void* redrawRequestor,
 		void* semaphoreSignaller,
 		size_t semaphoreIndex,
-		void* semaphoreThunk))
+		void* semaphoreThunk,
+		void* aCallback))
 ]
 
 { #category : #'as yet unclassified' }

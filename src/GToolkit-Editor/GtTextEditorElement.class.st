@@ -14,6 +14,17 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd [
+	editorModel addAttribute: anAttribute from: aStart to: anEnd
+]
+
+{ #category : #'api - navigation' }
+GtTextEditorElement >> addCursorAtVisualPoint: aPoint [
+	
+	editorModel addCursorAtVisualPoint: aPoint
+]
+
+{ #category : #'as yet unclassified' }
 GtTextEditorElement >> ensureEditorProcess [
 	(editorProcess isNil or: [ editorProcess isSuspended or: [ editorProcess isTerminated or: [ editorProcess isTerminating ] ] ])
 		ifFalse: [ ^ self ].
@@ -21,39 +32,67 @@ GtTextEditorElement >> ensureEditorProcess [
 	editorProcess := [ self runEditorProcess ] forkAt: Processor userInterruptPriority named: 'Editor'.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 GtTextEditorElement >> initialize [
 	| semaphoreIndex |
 	super initialize.
-
 	self beFocusable.
-
 	semaphore := Semaphore new.
 	semaphoreIndex := Smalltalk registerExternalObject: semaphore.
 	editorModel := GtTextEditorHandle forSemaphoreIndex: semaphoreIndex.
-
 	self beInSeparateCompositionLayer.
-
 	self addAptitude: BrGlamorousTextAreaSpacingAptitude.
-
 	self when: BlMouseWheelEvent do: [ :anEvent | self onMouseWheelEvent: anEvent ].
+	self when: BlMouseDownEvent do: [ :anEvent | self onMouseDownEvent: anEvent ].
+	self when: BlMouseUpEvent do: [ :anEvent | self onMouseUpEvent: anEvent ].
+	self when: BlClickEvent do: [ :anEvent | self onClickEvent: anEvent ].
 
-	self
-		when: BlClickEvent
-		do: [ :anEvent | 
-			anEvent consumed: true.
-			self requestFocus ].
+	self when: BlDragStartEvent do: [ :anEvent | self onDragStartEvent: anEvent ].
+
+	self when: BlDragEvent do: [ :anEvent | self onDragEvent: anEvent ].
+
+	self when: BlDragEndEvent do: [ :anEvent | self onDragEndEvent: anEvent ].
 
 	self when: BlTextInputEvent do: [ :anEvent | self onTextInputEvent: anEvent ].
-	
-	self addShortcut: (BlShortcutWithAction new combination: BlKeyCombination arrowLeft;
+	self initializeShortcuts
+]
+
+{ #category : #initialization }
+GtTextEditorElement >> initializeShortcuts [
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination arrowLeft;
 				action: [ self moveCursorLeft ]).
-				
-	self addShortcut: (BlShortcutWithAction new combination: BlKeyCombination arrowRight;
+
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination arrowRight;
 				action: [ self moveCursorRight ]).
-				
-	self addShortcut: (BlShortcutWithAction new combination: BlKeyCombination primaryV;
+
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryV;
 				action: [ self pasteString ]).
+
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination builder primary home build;
+				action: [ self moveCursorToBeginning ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination builder primary end build;
+				action: [ self moveCursorToEnd ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination home;
+				action: [ self moveCursorToLineStart ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination end;
+				action: [ self moveCursorToLineEnd ])
 ]
 
 { #category : #'as yet unclassified' }
@@ -61,17 +100,54 @@ GtTextEditorElement >> insertStringAtCursor: aString [
 	editorModel insertStringAtCursor: aString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'api - navigation' }
 GtTextEditorElement >> moveCursorLeft [
+	"Moves the cursor one letter at a time to the left from the current position and deselects any selected text."
+	
 	editorModel moveCursorLeft
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'api - navigation' }
 GtTextEditorElement >> moveCursorRight [
+	"Moves the cursor one letter at a time to the right from the current position and deselects any selected text"
+	
 	editorModel moveCursorRight
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'api - navigation' }
+GtTextEditorElement >> moveCursorToBeginning [
+	"Moves the cursor to the beginning of the current editor and deselects any selected text."
+	
+	editorModel moveCursorToBeginning
+]
+
+{ #category : #'api - navigation' }
+GtTextEditorElement >> moveCursorToEnd [
+	"Moves the cursor to the end of the current editor and deselects any selected text."
+	
+	editorModel moveCursorToEnd
+]
+
+{ #category : #'api - navigation' }
+GtTextEditorElement >> moveCursorToLineEnd [
+	"Moves the cursor to the end of the current line and deselects any selected text."
+	
+	editorModel moveCursorToLineEnd
+]
+
+{ #category : #'api - navigation' }
+GtTextEditorElement >> moveCursorToLineStart [
+	"Moves the cursor to the start of the current line and deselects any selected text."
+	
+	editorModel moveCursorToLineStart
+]
+
+{ #category : #'api - navigation' }
+GtTextEditorElement >> moveCursorToVisualPoint: aPoint [	
+	editorModel moveCursorToVisualPoint: aPoint
+]
+
+{ #category : #'hooks - children' }
 GtTextEditorElement >> onAddedToSceneGraph [
 	| window |
 	super onAddedToSceneGraph.
@@ -89,7 +165,33 @@ GtTextEditorElement >> onAddedToSceneGraph [
 	self ensureEditorProcess
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
+GtTextEditorElement >> onClickEvent: anEvent [
+	anEvent consumed: true
+]
+
+{ #category : #initialization }
+GtTextEditorElement >> onDragEndEvent: anEvent [
+	anEvent consumed: true.
+	
+	editorModel endSelectionAtVisualPoint
+]
+
+{ #category : #initialization }
+GtTextEditorElement >> onDragEvent: anEvent [
+	anEvent consumed: true.
+	
+	editorModel updateSelectionAtVisualPoint: anEvent localPosition
+]
+
+{ #category : #initialization }
+GtTextEditorElement >> onDragStartEvent: anEvent [
+	anEvent consumed: true.
+	
+	editorModel startSelectionAtVisualPoint: anEvent localPosition
+]
+
+{ #category : #layout }
 GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 	| heightSpec |
 	super onMeasure: anExtentMeasurementSpec.
@@ -117,6 +219,22 @@ GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 	self measuredExtent: (anExtentMeasurementSpec sizeFor: (self measuredWidth @ editorModel height))
 ]
 
+{ #category : #initialization }
+GtTextEditorElement >> onMouseDownEvent: anEvent [
+	anEvent consumed: true.
+	
+	anEvent modifiers isAlt
+		ifTrue: [ self addCursorAtVisualPoint: anEvent localPosition ]
+		ifFalse: [ self moveCursorToVisualPoint: anEvent localPosition ].
+		
+	self requestFocus. 
+]
+
+{ #category : #initialization }
+GtTextEditorElement >> onMouseUpEvent: anEvent [
+	anEvent consumed: true
+]
+
 { #category : #'as yet unclassified' }
 GtTextEditorElement >> onMouseWheelEvent: anEvent [
 	self constraints vertical resizer isFitContent
@@ -127,7 +245,7 @@ GtTextEditorElement >> onMouseWheelEvent: anEvent [
 	editorModel scrollBy: anEvent vector y
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'hooks - children' }
 GtTextEditorElement >> onRemovedFromSceneGraph [
 	super onRemovedFromSceneGraph.
 	
@@ -139,12 +257,15 @@ GtTextEditorElement >> onRemovedFromSceneGraph [
 
 { #category : #'as yet unclassified' }
 GtTextEditorElement >> onTextInputEvent: anEvent [
-	anEvent consumed: true.
+	(anEvent text allSatisfy: [ :aCharacter | Unicode isPrintable: aCharacter ])
+		ifFalse: [ ^ self ].
+
+    anEvent consumed: true.
 
 	editorModel insertStringAtCursor: anEvent text
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'event handling' }
 GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset [
 	| drawMethod viewportOffset textureExtent |
 	super paintMeAndChildrenOn: aCompositorPainter offset: anOffset.

@@ -1,22 +1,24 @@
 Class {
-	#name : #GtTextEditorTextWithReplacements,
-	#superclass : #GtBoxerValueBox,
-	#category : #'GToolkit-Editor-Model'
+	#name : 'GtTextEditorTextWithReplacements',
+	#superclass : 'GtBoxerValueBox',
+	#category : 'GToolkit-Editor-FFI',
+	#package : 'GToolkit-Editor',
+	#tag : 'FFI'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorTextWithReplacements class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorTextWithReplacements class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void text_with_replacements_release(void* aHandle))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorTextWithReplacements >> asArray [
 	^ Array streamContents: [ :s |
 		| next |
@@ -25,7 +27,7 @@ GtTextEditorTextWithReplacements >> asArray [
 				s nextPut: next ] ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorTextWithReplacements >> nextOrNil [
 	| next |
 	
@@ -36,7 +38,7 @@ GtTextEditorTextWithReplacements >> nextOrNil [
 		fromNativeHandle: next
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorTextWithReplacements >> primNext [
 	^ self ffiCall: #(void* text_with_replacements_next(self))
 ]

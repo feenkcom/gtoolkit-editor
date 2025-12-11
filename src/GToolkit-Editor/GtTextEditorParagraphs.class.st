@@ -1,22 +1,24 @@
 Class {
-	#name : #GtTextEditorParagraphs,
-	#superclass : #GtBoxerValueBox,
-	#category : #'GToolkit-Editor-Model'
+	#name : 'GtTextEditorParagraphs',
+	#superclass : 'GtBoxerValueBox',
+	#category : 'GToolkit-Editor-Model',
+	#package : 'GToolkit-Editor',
+	#tag : 'Model'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void paragraphs_release(void* aHandle))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> asArray [
 	| array |
 
@@ -28,17 +30,17 @@ GtTextEditorParagraphs >> asArray [
 	^ array
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> asBrItemsProvider [
 	^ BrSequenceableCollectionItemsProvider forCollection: self
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> at: anIndex [
 	^ GtTextEditorParagraph fromNativeHandle: (self primAt: anIndex - 1)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> gtParagraphsFor: aView [
 	<gtView>
 	
@@ -49,7 +51,7 @@ GtTextEditorParagraphs >> gtParagraphsFor: aView [
 		column: 'Range' text: [ :each | each range ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> paragraphAtByteOffset: byteOffset [
 	| paragraph |
 
@@ -60,22 +62,22 @@ GtTextEditorParagraphs >> paragraphAtByteOffset: byteOffset [
 	^ GtTextEditorParagraph fromNativeHandle: paragraph
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> primAt: anIndex [
 	^ self ffiCall: #(void* paragraphs_get_clone(self, size_t anIndex))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> primLength [
 	^ self ffiCall: #(size_t paragraphs_len(self))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> primParagraphAtOffset: aByteOffset [
 	^ self ffiCall: #(void* paragraphs_get_at_offset(self, size_t aByteOffset))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorParagraphs >> size [
 	^ self primLength
 ]

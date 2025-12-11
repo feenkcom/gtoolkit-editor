@@ -1,35 +1,37 @@
 Class {
-	#name : #GtTextEditorReplacementRun,
-	#superclass : #Object,
+	#name : 'GtTextEditorReplacementRun',
+	#superclass : 'Object',
 	#instVars : [
 		'attribute',
 		'start',
 		'end'
 	],
-	#category : #'GToolkit-Editor-Model'
+	#category : 'GToolkit-Editor-FFI',
+	#package : 'GToolkit-Editor',
+	#tag : 'FFI'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorReplacementRun >> attribute [
 	^ attribute
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorReplacementRun >> attribute: anObject [
 	attribute := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorReplacementRun >> end [
 	^ end
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorReplacementRun >> end: anObject [
 	end := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorReplacementRun >> gtDisplayOn: stream [
 	super gtDisplayOn: stream.
 	
@@ -42,12 +44,12 @@ GtTextEditorReplacementRun >> gtDisplayOn: stream [
 		nextPut: $)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorReplacementRun >> start [
 	^ start
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorReplacementRun >> start: anObject [
 	start := anObject
 ]

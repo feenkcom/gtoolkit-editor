@@ -1,36 +1,38 @@
 Class {
-	#name : #GtTextEditorRunTree,
-	#superclass : #GtBoxerValueBox,
-	#category : #'GToolkit-Editor-Model'
+	#name : 'GtTextEditorRunTree',
+	#superclass : 'GtBoxerValueBox',
+	#category : 'GToolkit-Editor-FFI',
+	#package : 'GToolkit-Editor',
+	#tag : 'FFI'
 }
 
-{ #category : #'library path' }
+{ #category : 'library path' }
 GtTextEditorRunTree class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : #'private - ffi' }
+{ #category : 'private - ffi' }
 GtTextEditorRunTree class >> primCreate [
 	^ self ffiCall: #(void* run_tree_new())
 ]
 
-{ #category : #'private - ffi' }
+{ #category : 'private - ffi' }
 GtTextEditorRunTree class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void run_tree_release(void* aHandle))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> addAttribute: anEditorAttribute start: aStart end: anEnd [
-	anEditorAttribute asAttributeDuring: [ :attr |
+	anEditorAttribute asGtExternalTextAttributeDuring: [ :attr |
 		self
 			primAddAttribute: attr
 			start: aStart
 			end: anEnd ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> attributeRuns [
 	^ GtTextEditorRunTreeRuns fromNativeHandle: (self
 		primAttributeRunsStart: 0
@@ -38,7 +40,7 @@ GtTextEditorRunTree >> attributeRuns [
 		offset: 0)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> flattenedReplacementRuns [
 	^ GtTextEditorFlattenedReplacementRuns fromNativeHandle: (self
 		primFlattenedReplacementRunsStart: 0
@@ -46,35 +48,35 @@ GtTextEditorRunTree >> flattenedReplacementRuns [
 		offset: 0)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> gtArrowDownElement [
 	^ (BrGlamorousVectorIcons smallDownwards asElement
 		background: BlTheme default default lightBorderColor)
 			asScalableElement size: 20@20
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> gtAttributeRunsElement [
 	| allRuns |
 	allRuns := self attributeRuns asArray.
 	^ self gtReplacementRunsElementOf: allRuns
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> gtFlattenReplacementRunsElement [
 	| allRuns |
 	allRuns := self flattenedReplacementRuns asArray.
 	^ self gtReplacementRunsElementOf: allRuns
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> gtReplacementRunsElement [
 	| allRuns |
 	allRuns := self replacementRuns asArray.
 	^ self gtReplacementRunsElementOf: allRuns
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> gtReplacementRunsElementOf: allRuns [
 	| runElements size container |
 	container := BrVerticalPane new
@@ -106,7 +108,7 @@ GtTextEditorRunTree >> gtReplacementRunsElementOf: allRuns [
 	^ container
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> gtReplacementRunsFor: aView [
 	<gtView>
 	
@@ -133,14 +135,14 @@ GtTextEditorRunTree >> gtReplacementRunsFor: aView [
 		]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> gtReplacementRunsLabel: aString [
 	^ BrLabel new
 		aptitude: BrGlamorousLabelAptitude;
 		text: aString
 ]
 
-{ #category : #'private - ffi' }
+{ #category : 'private - ffi' }
 GtTextEditorRunTree >> primAddAttribute: anEditorAttribute start: aStart end: anEnd [
 	self ffiCall: #(void run_tree_add_attribute(
 		self,
@@ -149,7 +151,7 @@ GtTextEditorRunTree >> primAddAttribute: anEditorAttribute start: aStart end: an
 		size_t anEnd))
 ]
 
-{ #category : #'private - ffi' }
+{ #category : 'private - ffi' }
 GtTextEditorRunTree >> primAttributeRunsStart: aStart end: anEnd offset: anOffset [
 	^ self ffiCall: #(void* run_tree_runs(
 		self,
@@ -159,7 +161,7 @@ GtTextEditorRunTree >> primAttributeRunsStart: aStart end: anEnd offset: anOffse
 	))
 ]
 
-{ #category : #'private - ffi' }
+{ #category : 'private - ffi' }
 GtTextEditorRunTree >> primFlattenedReplacementRunsStart: aStart end: anEnd offset: anOffset [
 	^ self ffiCall: #(void* run_tree_flatten_replacement_runs(
 		self,
@@ -169,12 +171,12 @@ GtTextEditorRunTree >> primFlattenedReplacementRunsStart: aStart end: anEnd offs
 	))
 ]
 
-{ #category : #'private - ffi' }
+{ #category : 'private - ffi' }
 GtTextEditorRunTree >> primLen [
 	self ffiCall: #(size_t run_tree_len(self))
 ]
 
-{ #category : #'private - ffi' }
+{ #category : 'private - ffi' }
 GtTextEditorRunTree >> primReplacementRunsStart: aStart end: anEnd offset: anOffset [
 	^ self ffiCall: #(void* run_tree_replacement_runs(
 		self,
@@ -184,7 +186,7 @@ GtTextEditorRunTree >> primReplacementRunsStart: aStart end: anEnd offset: anOff
 	))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> replacementRuns [
 	^ GtTextEditorReplacementRuns fromNativeHandle: (self
 		primReplacementRunsStart: 0
@@ -192,7 +194,7 @@ GtTextEditorRunTree >> replacementRuns [
 		offset: 0)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTree >> size [
 	^ self primLen
 ]

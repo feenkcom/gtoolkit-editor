@@ -1,17 +1,19 @@
 Class {
-	#name : #GtTextEditorEmbedder,
-	#superclass : #GtBoxerValueBox,
-	#category : #'GToolkit-Editor-Model'
+	#name : 'GtTextEditorEmbedder',
+	#superclass : 'GtBoxerValueBox',
+	#category : 'GToolkit-Editor-Model',
+	#package : 'GToolkit-Editor',
+	#tag : 'Model'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorEmbedder class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorEmbedder class >> forSemaphoreIndex: semaphoreIndex during: aBlock [
-	| renderThreadCallout renderThread semaphoreSignaller redrawRequestor measurer|
+	| renderThreadCallout renderThread semaphoreSignaller redrawRequestor |
 	
 	renderThreadCallout := FFIBackend current
 		loadSymbol: #winit_application_call_function
@@ -24,21 +26,6 @@ GtTextEditorEmbedder class >> forSemaphoreIndex: semaphoreIndex during: aBlock [
 
 	semaphoreSignaller := self primitiveGetSemaphoreSignaller.
 	semaphoreSignaller isNull ifTrue: [ self error: 'Primitive is missing' ].
-	
-	measurer := FFICallback
-		signature:  #(void (size_t id, float64 width))
-		block: [ :id :width |
-			NonInteractiveTranscript stdout
-				nextPutAll: 'measure adornment: ';
-				nextPutAll: id asString;
-				nextPutAll: ' width: ';
-				nextPutAll: width asString;
-				cr.
-		].
-		
-	NonInteractiveTranscript stdout
-		nextPutAll: measurer getHandle printString;
-		cr.
 
 	^ self
 		fromNativeHandle: (self
@@ -46,34 +33,40 @@ GtTextEditorEmbedder class >> forSemaphoreIndex: semaphoreIndex during: aBlock [
 				callout: renderThreadCallout
 				redrawRequestor: redrawRequestor
 				semaphoreSignaller: semaphoreSignaller
-				index: semaphoreIndex
-				thunk: ExternalAddress null
-				adornmentsMeasurer: measurer getHandle)
+				index: semaphoreIndex)
 		during: aBlock
 ]
 
-{ #category : #'as yet unclassified' }
-GtTextEditorEmbedder class >> primNewRenderThread: renderThread callout: renderThreadCallout redrawRequestor: redrawRequestor  semaphoreSignaller: semaphoreSignaller index: semaphoreIndex thunk: semaphoreThunk adornmentsMeasurer: aCallback [
+{ #category : 'as yet unclassified' }
+GtTextEditorEmbedder class >> primNewRenderThread: renderThread callout: renderThreadCallout redrawRequestor: redrawRequestor  semaphoreSignaller: semaphoreSignaller index: semaphoreIndex [
 	^ self ffiCall: #(void* editor_embedder_new(
 		void* renderThread,
 		void* renderThreadCallout,
 		void* redrawRequestor,
 		void* semaphoreSignaller,
-		size_t semaphoreIndex,
-		void* semaphoreThunk,
-		void* aCallback))
+		size_t semaphoreIndex))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorEmbedder class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void editor_embedder_release(void* aHandle))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorEmbedder class >> primitiveGetSemaphoreSignaller [
 	<primitive: 'primitiveGetSemaphoreSignaller'>
 
 	^ ExternalAddress null
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorEmbedder >> messagesQueue [
+	^ GtTextEditorEmbedderMessageQueue fromNativeHandle: self primGetMessagesQueue
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorEmbedder >> primGetMessagesQueue [
+	^ self ffiCall: #(void* editor_embedder_get_messages(self))
 ]

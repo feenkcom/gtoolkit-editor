@@ -1,24 +1,26 @@
 Class {
-	#name : #GtTextEditorRunTreeRun,
-	#superclass : #Object,
+	#name : 'GtTextEditorRunTreeRun',
+	#superclass : 'Object',
 	#instVars : [
 		'start',
 		'end'
 	],
-	#category : #'GToolkit-Editor-Model'
+	#category : 'GToolkit-Editor-FFI',
+	#package : 'GToolkit-Editor',
+	#tag : 'FFI'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorRunTreeRun >> end [
 	^ end
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorRunTreeRun >> end: anObject [
 	end := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTreeRun >> gtDisplayOn: stream [
 	super gtDisplayOn: stream.
 	
@@ -31,12 +33,12 @@ GtTextEditorRunTreeRun >> gtDisplayOn: stream [
 		nextPut: $)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorRunTreeRun >> start [
 	^ start
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 GtTextEditorRunTreeRun >> start: anObject [
 	start := anObject
 ]

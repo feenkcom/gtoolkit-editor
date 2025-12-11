@@ -1,22 +1,24 @@
 Class {
-	#name : #GtTextEditorChunksToMeasure,
-	#superclass : #GtBoxerValueBox,
-	#category : #'GToolkit-Editor-Model'
+	#name : 'GtTextEditorChunksToMeasure',
+	#superclass : 'GtBoxerValueBox',
+	#category : 'GToolkit-Editor-FFI',
+	#package : 'GToolkit-Editor',
+	#tag : 'FFI'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorChunksToMeasure class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorChunksToMeasure class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void chunks_to_measure_release(void* aHandle))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorChunksToMeasure >> asArray [
 	^ Array streamContents: [ :s |
 		| next |
@@ -25,7 +27,7 @@ GtTextEditorChunksToMeasure >> asArray [
 				s nextPut: next ] ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorChunksToMeasure >> nextOrNil [
 	| next |
 	
@@ -36,7 +38,7 @@ GtTextEditorChunksToMeasure >> nextOrNil [
 		fromNativeHandle: next
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorChunksToMeasure >> primNext [
 	^ self ffiCall: #(void* chunks_to_measure_next(self))
 ]

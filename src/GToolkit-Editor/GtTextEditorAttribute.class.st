@@ -1,22 +1,68 @@
 Class {
-	#name : #GtTextEditorAttribute,
-	#superclass : #GtBoxerValueBox,
-	#category : #'GToolkit-Editor-Model'
+	#name : 'GtTextEditorAttribute',
+	#superclass : 'GtBoxerValueBox',
+	#category : 'GToolkit-Editor-FFI-Text',
+	#package : 'GToolkit-Editor',
+	#tag : 'FFI-Text'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorAttribute class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> fontSize: aFontSize during: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: (self primFontSize: aFontSize)
+		during: aBlock
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> fontWeight: aFontWeight during: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: (self primFontWeight: aFontWeight)
+		during: aBlock
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> foreground: aColor during: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: (self
+				primForegroundRed: aColor red
+				green: aColor green
+				blue: aColor blue
+				alpha: aColor alpha)
+		during: aBlock
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> primFontSize: aFontSize [
+	^ self ffiCall: #(void* font_size_attribute_new(float32 aFontSize))
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> primFontWeight: aFontWeight [
+	^ self ffiCall: #(void* font_weight_attribute_new(size_t aFontWeight))
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> primForegroundRed: red green: green blue: blue alpha: alpha [
+	^ self ffiCall: #(void* text_foreground_attribute_new(
+		float32 red,
+		float32 green,
+		float32 blue,
+		float32 alpha))
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorAttribute class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void attribute_release(void* aHandle))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorAttribute >> asAttribute [
 	self class = GtTextEditorAttribute
 		ifTrue: [ ^ self ].
@@ -24,17 +70,27 @@ GtTextEditorAttribute >> asAttribute [
 	^ GtTextEditorAttribute fromNativeHandle: self primAsAttribute
 ]
 
-{ #category : #'as yet unclassified' }
-GtTextEditorAttribute >> asAttributeDuring: aBlock [
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute >> asGtExternalTextAttributeDuring: aBlock [
 	self class = GtTextEditorAttribute
 		ifTrue: [ ^ aBlock value: self ].
-		
+	
 	^ GtTextEditorAttribute
 		fromNativeHandle: self primAsAttribute
 		during: aBlock
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'accessing' }
+GtTextEditorAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBlock [
+	self asGtExternalTextAttributeDuring: aBlock
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute >> isAdornmentAttribute [
+	^ false
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorAttribute >> primAsAttribute [
 	self subclassResponsibility.
 

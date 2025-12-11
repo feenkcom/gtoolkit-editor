@@ -1,22 +1,24 @@
 Class {
-	#name : #GtTextEditorRunTreeRuns,
-	#superclass : #GtBoxerValueBox,
-	#category : #'GToolkit-Editor-Model'
+	#name : 'GtTextEditorRunTreeRuns',
+	#superclass : 'GtBoxerValueBox',
+	#category : 'GToolkit-Editor-FFI',
+	#package : 'GToolkit-Editor',
+	#tag : 'FFI'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTreeRuns class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTreeRuns class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void run_tree_runs_release(void* aHandle))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTreeRuns >> asArray [
 	^ Array streamContents: [ :s |
 		| next |
@@ -25,7 +27,7 @@ GtTextEditorRunTreeRuns >> asArray [
 				s nextPut: next ] ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTreeRuns >> nextOrNil [
 	| next |
 	
@@ -40,7 +42,7 @@ GtTextEditorRunTreeRuns >> nextOrNil [
 				end: run end ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 GtTextEditorRunTreeRuns >> primNext [
 	^ self ffiCall: #(void* run_tree_runs_next(self))
 ]

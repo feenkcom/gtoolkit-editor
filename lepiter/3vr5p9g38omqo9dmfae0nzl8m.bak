@@ -55,7 +55,7 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2025-09-26T10:32:19.078529+02:00"
+						"dateAndTimeString" : "2025-12-05T18:04:42.945597+01:00"
 					}
 				},
 				"editEmail" : {
@@ -66,14 +66,14 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2025-10-15T13:45:32.637946+02:00"
+						"dateAndTimeString" : "2025-12-05T18:04:45.047001+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
-					"uidString" : "pb1e3BH8DQCrrrIpBKGSQQ=="
+					"uidString" : "wUNuFy6lS4uCirN0L8gOMw=="
 				},
-				"code" : "GtTextEditorElement new\r\tsize: 500@400;\r\tinsertStringAtCursor: (String loremIpsum: 10000);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "GtTextEditorElement new\r\tsize: 500@400;\r\ttext: (String loremIpsum: 10000);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			},
 			{
 				"__type" : "pharoSnippet",
@@ -100,14 +100,48 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2025-10-15T14:00:53.324044+02:00"
+						"dateAndTimeString" : "2025-10-15T14:01:18.444832+02:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "76qLxpL9DQCtzghTBFXVGA=="
 				},
-				"code" : "attribute := GtTextEditorAdornmentAttribute new.\rattribute id.\r\rGtTextEditorElement new\r\tsize: 500@400;\r\tinsertStringAtCursor: (String loremIpsum: 100);\r\taddTextAttribute: nil from: 10 to: 12;\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "attribute := GtTextEditorAdornmentAttribute new.\r\rGtTextEditorElement new\r\tsize: 500@400;\r\tinsertStringAtCursor: (String loremIpsum: 100);\r\taddAttribute: attribute from: 10 to: 12;\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+			},
+			{
+				"__type" : "pharoSnippet",
+				"children" : {
+					"__type" : "snippets",
+					"items" : [ ]
+				},
+				"createEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"createTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2025-12-05T14:26:56.37961+01:00"
+					}
+				},
+				"editEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"editTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2025-12-11T20:45:53.957028+01:00"
+					}
+				},
+				"uid" : {
+					"__type" : "uid",
+					"uidString" : "7Fu39FJySy2pIhQoo9jo+g=="
+				},
+				"code" : "coder := GtPharoMethodCoder forMethod: (BlElement >> #addChild:).\rcoderViewModel := coder asCoderViewModel.\rtext := coder sourceText copy.\r\rGtPharoStyler new\r\tcoderViewModel: coderViewModel;\r\tstyle: text ast: coderViewModel astSync.\r\t\rGtPharoMethodExpanderStyler new\r\tcoderViewModel: coderViewModel;\r\tstyle: text  ast: coderViewModel astSync.\r\t\r(text from: 3 to: 3) appendingAdornment: [\r\tBlElement new\r\t\tsize: 50@50;\r\t\tbackground: Color blue;\r\t\t ].\r\rGtTextEditorElement new\r\tsize: 500@400;\r\ttext: text;\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			}
 		]
 	},

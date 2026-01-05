@@ -20,13 +20,46 @@ Class {
 
 { #category : 'as yet unclassified' }
 GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd [
-	editorModel addAttribute: anAttribute from: aStart to: anEnd
+	anAttribute
+		asGtExternalTextAttributeForTheme: self theme
+		during: [ :externalAttribute |
+			externalAttribute isAdornmentAttribute
+				ifTrue: [
+					adornments
+						at: externalAttribute id
+						put: (externalAttribute adornmentAttribute -> nil) ].			
+		
+			editorModel addAttribute: externalAttribute from: aStart to: anEnd ].
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentId [
+	anAttribute
+		asGtExternalTextAttributeForTheme: self theme
+		during: [ :externalAttribute |
+			externalAttribute isAdornmentAttribute
+				ifTrue: [
+					adornments
+						at: externalAttribute id
+						put: (externalAttribute adornmentAttribute -> nil) ].			
+		
+			editorModel addAttribute: externalAttribute overAdornment: anAdornmentId ].
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> addCursorAtVisualPoint: aPoint [
 	
 	editorModel addCursorAtVisualPoint: aPoint
+]
+
+{ #category : 'initialization' }
+GtTextEditorElement >> deleteNextAtCursor [
+	editorModel deleteNextAtCursor
+]
+
+{ #category : 'initialization' }
+GtTextEditorElement >> deletePreviousAtCursor [
+	editorModel deletePreviousAtCursor
 ]
 
 { #category : 'accessing' }
@@ -45,8 +78,9 @@ GtTextEditorElement >> ensureEditorProcess [
 { #category : 'as yet unclassified' }
 GtTextEditorElement >> gtDefaultInspectorTool [
 	^ GtPhlowCompositeTool new
-				addTool: (GtTextEditorInspectorTool new object: (GtWrappedTextEditorElementForInspector new editorElement: self));
-				addTool: super gtDefaultInspectorTool
+		addTool: super gtDefaultInspectorTool;
+		addTool: (GtTextEditorInspectorTool new
+				object: (GtWrappedTextEditorElementForInspector new editorElement: self))
 ]
 
 { #category : 'initialization' }
@@ -86,6 +120,16 @@ GtTextEditorElement >> initialize [
 
 { #category : 'initialization' }
 GtTextEditorElement >> initializeShortcuts [
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination backspace;
+				action: [ self deletePreviousAtCursor ]).
+				
+			self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination delete;
+				action: [ self deleteNextAtCursor ]).
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination arrowLeft;
@@ -244,7 +288,7 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 			theAdornmentElements := anAssociation value.
 			theAdornmentElements ifNil: [
 				aTextPiece := GtTextEditorTextPiece new
-					initializeWith: '' asRopedText
+					initializeWith: (GtTextEditorTextOfAdornment new setEditorElement: self adornmentId: aMessage adornmentId)
 					from: 0
 					to: 0
 					delimiter: 0.
@@ -371,6 +415,8 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 		bounds: self invalidationBounds
 		compositing: BlCompositingSeparateLayerMode uniqueInstance
 		thenPaint: [ :aNewPainter :aNewOffset |  ].
+		
+	"self paintChildrenOn: aCompositorPainter offset: anOffset."
 
 	aCompositorPainter
 		pushChildren: self children sortedByElevation

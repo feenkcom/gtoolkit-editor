@@ -28,19 +28,38 @@ GtTextEditorHandle class >> primRelease: aHandle [
 	self ffiCall: #(void editor_handle_release(void* aHandle))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'adding' }
 GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd [
-	self
-		primAddAttribute: anAttribute
-		start: aStart - 1
-		end: anEnd - 1
+	anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
+		self
+			primAddAttribute: aTextAttribute
+			start: aStart - 1
+			end: anEnd - 1 ].
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'adding' }
+GtTextEditorHandle >> addAttribute: anAttribute overAdornment: anAdornmentId [
+	anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
+		self
+			primAddAttribute: aTextAttribute
+			overAdornment: anAdornmentId ]
+]
+
+{ #category : 'adding' }
 GtTextEditorHandle >> addCursorAtVisualPoint: aPoint [
 	self
 		primAddCursorAtVisualX: aPoint x
 		y: aPoint y
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorHandle >> deleteNextAtCursor [
+	self primDeleteNextAtCursor
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorHandle >> deletePreviousAtCursor [
+	self primDeletePreviousAtCursor
 ]
 
 { #category : 'as yet unclassified' }
@@ -75,46 +94,54 @@ GtTextEditorHandle >> measureWidth: aWidth top: aTopOrNil height: aHeightOrNil [
 		viewportHeight: (aHeightOrNil ifNil: [ 0.0])
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorHandle >> metrics [
 	^ GtTextEditorMetrics fromNativeHandle: self primQueryMetrics
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> moveCursorLeft [
 	^ self primMoveCursorLeft
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> moveCursorRight [
 	^ self primMoveCursorRight
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> moveCursorToBeginning [
 	^ self primMoveCursorToBeginning
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> moveCursorToEnd [
 	^ self primMoveCursorToEnd
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> moveCursorToLineEnd [
 	^ self primMoveCursorToLineEnd
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> moveCursorToLineStart [
 	^ self primMoveCursorToLineStart
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> moveCursorToVisualPoint: aPoint [
 	self
 		primMoveCursorToVisualX: aPoint x
 		y: aPoint y
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primAddAttribute: anAttribute overAdornment: anAdornmentId [
+	self ffiCall: #(void editor_handle_add_text_attribute_over_adornment(
+		self,
+		void* anAttribute,
+		size_t anAdornmentId))
 ]
 
 { #category : 'private - ffi' }
@@ -137,6 +164,16 @@ GtTextEditorHandle >> primAddCursorAtVisualX: aX y: aY [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primCreateAdornmentDynamicOffset: anAdornmentId [
 	^ self ffiCall: #(void* editor_handle_make_dynamic_offset_payload(self, size_t anAdornmentId))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primDeleteNextAtCursor [
+	self ffiCall: #(void editor_handle_delete_next_at_cursor(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primDeletePreviousAtCursor [
+	self ffiCall: #(void editor_handle_delete_previous_at_cursor(self))
 ]
 
 { #category : 'private - ffi' }
@@ -268,7 +305,7 @@ GtTextEditorHandle >> scrollBy: aY [
 	self primScrollBy: aY
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 GtTextEditorHandle >> setRenderThreadWakerThunk: aWindow [
 	self primSetRenderThreadWakerThunk: aWindow
 ]
@@ -278,7 +315,7 @@ GtTextEditorHandle >> startSelectionAtVisualPoint: aPoint [
 	self primStartSelectionAtVisualX: aPoint x y: aPoint y
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorHandle >> text: aGtTextEditorExternalText [
 	self primSetText: aGtTextEditorExternalText
 ]

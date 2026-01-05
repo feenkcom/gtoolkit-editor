@@ -134,14 +134,14 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2025-12-11T20:46:19.700573+01:00"
+						"dateAndTimeString" : "2025-12-12T19:19:19.296329+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "7Fu39FJySy2pIhQoo9jo+g=="
 				},
-				"code" : "coder := GtPharoMethodCoder forMethod: (BlElement >> #addChild:).\rcoderViewModel := coder asCoderViewModel.\rtext := coder sourceText copy.\r\rGtPharoStyler new\r\tcoderViewModel: coderViewModel;\r\tstyle: text ast: coderViewModel astSync.\r\t\rGtPharoMethodExpanderStyler new\r\tcoderViewModel: coderViewModel;\r\tstyle: text  ast: coderViewModel astSync.\r\t\r(text from: 3 to: 3) appendingAdornment: [\r\tBlElement new\r\t\tsize: 50@50;\r\t\tbackground: Color blue;\r\t\twhen: BlClickEvent do: [ :e |\r\t\t\te consumed: true.\r\t\t\te currentTarget background: Color random ] ].\r\rGtTextEditorElement new\r\tsize: 500@400;\r\ttext: text;\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "coder := GtPharoMethodCoder forMethod: (BlElement >> #addChild:).\rcoderViewModel := coder asCoderViewModel.\rtext := coder sourceText copy.\r\rGtPharoStyler new\r\tcoderViewModel: coderViewModel;\r\tstyle: text ast: coderViewModel astSync.\r\t\rGtPharoMethodExpanderStyler new\r\tcoderViewModel: coderViewModel;\r\tstyle: text  ast: coderViewModel astSync.\r\t\t\t\r(text from: 10 to: 10) attribute: (BrGlamorousTriangleExpanderTextAttribute new \r\t\tattributesCreatingBlock: [\r\t\t\tBrTextAdornmentDynamicAttribute new \t\r\t\t\t\tbeAppend;\r\t\t\t\tstencil:  [\r\t\t\t\t\tBlElement new\r\t\tsize: 50@50;\r\t\tbackground: Color red ] ]).\r\r\"BrEditor new\r\taptitude: BrGlamorousRegularEditorAptitude;\r\tsize: 500@400;\r\ttext: text\"\r\t\t\rGtTextEditorElement new\r\tsize: 500@400;\r\ttext: text;\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			}
 		]
 	},

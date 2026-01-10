@@ -186,6 +186,11 @@ GtTextEditorHandle >> primGetHeight [
 	self ffiCall: #(float64 editor_handle_get_height(self))
 ]
 
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primGetUnstyledText [
+	self ffiCall: #(void* editor_handle_get_unstyled_text(self))
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> primInsertString: aStringBox [
 	^ self ffiCall: #(void editor_handle_insert_str(
@@ -318,6 +323,11 @@ GtTextEditorHandle >> startSelectionAtVisualPoint: aPoint [
 { #category : 'accessing' }
 GtTextEditorHandle >> text: aGtTextEditorExternalText [
 	self primSetText: aGtTextEditorExternalText
+]
+
+{ #category : 'accessing' }
+GtTextEditorHandle >> unstyledText [
+	^ GtTextEditorExternalText fromNativeHandle: self primGetUnstyledText
 ]
 
 { #category : 'as yet unclassified' }

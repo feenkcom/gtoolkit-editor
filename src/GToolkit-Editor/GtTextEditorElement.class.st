@@ -11,7 +11,9 @@ Class {
 		'editorProcess',
 		'messagesQueue',
 		'messagesQueueUpdater',
-		'adornments'
+		'adornments',
+		'stylerStrategy',
+		'styler'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -50,6 +52,11 @@ GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentId [
 GtTextEditorElement >> addCursorAtVisualPoint: aPoint [
 	
 	editorModel addCursorAtVisualPoint: aPoint
+]
+
+{ #category : 'styling' }
+GtTextEditorElement >> defaultStylerStrategy [
+	^ GtTextEditorStylerAsyncStrategy new
 ]
 
 { #category : 'initialization' }
@@ -91,6 +98,11 @@ GtTextEditorElement >> initialize [
 	semaphore := Semaphore new.
 	semaphoreIndex := Smalltalk registerExternalObject: semaphore.
 	
+	adornments := OrderedDictionary new.
+	
+	styler := BlTextNullStyler new.
+	stylerStrategy := self defaultStylerStrategy.
+	
 	editorModel := (GtTextEditorEmbedder
 			forSemaphoreIndex: semaphoreIndex
 			during: [ :pharoEmbedder |
@@ -115,6 +127,8 @@ GtTextEditorElement >> initialize [
 	self when: BlDragEndEvent do: [ :anEvent | self onDragEndEvent: anEvent ].
 
 	self when: BlTextInputEvent do: [ :anEvent | self onTextInputEvent: anEvent ].
+	
+	self when: BrTextStyledEvent do: [ :anEvent | self onTextStyledEvent: anEvent ].
 	self initializeShortcuts
 ]
 
@@ -262,7 +276,7 @@ GtTextEditorElement >> onDragStartEvent: anEvent [
 	editorModel startSelectionAtVisualPoint: anEvent localPosition
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onEditorLayoutReady: aMessage [
 	self children
 		do: [ :eachChild | 
@@ -277,7 +291,7 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 	self requestLayout
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 	adornments
 		at: aMessage adornmentId
@@ -300,6 +314,17 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 				self addChildren: theAdornmentElements.
 			].
 		]
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorReadyToStyle: aMessage [
+	| textToStyle |
+	
+	textToStyle := GtTextEditorTextToStyle new setExternalText: aMessage text theme: self theme.
+	self stylerStrategy
+		styleText: textToStyle
+		inEditorElement: self
+		thenDo: [ :aText | ]
 ]
 
 { #category : 'layout' }
@@ -356,7 +381,7 @@ GtTextEditorElement >> onMouseUpEvent: anEvent [
 	anEvent consumed: true
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onMouseWheelEvent: anEvent [
 	self constraints vertical resizer isFitContent
 		ifTrue: [ ^ self ].
@@ -376,7 +401,7 @@ GtTextEditorElement >> onRemovedFromSceneGraph [
 	editorProcess := nil
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onTextInputEvent: anEvent [
 	(anEvent text allSatisfy: [ :aCharacter | Unicode isPrintable: aCharacter ])
 		ifFalse: [ ^ self ].
@@ -384,6 +409,12 @@ GtTextEditorElement >> onTextInputEvent: anEvent [
     anEvent consumed: true.
 
 	editorModel insertStringAtCursor: anEvent text
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onTextStyledEvent: anEvent [
+	anEvent afterAction value: anEvent text.
+	self styledText: anEvent text
 ]
 
 { #category : 'event handling' }
@@ -453,6 +484,17 @@ GtTextEditorElement >> pollEditorMessages [
 	] repeat
 ]
 
+{ #category : 'styling' }
+GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
+	"Actually trigger a text styler"
+	
+	(BlTextStylerRequestedSignal new element: self) emit.
+	
+	self stylerStrategy
+		styleTextInEditorElement: self
+		thenDo: aBlock
+]
+
 { #category : 'private' }
 GtTextEditorElement >> runEditorProcess [
 	[
@@ -461,11 +503,40 @@ GtTextEditorElement >> runEditorProcess [
 	] repeat
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'styling' }
+GtTextEditorElement >> styledText: aTextToStyle [
+	aTextToStyle
+		asGtTextEditorTextForTheme: self theme
+		during: [ :textEditorText |
+			adornments := textEditorText adornments collect: [ :eachAttribute | eachAttribute -> nil ].
+			self editorModel text: textEditorText ]
+]
+
+{ #category : 'styling' }
+GtTextEditorElement >> styler [
+	^ styler
+]
+
+{ #category : 'styling' }
+GtTextEditorElement >> styler: aStyler [
+	styler := aStyler
+]
+
+{ #category : 'styling' }
+GtTextEditorElement >> stylerStrategy [
+	^ stylerStrategy
+]
+
+{ #category : 'accessing' }
 GtTextEditorElement >> text: aBlText [
 	aBlText
 		asGtTextEditorTextForTheme: self theme
 		during: [ :textEditorText |
 			adornments := textEditorText adornments collect: [ :eachAttribute | eachAttribute -> nil ].
 			self editorModel text: textEditorText ]
+]
+
+{ #category : 'styling' }
+GtTextEditorElement >> unstyledText [
+	^ editorModel unstyledText
 ]

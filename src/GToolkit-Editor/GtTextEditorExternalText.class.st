@@ -71,7 +71,7 @@ GtTextEditorExternalText >> attribute: aTextAttribute from: aStart to: anEnd [
 	aTextAttribute asGtExternalTextAttributeDuring: [ :attr |
 		self
 			primAddAttribute: attr
-			start: aStart - 1
+			start: ((aStart - 1) max: 0)
 			end: anEnd ]
 ]
 

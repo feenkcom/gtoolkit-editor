@@ -60,6 +60,16 @@ GtTextEditorExternalText >> asGtTextEditorTextForTheme: aTheme during: aBlock [
 	^ aBlock value: self
 ]
 
+{ #category : 'as yet unclassified' }
+GtTextEditorExternalText >> asRopedText [
+	^ self asString asRopedText
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorExternalText >> asString [
+	^ self ffiLibrary getStringFrom: [ :aStringBox | self primToString: aStringBox ]
+]
+
 { #category : 'text - attributes' }
 GtTextEditorExternalText >> attribute: aTextAttribute from: aStart to: anEnd [
 	aTextAttribute isAdornmentAttribute
@@ -176,6 +186,11 @@ GtTextEditorExternalText >> primLen [
 { #category : 'private - ffi' }
 GtTextEditorExternalText >> primTextWithReplacements [
 	^ self ffiCall: #(void* text_with_replacements(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorExternalText >> primToString: aStringBox [
+	^ self ffiCall: #(void text_to_string(self, void* aStringBox))
 ]
 
 { #category : 'accessing' }

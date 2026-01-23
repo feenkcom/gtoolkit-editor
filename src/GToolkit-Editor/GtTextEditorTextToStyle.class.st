@@ -3,7 +3,8 @@ Class {
 	#superclass : 'BlText',
 	#instVars : [
 		'theme',
-		'externalText'
+		'externalText',
+		'allAttributes'
 	],
 	#category : 'GToolkit-Editor-Model',
 	#package : 'GToolkit-Editor',
@@ -19,7 +20,9 @@ GtTextEditorTextToStyle >> asGtTextEditorTextForTheme: aTheme during: aBlock [
 GtTextEditorTextToStyle >> attributes: anAttributesCollection from: aFromIndex to: aToIndex [
 	anAttributesCollection
 		ifEmpty: [ ^ self ].
-		
+	
+	allAttributes addAll: (anAttributesCollection collect: [ :each | each -> (aFromIndex to: aToIndex) ]).
+	
 	anAttributesCollection do: [ :eachAttribute |
 			eachAttribute
 				asGtExternalTextAttributeForTheme: theme
@@ -36,6 +39,18 @@ GtTextEditorTextToStyle >> generation [
 ]
 
 { #category : 'as yet unclassified' }
+GtTextEditorTextToStyle >> initialize [
+	super initialize.
+	
+	allAttributes := OrderedCollection new
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorTextToStyle >> isEmpty [
+	^ self size = 0
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorTextToStyle >> nextGeneration [
 	^ self
 ]
@@ -44,6 +59,11 @@ GtTextEditorTextToStyle >> nextGeneration [
 GtTextEditorTextToStyle >> setExternalText: anExternalText theme: aTheme [
 	externalText := anExternalText.
 	theme := aTheme
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorTextToStyle >> size [
+	^ externalText size
 ]
 
 { #category : 'as yet unclassified' }

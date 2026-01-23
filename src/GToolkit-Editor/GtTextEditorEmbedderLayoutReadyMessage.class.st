@@ -25,7 +25,7 @@ GtTextEditorEmbedderLayoutReadyMessage >> adornmentPosition: adornmentId ifPrese
 GtTextEditorEmbedderLayoutReadyMessage >> primGetAdornmentPosition: adornmentId point: boxerPoint [
 	^ self ffiCall: #(bool to_embedder_layout_ready_message_get_adornment_position(
 		self,
-		size_t adornmentId,
+		uint64 adornmentId,
 		void* boxerPoint))
 ]
 

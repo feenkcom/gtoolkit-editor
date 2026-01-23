@@ -12,6 +12,16 @@ GtTextEditorAttribute class >> ffiLibrary [
 ]
 
 { #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> fontFamily: aFontFamilyName during: aBlock [
+	^ self ffiLibrary
+		newString: aFontFamilyName
+		during: [ :aStringBox | 
+			GtTextEditorAttribute
+				fromNativeHandle: (self primFontFamily: aStringBox)
+				during: aBlock ]
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorAttribute class >> fontSize: aFontSize during: aBlock [
 	^ GtTextEditorAttribute
 		fromNativeHandle: (self primFontSize: aFontSize)
@@ -37,6 +47,18 @@ GtTextEditorAttribute class >> foreground: aColor during: aBlock [
 ]
 
 { #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> markerDuring: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: self primMarker
+		during: aBlock
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> primFontFamily: aStringBox [
+	^ self ffiCall: #(void* font_family_attribute_new(void* aStringBox))
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorAttribute class >> primFontSize: aFontSize [
 	^ self ffiCall: #(void* font_size_attribute_new(float32 aFontSize))
 ]
@@ -53,6 +75,11 @@ GtTextEditorAttribute class >> primForegroundRed: red green: green blue: blue al
 		float32 green,
 		float32 blue,
 		float32 alpha))
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAttribute class >> primMarker [
+	^ self ffiCall: #(void* marker_attribute_new())
 ]
 
 { #category : 'as yet unclassified' }

@@ -13,7 +13,8 @@ Class {
 		'messagesQueueUpdater',
 		'adornments',
 		'stylerStrategy',
-		'styler'
+		'styler',
+		'currentStyledText'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -54,6 +55,31 @@ GtTextEditorElement >> addCursorAtVisualPoint: aPoint [
 	editorModel addCursorAtVisualPoint: aPoint
 ]
 
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> addEditorShortcuts: aCollection [ 
+	
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> beReadOnlyWithSelection [
+	
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> defaultFontName: aFontFamilyName [
+	editorModel defaultFontName: aFontFamilyName
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> defaultFontSize: aFontSize [
+	editorModel defaultFontSize: aFontSize
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> defaultForeground: aColor [
+	editorModel defaultForeground: aColor
+]
+
 { #category : 'styling' }
 GtTextEditorElement >> defaultStylerStrategy [
 	^ GtTextEditorStylerAsyncStrategy new
@@ -67,6 +93,11 @@ GtTextEditorElement >> deleteNextAtCursor [
 { #category : 'initialization' }
 GtTextEditorElement >> deletePreviousAtCursor [
 	editorModel deletePreviousAtCursor
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> editor [
+	^ self
 ]
 
 { #category : 'accessing' }
@@ -312,19 +343,16 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 					each userData at: #editorAdornmentId put: aMessage adornmentId
 				].
 				self addChildren: theAdornmentElements.
+				anAssociation value: theAdornmentElements
 			].
 		]
+		ifAbsent: [ ]
 ]
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorReadyToStyle: aMessage [
-	| textToStyle |
-	
-	textToStyle := GtTextEditorTextToStyle new setExternalText: aMessage text theme: self theme.
-	self stylerStrategy
-		styleText: textToStyle
-		inEditorElement: self
-		thenDo: [ :aText | ]
+	self dispatchEvent: BrTextEditorModifiedEvent new.
+	self styleText
 ]
 
 { #category : 'layout' }
@@ -495,6 +523,29 @@ GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
 		thenDo: aBlock
 ]
 
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
+	
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> removeObsoleteAdornmentElements [
+	| obsoleteElements |
+	obsoleteElements := self children
+			reject: [ :eachChild | 
+				eachChild userData
+					at: #editorAdornmentId
+					ifPresent: [ :adornmentId | adornments includesKey: adornmentId ]
+					ifAbsent: [ true ] ].
+
+	self removeChildren: obsoleteElements
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> removeTextAttribute: aGtCompletionAttachmentAttribute [
+	
+]
+
 { #category : 'private' }
 GtTextEditorElement >> runEditorProcess [
 	[
@@ -503,13 +554,26 @@ GtTextEditorElement >> runEditorProcess [
 	] repeat
 ]
 
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> styleText [
+	| textToStyle |
+	textToStyle := GtTextEditorTextToStyle new setExternalText: self unstyledText theme: self theme.
+	self stylerStrategy
+		styleText: textToStyle
+		inEditorElement: self
+		thenDo: [ :aText | ]
+]
+
 { #category : 'styling' }
 GtTextEditorElement >> styledText: aTextToStyle [
+	currentStyledText := aTextToStyle.
+
 	aTextToStyle
 		asGtTextEditorTextForTheme: self theme
 		during: [ :textEditorText |
 			adornments := textEditorText adornments collect: [ :eachAttribute | eachAttribute -> nil ].
-			self editorModel text: textEditorText ]
+			self removeObsoleteAdornmentElements.
+			self editorModel styledText: textEditorText ]
 ]
 
 { #category : 'styling' }
@@ -527,12 +591,18 @@ GtTextEditorElement >> stylerStrategy [
 	^ stylerStrategy
 ]
 
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> text [
+	^ self unstyledText asRopedText
+]
+
 { #category : 'accessing' }
 GtTextEditorElement >> text: aBlText [
 	aBlText
 		asGtTextEditorTextForTheme: self theme
 		during: [ :textEditorText |
 			adornments := textEditorText adornments collect: [ :eachAttribute | eachAttribute -> nil ].
+			self removeObsoleteAdornmentElements.
 			self editorModel text: textEditorText ]
 ]
 

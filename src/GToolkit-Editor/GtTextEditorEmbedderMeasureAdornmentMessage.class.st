@@ -20,7 +20,7 @@ GtTextEditorEmbedderMeasureAdornmentMessage >> adornmentId [
 
 { #category : 'as yet unclassified' }
 GtTextEditorEmbedderMeasureAdornmentMessage >> primGetAdornmentId [
-	^ self ffiCall: #(size_t to_embedder_measure_adornment_message_get_id(self))
+	^ self ffiCall: #(uint64 to_embedder_measure_adornment_message_get_id(self))
 ]
 
 { #category : 'as yet unclassified' }

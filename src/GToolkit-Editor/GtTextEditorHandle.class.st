@@ -39,10 +39,18 @@ GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd [
 
 { #category : 'adding' }
 GtTextEditorHandle >> addAttribute: anAttribute overAdornment: anAdornmentId [
-	anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
+	<return: #GtTextEditorAttributeTag>
+	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
+		| anAttributeTag |
+		
+		anAttributeTag := GtTextEditorAttributeTag new.
+		
 		self
 			primAddAttribute: aTextAttribute
-			overAdornment: anAdornmentId ]
+			overAdornment: anAdornmentId
+			tag: anAttributeTag.
+		
+		anAttributeTag ]
 ]
 
 { #category : 'adding' }
@@ -52,12 +60,33 @@ GtTextEditorHandle >> addCursorAtVisualPoint: aPoint [
 		y: aPoint y
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
+GtTextEditorHandle >> defaultFontName: aFontFamilyName [
+	self ffiLibrary
+		newString: aFontFamilyName
+		during: [ :aStringBox | self primSetDefaultFontFamily: aStringBox ]
+]
+
+{ #category : 'accessing' }
+GtTextEditorHandle >> defaultFontSize: aNumber [
+	self primSetDefaultFontSize: aNumber
+]
+
+{ #category : 'accessing' }
+GtTextEditorHandle >> defaultForeground: aColor [
+	self
+		primSetDefaultForegroundRed: aColor red
+		green: aColor green
+		blue: aColor blue
+		alpha: aColor alpha
+]
+
+{ #category : 'api - editing' }
 GtTextEditorHandle >> deleteNextAtCursor [
 	self primDeleteNextAtCursor
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - editing' }
 GtTextEditorHandle >> deletePreviousAtCursor [
 	self primDeletePreviousAtCursor
 ]
@@ -137,11 +166,12 @@ GtTextEditorHandle >> moveCursorToVisualPoint: aPoint [
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorHandle >> primAddAttribute: anAttribute overAdornment: anAdornmentId [
-	self ffiCall: #(void editor_handle_add_text_attribute_over_adornment(
+GtTextEditorHandle >> primAddAttribute: anAttribute overAdornment: anAdornmentId tag: aTagPointer [
+	self ffiBareCall: #(void editor_handle_add_text_attribute_over_adornment(
 		self,
 		void* anAttribute,
-		size_t anAdornmentId))
+		uint64 anAdornmentId,
+		void* aTagPointer))
 ]
 
 { #category : 'private - ffi' }
@@ -163,17 +193,17 @@ GtTextEditorHandle >> primAddCursorAtVisualX: aX y: aY [
 
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primCreateAdornmentDynamicOffset: anAdornmentId [
-	^ self ffiCall: #(void* editor_handle_make_dynamic_offset_payload(self, size_t anAdornmentId))
+	^ self ffiCall: #(void* editor_handle_make_dynamic_offset_payload(self, uint64 anAdornmentId))
 ]
 
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primDeleteNextAtCursor [
-	self ffiCall: #(void editor_handle_delete_next_at_cursor(self))
+	self ffiCall: #(void editor_handle_delete_next_at_carets(self))
 ]
 
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primDeletePreviousAtCursor [
-	self ffiCall: #(void editor_handle_delete_previous_at_cursor(self))
+	self ffiCall: #(void editor_handle_delete_previous_at_carets(self))
 ]
 
 { #category : 'private - ffi' }
@@ -261,7 +291,7 @@ GtTextEditorHandle >> primQueryMetrics [
 GtTextEditorHandle >> primResizeAdornment: anId width: aWidth height: aHeight [
 	^ self ffiCall: #(void editor_handle_resize_adornment(
 		self,
-		size_t anId,
+		uint64 anId,
 		float64 aWidth,
 		float64 aHeight))
 ]
@@ -271,9 +301,34 @@ GtTextEditorHandle >> primScrollBy: aY [
 	self ffiCall: #(void editor_handle_scroll_by(self, float64 aY))
 ]
 
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primSetDefaultFontFamily: aStringBox [
+	self ffiCall: #(void editor_handle_set_default_font_family(self, void* aStringBox))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primSetDefaultFontSize: aNumber [
+	self ffiCall: #(void editor_handle_set_default_font_size(self, float32 aNumber))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primSetDefaultForegroundRed: red green: green blue: blue alpha: alpha [
+	self ffiCall: #(void editor_handle_set_default_text_foreground(
+		self,
+		float32 red,
+		float32 green,
+		float32 blue,
+		float32 alpha))
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> primSetRenderThreadWakerThunk: thunk [
 	^ self ffiCall: #(void editor_handle_set_render_thread_thunk(self, void* thunk))
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorHandle >> primSetStyledText: aGtTextEditorExternalText [
+	self ffiCall: #(void editor_handle_set_styled_text(self, void* aGtTextEditorExternalText))
 ]
 
 { #category : 'as yet unclassified' }
@@ -318,6 +373,11 @@ GtTextEditorHandle >> setRenderThreadWakerThunk: aWindow [
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> startSelectionAtVisualPoint: aPoint [
 	self primStartSelectionAtVisualX: aPoint x y: aPoint y
+]
+
+{ #category : 'accessing' }
+GtTextEditorHandle >> styledText: aGtTextEditorExternalText [
+	self primSetStyledText: aGtTextEditorExternalText
 ]
 
 { #category : 'accessing' }

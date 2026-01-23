@@ -68,5 +68,5 @@ GtTextEditorAdornmentAttribute >> primBeReplacing [
 
 { #category : 'as yet unclassified' }
 GtTextEditorAdornmentAttribute >> primGetId [
-	^ self ffiCall: #(size_t adornment_attribute_get_id(self))
+	^ self ffiCall: #(uint64 adornment_attribute_get_id(self))
 ]

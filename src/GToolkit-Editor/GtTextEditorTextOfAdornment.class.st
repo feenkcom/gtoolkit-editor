@@ -14,17 +14,20 @@ Class {
 { #category : 'as yet unclassified' }
 GtTextEditorTextOfAdornment >> attributes: aCollection [
 	aCollection do: [ :eachAttribute |
-		editorElement
+		| attributeTag |
+		
+		attributeTag := (editorElement
 			addAttribute: eachAttribute
-			overAdornment: adornmentId ].
-	addedAttributes addAll: aCollection
+			overAdornment: adornmentId).
+			
+		addedAttributes add: (attributeTag -> eachAttribute) ].
 ]
 
 { #category : 'as yet unclassified' }
 GtTextEditorTextOfAdornment >> clearAttributes: aFullBlockClosure [
-	| attributesToRemove |
-	attributesToRemove := addedAttributes select: aFullBlockClosure.
-	
+	addedAttributes
+		select: [ :eachAssociation | aFullBlockClosure value: eachAssociation value ]
+		thenDo: [ :eachAssociation | "editorElement removeAttribute: eachAttribute overAdornment: adornmentId" ]
 ]
 
 { #category : 'as yet unclassified' }

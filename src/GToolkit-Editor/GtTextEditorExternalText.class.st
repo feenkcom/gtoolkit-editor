@@ -55,6 +55,32 @@ GtTextEditorExternalText >> adornments [
 	^ adornments
 ]
 
+{ #category : 'text - attributes' }
+GtTextEditorExternalText >> appendText: anExternalText anchor: anAttributeAnchor [
+	GtTextEditorAttribute
+		appendingText: anExternalText
+		during: [ :appendingAttribute | 
+			self
+				appendingAttribute: appendingAttribute
+				anchor: anAttributeAnchor ].
+]
+
+{ #category : 'text - attributes' }
+GtTextEditorExternalText >> appendText: anExternalText at: anIndex [
+	self
+	 appendText: anExternalText
+	 anchor: (GtTextEditorAttributeAnchor right: anIndex).
+]
+
+{ #category : 'text - attributes' }
+GtTextEditorExternalText >> appendingAttribute: anAppendingAttribute anchor: anAttributeAnchor [
+	self assert: [ anAppendingAttribute isKindOf: GtTextEditorAppendingAttribute ].
+	
+	self
+		primAddAppendingAttribute: anAppendingAttribute
+		anchor: anAttributeAnchor
+]
+
 { #category : 'converting' }
 GtTextEditorExternalText >> asGtTextEditorTextForTheme: aTheme during: aBlock [
 	^ aBlock value: self
@@ -75,7 +101,7 @@ GtTextEditorExternalText >> attribute: aTextAttribute from: aStart to: anEnd [
 	aTextAttribute isAdornmentAttribute
 		ifTrue: [
 			adornments
-				at: aTextAttribute id
+				at: aTextAttribute attributeTag
 				put: aTextAttribute adornmentAttribute ].
 
 	aTextAttribute asGtExternalTextAttributeDuring: [ :attr |
@@ -93,6 +119,17 @@ GtTextEditorExternalText >> attributes [
 { #category : 'accessing' }
 GtTextEditorExternalText >> chunksToMeasure: chunkSize [
 	^ GtTextEditorChunksToMeasure fromNativeHandle: (self primChunksToMeasure: chunkSize)
+]
+
+{ #category : 'text - attributes' }
+GtTextEditorExternalText >> foreground: aColor [
+	GtTextEditorAttribute
+		foreground: aColor
+		during: [ :anAttribute | 
+			self
+				attribute: anAttribute
+				from: 1
+				to: self size ]
 ]
 
 { #category : 'gt - extensions' }
@@ -149,6 +186,14 @@ GtTextEditorExternalText >> insertString: aString at: anIndex [
 		self
 			primInsertString: aStringBox
 			offset:offset ]
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorExternalText >> primAddAppendingAttribute: anAttribute anchor: anAttributeAnchor [
+	^ self ffiBareCall: #(void text_add_appending_attribute(
+		self,
+		void* anAttribute,
+		void* anAttributeAnchor))
 ]
 
 { #category : 'private - ffi' }

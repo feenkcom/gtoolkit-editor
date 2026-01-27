@@ -28,29 +28,23 @@ GtTextEditorHandle class >> primRelease: aHandle [
 	self ffiCall: #(void editor_handle_release(void* aHandle))
 ]
 
-{ #category : 'adding' }
+{ #category : 'api - attributes' }
 GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd [
-	anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
+	<return: #Number>
+
+	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
 		self
 			primAddAttribute: aTextAttribute
 			start: aStart - 1
 			end: anEnd - 1 ].
 ]
 
-{ #category : 'adding' }
-GtTextEditorHandle >> addAttribute: anAttribute overAdornment: anAdornmentId [
-	<return: #GtTextEditorAttributeTag>
-	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
-		| anAttributeTag |
-		
-		anAttributeTag := GtTextEditorAttributeTag new.
-		
-		self
-			primAddAttribute: aTextAttribute
-			overAdornment: anAdornmentId
-			tag: anAttributeTag.
-		
-		anAttributeTag ]
+{ #category : 'api - attributes' }
+GtTextEditorHandle >> addAttribute: anAttribute overAdornment: anAdornmentTag [
+	<return: #Number>
+	^ anAttribute
+		asGtExternalTextAttributeDuring: [ :aTextAttribute |
+			self primAddAttribute: aTextAttribute overAdornment: anAdornmentTag ]
 ]
 
 { #category : 'adding' }
@@ -166,17 +160,16 @@ GtTextEditorHandle >> moveCursorToVisualPoint: aPoint [
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorHandle >> primAddAttribute: anAttribute overAdornment: anAdornmentId tag: aTagPointer [
-	self ffiBareCall: #(void editor_handle_add_text_attribute_over_adornment(
+GtTextEditorHandle >> primAddAttribute: anAttribute overAdornment: anAdornmentTag [
+	self ffiBareCall: #(uint64 editor_handle_add_text_attribute_over_adornment(
 		self,
 		void* anAttribute,
-		uint64 anAdornmentId,
-		void* aTagPointer))
+		uint64 anAdornmentTag))
 ]
 
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primAddAttribute: anAttribute start: aStart end: anEnd [
-	self ffiCall: #(void editor_handle_add_text_attribute(
+	self ffiBareCall: #(uint64 editor_handle_add_text_attribute(
 		self,
 		void* anAttribute,
 		size_t aStart,
@@ -287,11 +280,19 @@ GtTextEditorHandle >> primQueryMetrics [
 	^ self ffiCall: #(void* editor_handle_query_metrics(self))
 ]
 
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
+	self ffiBareCall: #(void editor_handle_remove_text_attribute_over_adornment(
+		self,
+		uint64 anAttributeTag,
+		uint64 anAdornmentTag))
+]
+
 { #category : 'as yet unclassified' }
-GtTextEditorHandle >> primResizeAdornment: anId width: aWidth height: aHeight [
+GtTextEditorHandle >> primResizeAdornment: anAttributeTag width: aWidth height: aHeight [
 	^ self ffiCall: #(void editor_handle_resize_adornment(
 		self,
-		uint64 anId,
+		uint64 anAttributeTag,
 		float64 aWidth,
 		float64 aHeight))
 ]
@@ -352,10 +353,17 @@ GtTextEditorHandle >> primUpdateSelectionAtVisualX: aX y: aY [
 		float64 aY))
 ]
 
-{ #category : 'as yet unclassified' }
-GtTextEditorHandle >> resizeAdornment: anId extent: aPoint [
+{ #category : 'api - attributes' }
+GtTextEditorHandle >> removeAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
 	self
-		primResizeAdornment: anId
+			primRemoveAttributeTagged: anAttributeTag
+			overAdornment: anAdornmentTag
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorHandle >> resizeAdornment: anAttributeTag extent: aPoint [
+	self
+		primResizeAdornment: anAttributeTag
 		width: aPoint x
 		height: aPoint y
 ]

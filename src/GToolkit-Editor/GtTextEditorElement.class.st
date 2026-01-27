@@ -21,32 +21,45 @@ Class {
 	#tag : 'UI'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd [
 	anAttribute
 		asGtExternalTextAttributeForTheme: self theme
 		during: [ :externalAttribute |
+			| attributeTag |
+			
+			attributeTag := editorModel
+				addAttribute: externalAttribute
+				from: aStart
+				to: anEnd.
+			
 			externalAttribute isAdornmentAttribute
 				ifTrue: [
 					adornments
-						at: externalAttribute id
-						put: (externalAttribute adornmentAttribute -> nil) ].			
-		
-			editorModel addAttribute: externalAttribute from: aStart to: anEnd ].
+						at: attributeTag
+						put: (externalAttribute adornmentAttribute -> nil) ].
+
+			attributeTag ].
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentId [
-	anAttribute
+	<return: #Number>
+	^ anAttribute
 		asGtExternalTextAttributeForTheme: self theme
 		during: [ :externalAttribute |
+			| attributeTag |
+	
+			attributeTag := editorModel
+				addAttribute: externalAttribute
+				overAdornment: anAdornmentId.
+		
 			externalAttribute isAdornmentAttribute
 				ifTrue: [
 					adornments
-						at: externalAttribute id
+						at: attributeTag
 						put: (externalAttribute adornmentAttribute -> nil) ].			
-		
-			editorModel addAttribute: externalAttribute overAdornment: anAdornmentId ].
+			attributeTag ].
 ]
 
 { #category : 'api - navigation' }
@@ -313,9 +326,9 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 		do: [ :eachChild | 
 			eachChild userData
 				at: #editorAdornmentId
-				ifPresent: [ :adornmentId | 
+				ifPresent: [ :anAdornmentTag | 
 					aMessage
-						adornmentPosition: adornmentId
+						adornmentPosition: anAdornmentTag
 						ifPresent: [ :adornmentPosition | eachChild relocate: adornmentPosition ]
 						ifAbsent: [  ] ] ].
 
@@ -325,7 +338,7 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 	adornments
-		at: aMessage adornmentId
+		at: aMessage adornmentTag
 		ifPresent: [ :anAssociation |
 			| anAdornmentAttribute aTextPiece theAdornmentElements |
 			
@@ -333,14 +346,14 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 			theAdornmentElements := anAssociation value.
 			theAdornmentElements ifNil: [
 				aTextPiece := GtTextEditorTextPiece new
-					initializeWith: (GtTextEditorTextOfAdornment new setEditorElement: self adornmentId: aMessage adornmentId)
+					initializeWith: (GtTextEditorTextOfAdornment new setEditorElement: self adornmentId: aMessage adornmentTag)
 					from: 0
 					to: 0
 					delimiter: 0.
 				
 				theAdornmentElements := (anAdornmentAttribute affect: aTextPiece in: self) asOrderedCollection.
 				theAdornmentElements do: [ :each |
-					each userData at: #editorAdornmentId put: aMessage adornmentId
+					each userData at: #editorAdornmentId put:aMessage adornmentTag
 				].
 				self addChildren: theAdornmentElements.
 				anAssociation value: theAdornmentElements
@@ -363,9 +376,9 @@ GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 	self children accountedByLayout do: [ :eachChild |
 		eachChild userData
 			at: #editorAdornmentId
-			ifPresent: [ :anId |
+			ifPresent: [ :anAdornmentTag |
 				editorModel
-					resizeAdornment: anId
+					resizeAdornment: anAdornmentTag
 					extent: eachChild measuredExtent
 			]
 	].
@@ -484,11 +497,11 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 		thenPaint: [ :aChildElement :aChildPainter :aChildOffset | 
 			aChildElement userData
 				at: #editorAdornmentId
-				ifPresent: [ :anAdornmentId | 
+				ifPresent: [ :anAdornmentTag | 
 					aChildPainter
 						pushLayer: (BlCompositionDynamicOffsetLayer new
 										setOffsetFn: externalMethods offsetFn
-										payload: (editorModel primCreateAdornmentDynamicOffset: anAdornmentId)
+										payload: (editorModel primCreateAdornmentDynamicOffset: anAdornmentTag)
 										cloneFn: externalMethods payloadCloneFn
 										freeFn: externalMethods payloadFreeFn)
 						offset: aChildOffset - aChildElement position
@@ -523,6 +536,16 @@ GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
 		thenDo: aBlock
 ]
 
+{ #category : 'api - attributes' }
+GtTextEditorElement >> removeAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
+	(adornments removeKey: anAttributeTag ifAbsent: [ nil ]) ifNotNil: [ :anAssociation |
+		anAssociation value ifNotNil: [ :anElement | self removeChildren: anElement ] ].
+
+	editorModel
+		removeAttributeTagged: anAttributeTag
+		overAdornment: anAdornmentTag	
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
 	
@@ -535,7 +558,7 @@ GtTextEditorElement >> removeObsoleteAdornmentElements [
 			reject: [ :eachChild | 
 				eachChild userData
 					at: #editorAdornmentId
-					ifPresent: [ :adornmentId | adornments includesKey: adornmentId ]
+					ifPresent: [ :anAdornmentTag | adornments includesKey: anAdornmentTag ]
 					ifAbsent: [ true ] ].
 
 	self removeChildren: obsoleteElements

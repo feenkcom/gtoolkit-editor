@@ -48,5 +48,5 @@ GtTextEditorExternalReplacementRun >> start [
 
 { #category : 'as yet unclassified' }
 GtTextEditorExternalReplacementRun >> takeAttribute [
-	^ GtTextEditorAdornmentAttribute fromNativeHandle: self primTakeAttribute
+	^ GtTextEditorReplacingAttribute fromNativeHandle: self primTakeAttribute
 ]

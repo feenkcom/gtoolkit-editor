@@ -3,8 +3,8 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'editorElement',
-		'adornmentId',
-		'addedAttributes'
+		'addedAttributes',
+		'adornmentTag'
 	],
 	#category : 'GToolkit-Editor-FFI-Text',
 	#package : 'GToolkit-Editor',
@@ -18,16 +18,29 @@ GtTextEditorTextOfAdornment >> attributes: aCollection [
 		
 		attributeTag := (editorElement
 			addAttribute: eachAttribute
-			overAdornment: adornmentId).
+			overAdornment: adornmentTag).
 			
 		addedAttributes add: (attributeTag -> eachAttribute) ].
 ]
 
 { #category : 'as yet unclassified' }
 GtTextEditorTextOfAdornment >> clearAttributes: aFullBlockClosure [
-	addedAttributes
-		select: [ :eachAssociation | aFullBlockClosure value: eachAssociation value ]
-		thenDo: [ :eachAssociation | "editorElement removeAttribute: eachAttribute overAdornment: adornmentId" ]
+	| attributesToRemove attributesToKeep |
+	
+	attributesToRemove := OrderedCollection new.
+	attributesToKeep := OrderedCollection new.
+	
+	addedAttributes do: [ :eachAssociation |
+		(aFullBlockClosure value: eachAssociation value)
+			ifTrue: [ attributesToRemove add: eachAssociation ]
+			ifFalse: [ attributesToKeep add: attributesToKeep ] ].
+			
+	addedAttributes := attributesToKeep.
+
+	attributesToRemove do: [ :eachAssociation |
+		editorElement
+			removeAttributeTagged: eachAssociation key
+			overAdornment: adornmentTag ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -40,5 +53,5 @@ GtTextEditorTextOfAdornment >> initialize [
 { #category : 'initialization' }
 GtTextEditorTextOfAdornment >> setEditorElement: anEditorElement adornmentId: anAdornmentId [
 	editorElement := anEditorElement.
-	adornmentId := anAdornmentId
+	adornmentTag := anAdornmentId
 ]

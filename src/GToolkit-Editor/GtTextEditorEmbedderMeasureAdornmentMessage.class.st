@@ -14,7 +14,7 @@ GtTextEditorEmbedderMeasureAdornmentMessage class >> primRelease: aHandle [
 ]
 
 { #category : 'as yet unclassified' }
-GtTextEditorEmbedderMeasureAdornmentMessage >> adornmentId [
+GtTextEditorEmbedderMeasureAdornmentMessage >> adornmentTag [
 	^ self primGetAdornmentId
 ]
 

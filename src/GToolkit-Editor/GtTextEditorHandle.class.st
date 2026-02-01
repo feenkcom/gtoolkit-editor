@@ -90,9 +90,19 @@ GtTextEditorHandle >> editorClone [
 	^ GtTextEditorModel fromNativeHandle: self primQueryEditorClone
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - selection' }
 GtTextEditorHandle >> endSelectionAtVisualPoint [
 	self primEndSelectionAtVisualPoint
+]
+
+{ #category : 'api - selection' }
+GtTextEditorHandle >> extendSelectionLeft [
+	self primExtendSelectionLeft
+]
+
+{ #category : 'api - selection' }
+GtTextEditorHandle >> extendSelectionRight [
+	self primExtendSelectionRight
 ]
 
 { #category : 'accessing' }
@@ -120,6 +130,16 @@ GtTextEditorHandle >> measureWidth: aWidth top: aTopOrNil height: aHeightOrNil [
 { #category : 'accessing' }
 GtTextEditorHandle >> metrics [
 	^ GtTextEditorMetrics fromNativeHandle: self primQueryMetrics
+]
+
+{ #category : 'api - navigation' }
+GtTextEditorHandle >> moveCaretsDown [
+	^ self primMoveCaretsDown
+]
+
+{ #category : 'api - navigation' }
+GtTextEditorHandle >> moveCaretsUp [
+	^ self primMoveCaretsUp
 ]
 
 { #category : 'api - navigation' }
@@ -205,6 +225,16 @@ GtTextEditorHandle >> primEndSelectionAtVisualPoint [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primExtendSelectionLeft [
+	self ffiCall: #(void editor_handle_extend_selection_left(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primExtendSelectionRight [
+	self ffiCall: #(void editor_handle_extend_selection_right(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primGetHeight [
 	self ffiCall: #(float64 editor_handle_get_height(self))
 ]
@@ -230,6 +260,16 @@ GtTextEditorHandle >> primMeasureWidth: aWidth hasViewportTop: hasViewportTop vi
 		float64 viewportTop,
 		bool hasViewportHeight,
 		float64 viewportHeight))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primMoveCaretsDown [
+	self ffiCall: #(void editor_handle_move_carets_down(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primMoveCaretsUp [
+	self ffiCall: #(void editor_handle_move_carets_up(self))
 ]
 
 { #category : 'private - ffi' }
@@ -303,6 +343,11 @@ GtTextEditorHandle >> primScrollBy: aY [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primSelectAll [
+	self ffiCall: #(void editor_handle_select_all(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSetDefaultFontFamily: aStringBox [
 	self ffiCall: #(void editor_handle_set_default_font_family(self, void* aStringBox))
 ]
@@ -322,9 +367,19 @@ GtTextEditorHandle >> primSetDefaultForegroundRed: red green: green blue: blue a
 		float32 alpha))
 ]
 
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primSetMockedTextLayouter: aGlyphSize [
+	self ffiCall: #(void editor_handle_set_text_layouter_mocked(self, float64 aGlyphSize))
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> primSetRenderThreadWakerThunk: thunk [
 	^ self ffiCall: #(void editor_handle_set_render_thread_thunk(self, void* thunk))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primSetSkiaTextLayouter [
+	self ffiCall: #(void editor_handle_set_text_layouter_skia(self))
 ]
 
 { #category : 'as yet unclassified' }
@@ -373,12 +428,17 @@ GtTextEditorHandle >> scrollBy: aY [
 	self primScrollBy: aY
 ]
 
+{ #category : 'api - selection' }
+GtTextEditorHandle >> selectAll [
+	self primSelectAll
+]
+
 { #category : 'initialization' }
 GtTextEditorHandle >> setRenderThreadWakerThunk: aWindow [
 	self primSetRenderThreadWakerThunk: aWindow
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - selection' }
 GtTextEditorHandle >> startSelectionAtVisualPoint: aPoint [
 	self primStartSelectionAtVisualX: aPoint x y: aPoint y
 ]
@@ -398,7 +458,17 @@ GtTextEditorHandle >> unstyledText [
 	^ GtTextEditorExternalText fromNativeHandle: self primGetUnstyledText
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - selection' }
 GtTextEditorHandle >> updateSelectionAtVisualPoint: aPoint [
 	self primUpdateSelectionAtVisualX: aPoint x y: aPoint y
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorHandle >> useMockedTextLayouter: aGlyphSize [
+	self primSetMockedTextLayouter: aGlyphSize
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorHandle >> useSkiaTextLayouter [
+	self primSetSkiaTextLayouter
 ]

@@ -66,14 +66,14 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2026-01-24T19:53:00.410017+01:00"
+						"dateAndTimeString" : "2026-01-30T16:18:56.888178+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "TMQMxdCUT7CiK9zur1Toxw=="
 				},
-				"code" : "nestedText := GtTextEditorExternalText fromString: 'https://www.google.com/maps/place/Gasthof+B%C3%A4ren+Laupen+AG/@46.9092972,7.2196642,511m/data=!3m1!1e3!4m9!3m8!1s0x478e6acbc27402db:0x20213b19ac9b4f2a!5m2!4m1!1i2!8m2!3d46.9031599!4d7.2387484!16s%2Fg%2F1tk66lnj?entry=ttu&g_ep=EgoyMDI2MDEyMS4wIKXMDSoKLDEwMDc5MjA3M0gBUAM%3D'.\rnestedText foreground: Color red.\r\rappendedText := GtTextEditorExternalText fromString: 'Beautiful  '.\rappendedText foreground: Color blue.\rappendedText\r\tappendText: nestedText\r\tat: 10.\r\rtext := GtTextEditorExternalText fromString: 'Hello'.\rtext\r\tappendText: appendedText\r\tat: 6.\r\rtext"
+				"code" : "nestedText := GtTextEditorExternalText fromString: 'World'.\rnestedText foreground: Color red.\r\rappendedText := GtTextEditorExternalText fromString: 'Beautiful  '.\rappendedText foreground: Color blue.\rappendedText\r\tappendText: nestedText\r\tat: 10.\r\rtext := GtTextEditorExternalText fromString: 'Hello  '.\rtext\r\tappendText: appendedText\r\tat: 6.\t\r\rtext"
 			}
 		]
 	},

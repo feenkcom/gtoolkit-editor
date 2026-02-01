@@ -66,14 +66,48 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2026-01-24T19:53:06.689878+01:00"
+						"dateAndTimeString" : "2026-01-30T16:18:56.888178+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "TMQMxdCUT7CiK9zur1Toxw=="
 				},
-				"code" : "nestedText := GtTextEditorExternalText fromString: 'World'.\rnestedText foreground: Color red.\r\rappendedText := GtTextEditorExternalText fromString: 'Beautiful  '.\rappendedText foreground: Color blue.\rappendedText\r\tappendText: nestedText\r\tat: 10.\r\rtext := GtTextEditorExternalText fromString: 'Hello  '.\rtext\r\tappendText: appendedText\r\tat: 6.\r\rtext"
+				"code" : "nestedText := GtTextEditorExternalText fromString: 'World'.\rnestedText foreground: Color red.\r\rappendedText := GtTextEditorExternalText fromString: 'Beautiful  '.\rappendedText foreground: Color blue.\rappendedText\r\tappendText: nestedText\r\tat: 10.\r\rtext := GtTextEditorExternalText fromString: 'Hello  '.\rtext\r\tappendText: appendedText\r\tat: 6.\t\r\rtext"
+			},
+			{
+				"__type" : "pharoSnippet",
+				"children" : {
+					"__type" : "snippets",
+					"items" : [ ]
+				},
+				"createEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"createTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2026-01-30T16:50:33.471151+01:00"
+					}
+				},
+				"editEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"editTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2026-01-30T16:50:50.165851+01:00"
+					}
+				},
+				"uid" : {
+					"__type" : "uid",
+					"uidString" : "CT1FvUrtThmN7dpXFyuI8A=="
+				},
+				"code" : "text := GtTextEditorExternalText fromString: 'Hello😎World'.\rtext"
 			}
 		]
 	},

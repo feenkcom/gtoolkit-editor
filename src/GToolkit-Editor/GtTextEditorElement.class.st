@@ -98,12 +98,12 @@ GtTextEditorElement >> defaultStylerStrategy [
 	^ GtTextEditorStylerAsyncStrategy new
 ]
 
-{ #category : 'initialization' }
+{ #category : 'api - editing' }
 GtTextEditorElement >> deleteNextAtCursor [
 	editorModel deleteNextAtCursor
 ]
 
-{ #category : 'initialization' }
+{ #category : 'api - editing' }
 GtTextEditorElement >> deletePreviousAtCursor [
 	editorModel deletePreviousAtCursor
 ]
@@ -124,6 +124,16 @@ GtTextEditorElement >> ensureEditorProcess [
 		ifFalse: [ ^ self ].
 		
 	editorProcess := [ self runEditorProcess ] forkAt: Processor userInterruptPriority named: 'Editor'.
+]
+
+{ #category : 'api - selection' }
+GtTextEditorElement >> extendSelectionLeft [
+	editorModel extendSelectionLeft
+]
+
+{ #category : 'api - selection' }
+GtTextEditorElement >> extendSelectionRight [
+	editorModel extendSelectionRight
 ]
 
 { #category : 'as yet unclassified' }
@@ -183,20 +193,50 @@ GtTextEditorElement >> initializeShortcuts [
 				combination: BlKeyCombination backspace;
 				action: [ self deletePreviousAtCursor ]).
 				
-			self
+	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination delete;
 				action: [ self deleteNextAtCursor ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination enter;
+				action: [ self insertLineBreakAtCarets ]).
 
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination arrowLeft;
 				action: [ self moveCursorLeft ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination shiftArrowLeft;
+				action: [ self extendSelectionLeft ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination shiftArrowRight;
+				action: [ self extendSelectionRight ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryA;
+				action: [ self selectAll ]).
 
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination arrowRight;
 				action: [ self moveCursorRight ]).
+				
+		self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination arrowUp;
+				action: [ self moveCaretsUp ]).
+
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination arrowDown;
+				action: [ self moveCaretsDown ]).
 
 	self
 		addShortcut: (BlShortcutWithAction new
@@ -224,9 +264,24 @@ GtTextEditorElement >> initializeShortcuts [
 				action: [ self moveCursorToLineEnd ])
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - editing' }
+GtTextEditorElement >> insertLineBreakAtCarets [
+	self insertStringAtCursor: OSPlatform current lineEnding
+]
+
+{ #category : 'api - editing' }
 GtTextEditorElement >> insertStringAtCursor: aString [
 	editorModel insertStringAtCursor: aString
+]
+
+{ #category : 'api - navigation' }
+GtTextEditorElement >> moveCaretsDown [
+	editorModel moveCaretsDown
+]
+
+{ #category : 'api - navigation' }
+GtTextEditorElement >> moveCaretsUp [
+	editorModel moveCaretsUp
 ]
 
 { #category : 'api - navigation' }
@@ -575,6 +630,11 @@ GtTextEditorElement >> runEditorProcess [
 		semaphore wait.
 		messagesQueueUpdater requestUpdate
 	] repeat
+]
+
+{ #category : 'api - selection' }
+GtTextEditorElement >> selectAll [
+	editorModel selectAll
 ]
 
 { #category : 'as yet unclassified' }

@@ -57,7 +57,7 @@ GtTextEditorExternalText >> adornments [
 
 { #category : 'text - attributes' }
 GtTextEditorExternalText >> appendText: anExternalText anchor: anAttributeAnchor [
-	GtTextEditorAttribute
+	GtTextEditorAppendingAttribute
 		appendingText: anExternalText
 		during: [ :appendingAttribute | 
 			self

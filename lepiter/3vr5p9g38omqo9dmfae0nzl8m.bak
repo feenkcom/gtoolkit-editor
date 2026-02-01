@@ -66,14 +66,14 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2025-12-05T18:04:45.047001+01:00"
+						"dateAndTimeString" : "2026-01-31T12:50:07.261375+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "wUNuFy6lS4uCirN0L8gOMw=="
 				},
-				"code" : "GtTextEditorElement new\r\tsize: 500@400;\r\ttext: (String loremIpsum: 10000);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: (String loremIpsum: 10000);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			},
 			{
 				"__type" : "pharoSnippet",
@@ -89,7 +89,7 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2025-10-15T13:45:35.333085+02:00"
+						"dateAndTimeString" : "2026-02-01T19:54:41.111704+01:00"
 					}
 				},
 				"editEmail" : {
@@ -100,48 +100,14 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2025-10-15T14:01:18.444832+02:00"
+						"dateAndTimeString" : "2026-02-01T19:58:32.592424+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
-					"uidString" : "76qLxpL9DQCtzghTBFXVGA=="
+					"uidString" : "tp935YqiSBiJC4wpfegZGQ=="
 				},
-				"code" : "attribute := GtTextEditorAdornmentAttribute new.\r\rGtTextEditorElement new\r\tsize: 500@400;\r\tinsertStringAtCursor: (String loremIpsum: 100);\r\taddAttribute: attribute from: 10 to: 12;\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
-			},
-			{
-				"__type" : "pharoSnippet",
-				"children" : {
-					"__type" : "snippets",
-					"items" : [ ]
-				},
-				"createEmail" : {
-					"__type" : "email",
-					"emailString" : "<unknown>"
-				},
-				"createTime" : {
-					"__type" : "time",
-					"time" : {
-						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2025-12-05T14:26:56.37961+01:00"
-					}
-				},
-				"editEmail" : {
-					"__type" : "email",
-					"emailString" : "<unknown>"
-				},
-				"editTime" : {
-					"__type" : "time",
-					"time" : {
-						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2026-01-09T12:16:26.445499+01:00"
-					}
-				},
-				"uid" : {
-					"__type" : "uid",
-					"uidString" : "7Fu39FJySy2pIhQoo9jo+g=="
-				},
-				"code" : "coder := GtPharoMethodCoder forMethod: (BlElement >> #addChild:).\rcoderViewModel := coder asCoderViewModel.\rtext := coder sourceText copy.\r\rstyler := BlCompositeStyler new.\rstyler addStyler: (GtPharoStyler new coderViewModel: coderViewModel).\rstyler addStyler: (GtPharoMethodExpanderStyler new coderViewModel: coderViewModel).\r\rtext attribute: (BrGlamorousTriangleExpanderTextAttribute new \r\t\tattributesCreatingBlock: [\r\t\t\tBrTextAdornmentDynamicAttribute new \t\r\t\t\t\tbeAppend;\r\t\t\t\tstencil:  [\r\t\t\t\t\tBlElement new\r\t\tsize: 50@50;\r\t\tbackground: Color red ] ]) from: 10 to: 10.\r\t\t\rGtTextEditorElement new\r\tstyler: styler;\r\tsize: 500@400;\r\ttext: text;\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: '';\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			}
 		]
 	},

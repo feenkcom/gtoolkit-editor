@@ -5,6 +5,7 @@ BrTextAdornmentAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aB
 	self shouldAppend
 		ifTrue: [ ^ GtTextEditorAppendingAttribute newDuring: [ :attribute |
 			attribute adornmentAttribute: self.
+			self gtExternalTextConfigureAppendingAttribute: attribute.
 			aBlock value: attribute ] ].
 			
 	self shouldReplace
@@ -13,4 +14,8 @@ BrTextAdornmentAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aB
 			aBlock value: attribute ] ].
 
 	^ self
+]
+
+{ #category : '*GToolkit-Editor' }
+BrTextAdornmentAttribute >> gtExternalTextConfigureAppendingAttribute: anAttribute [
 ]

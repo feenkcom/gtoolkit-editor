@@ -49,6 +49,16 @@ GtTextEditorAppendingAttribute >> attributeTag [
 ]
 
 { #category : 'as yet unclassified' }
+GtTextEditorAppendingAttribute >> beExactHeight: aNumber [
+	self primSetExactAdornmentHeight: aNumber
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAppendingAttribute >> beExactWidth: aNumber [
+	self primSetExactAdornmentWidth: aNumber
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorAppendingAttribute >> isAdornmentAttribute [
 	^ true
 ]
@@ -61,4 +71,14 @@ GtTextEditorAppendingAttribute >> primAsAttribute [
 { #category : 'as yet unclassified' }
 GtTextEditorAppendingAttribute >> primGetTag [
 	^ self ffiCall: #(uint64 appending_attribute_get_tag(self))
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAppendingAttribute >> primSetExactAdornmentHeight: aNumber [
+	^ self ffiCall: #(void appending_attribute_set_exact_height(self, float64 aNumber))
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAppendingAttribute >> primSetExactAdornmentWidth: aNumber [
+	^ self ffiCall: #(void appending_attribute_set_exact_width(self, float64 aNumber))
 ]

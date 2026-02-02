@@ -134,7 +134,7 @@ GtTextEditorExternalText >> foreground: aColor [
 
 { #category : 'gt - extensions' }
 GtTextEditorExternalText >> gtChunksToMeasureFor: aView [
-	<gtView>
+	"<gtView>"
 	| chunkSize |
 	
 	chunkSize := 10.
@@ -161,7 +161,7 @@ GtTextEditorExternalText >> gtTextFor: aView [
 
 { #category : 'gt - extensions' }
 GtTextEditorExternalText >> gtTextWithReplacementsFor: aView [
-	<gtView>
+	"<gtView>"
 	
 	^ aView columnedList
 		title: 'Text and replacements';

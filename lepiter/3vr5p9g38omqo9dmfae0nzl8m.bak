@@ -66,14 +66,14 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2026-01-31T12:50:07.261375+01:00"
+						"dateAndTimeString" : "2026-02-02T10:23:00.645216+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "wUNuFy6lS4uCirN0L8gOMw=="
 				},
-				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: (String loremIpsum: 10000);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: (String loremIpsum: 20000);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			},
 			{
 				"__type" : "pharoSnippet",
@@ -100,14 +100,48 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2026-02-01T19:58:32.592424+01:00"
+						"dateAndTimeString" : "2026-02-02T10:24:01.55995+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "tp935YqiSBiJC4wpfegZGQ=="
 				},
-				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: '';\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: 'Hello😎World';\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+			},
+			{
+				"__type" : "pharoSnippet",
+				"children" : {
+					"__type" : "snippets",
+					"items" : [ ]
+				},
+				"createEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"createTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2026-02-01T21:20:00.00841+01:00"
+					}
+				},
+				"editEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"editTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2026-02-01T21:20:01.02064+01:00"
+					}
+				},
+				"uid" : {
+					"__type" : "uid",
+					"uidString" : "MNjnebSUSQSyX5EP4i1IEw=="
+				},
+				"code" : "GtTextEditorElement new\r\tsize: 500@400;\r\ttext: ('a.txt' asFileReference contents);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			}
 		]
 	},

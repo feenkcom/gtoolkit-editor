@@ -96,6 +96,11 @@ GtTextEditorHandle >> endSelectionAtVisualPoint [
 ]
 
 { #category : 'api - selection' }
+GtTextEditorHandle >> extendSelectionDown [
+	self primExtendSelectionDown
+]
+
+{ #category : 'api - selection' }
 GtTextEditorHandle >> extendSelectionLeft [
 	self primExtendSelectionLeft
 ]
@@ -103,6 +108,21 @@ GtTextEditorHandle >> extendSelectionLeft [
 { #category : 'api - selection' }
 GtTextEditorHandle >> extendSelectionRight [
 	self primExtendSelectionRight
+]
+
+{ #category : 'api - selection' }
+GtTextEditorHandle >> extendSelectionToLineEnd [
+	self primExtendSelectionToLineEnd
+]
+
+{ #category : 'api - selection' }
+GtTextEditorHandle >> extendSelectionToLineStart [
+	self primExtendSelectionToLineStart
+]
+
+{ #category : 'api - selection' }
+GtTextEditorHandle >> extendSelectionUp [
+	self primExtendSelectionUp
 ]
 
 { #category : 'accessing' }
@@ -225,6 +245,11 @@ GtTextEditorHandle >> primEndSelectionAtVisualPoint [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primExtendSelectionDown [
+	self ffiCall: #(void editor_handle_extend_selection_down(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primExtendSelectionLeft [
 	self ffiCall: #(void editor_handle_extend_selection_left(self))
 ]
@@ -232,6 +257,21 @@ GtTextEditorHandle >> primExtendSelectionLeft [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primExtendSelectionRight [
 	self ffiCall: #(void editor_handle_extend_selection_right(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primExtendSelectionToLineEnd [
+	self ffiCall: #(void editor_handle_extend_selection_to_line_end(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primExtendSelectionToLineStart [
+	self ffiCall: #(void editor_handle_extend_selection_to_line_start(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primExtendSelectionUp [
+	self ffiCall: #(void editor_handle_extend_selection_up(self))
 ]
 
 { #category : 'private - ffi' }

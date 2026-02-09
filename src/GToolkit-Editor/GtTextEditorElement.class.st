@@ -127,6 +127,11 @@ GtTextEditorElement >> ensureEditorProcess [
 ]
 
 { #category : 'api - selection' }
+GtTextEditorElement >> extendSelectionDown [
+	editorModel extendSelectionDown
+]
+
+{ #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionLeft [
 	editorModel extendSelectionLeft
 ]
@@ -134,6 +139,21 @@ GtTextEditorElement >> extendSelectionLeft [
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionRight [
 	editorModel extendSelectionRight
+]
+
+{ #category : 'api - selection' }
+GtTextEditorElement >> extendSelectionToLineEnd [
+	editorModel extendSelectionToLineEnd
+]
+
+{ #category : 'api - selection' }
+GtTextEditorElement >> extendSelectionToLineStart [
+	editorModel extendSelectionToLineStart
+]
+
+{ #category : 'api - selection' }
+GtTextEditorElement >> extendSelectionUp [
+	editorModel extendSelectionUp
 ]
 
 { #category : 'as yet unclassified' }
@@ -220,6 +240,16 @@ GtTextEditorElement >> initializeShortcuts [
 				
 	self
 		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination shiftArrowUp;
+				action: [ self extendSelectionUp ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination shiftArrowDown;
+				action: [ self extendSelectionDown ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryA;
 				action: [ self selectAll ]).
 
@@ -255,13 +285,23 @@ GtTextEditorElement >> initializeShortcuts [
 				
 	self
 		addShortcut: (BlShortcutWithAction new
-				combination: BlKeyCombination home;
+				combination: BlKeyCombination primaryArrowLeft;
 				action: [ self moveCursorToLineStart ]).
 				
 	self
 		addShortcut: (BlShortcutWithAction new
-				combination: BlKeyCombination end;
-				action: [ self moveCursorToLineEnd ])
+				combination: BlKeyCombination primaryArrowRight;
+				action: [ self moveCursorToLineEnd ]).
+		
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryShiftArrowLeft;
+				action: [ self extendSelectionToLineStart ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryShiftArrowRight;
+				action: [ self extendSelectionToLineEnd ])
 ]
 
 { #category : 'api - editing' }

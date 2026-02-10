@@ -32,7 +32,7 @@ GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsent
 			GtTextEditorEmbedderLayoutReadyMessage.
 			GtTextEditorEmbedderMeasureAdornmentMessage.
 			GtTextEditorEmbedderAdornmentMeasuredMessage.
-			GtTextEditorEmbedderReadyToStyleMessage}.
+			GtTextEditorEmbedderTextChangedMessage}.
 
 	^ (messageClasses at: messageType ifAbsent: [ ^ self ])
 		fromNativeHandle: messageHandle

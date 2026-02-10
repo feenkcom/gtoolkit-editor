@@ -78,6 +78,16 @@ GtTextEditorElement >> beReadOnlyWithSelection [
 	
 ]
 
+{ #category : 'api - editing' }
+GtTextEditorElement >> copySelected [
+	editorModel copySelected
+]
+
+{ #category : 'api - editing' }
+GtTextEditorElement >> cutSelected [
+	editorModel cutSelected
+]
+
 { #category : 'accessing' }
 GtTextEditorElement >> defaultFontName: aFontFamilyName [
 	editorModel defaultFontName: aFontFamilyName
@@ -270,9 +280,29 @@ GtTextEditorElement >> initializeShortcuts [
 
 	self
 		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryC;
+				action: [ self copySelected ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryX;
+				action: [ self cutSelected ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryV;
-				action: [ self pasteString ]).
+				action: [ self pasteAtCarets ]).
 
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryZ;
+				action: [ self undo ]).
+	
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination primaryShiftZ;
+				action: [ self redo ]).
+	
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination builder primary home build;
@@ -389,26 +419,26 @@ GtTextEditorElement >> onAddedToSceneGraph [
 	self ensureEditorProcess
 ]
 
-{ #category : 'initialization' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onClickEvent: anEvent [
 	anEvent consumed: true
 ]
 
-{ #category : 'initialization' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onDragEndEvent: anEvent [
 	anEvent consumed: true.
 	
 	editorModel endSelectionAtVisualPoint
 ]
 
-{ #category : 'initialization' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onDragEvent: anEvent [
 	anEvent consumed: true.
 	
 	editorModel updateSelectionAtVisualPoint: anEvent localPosition
 ]
 
-{ #category : 'initialization' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onDragStartEvent: anEvent [
 	anEvent consumed: true.
 	
@@ -489,9 +519,9 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 ]
 
 { #category : 'event handling' }
-GtTextEditorElement >> onEditorReadyToStyle: aMessage [
+GtTextEditorElement >> onEditorTextChanged: aMessage [
 	self dispatchEvent: BrTextEditorModifiedEvent new.
-	self styleText
+	"self styleText"
 ]
 
 { #category : 'layout' }
@@ -532,7 +562,7 @@ GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 	self measuredExtent: (anExtentMeasurementSpec sizeFor: (self measuredWidth @ editorModel height))
 ]
 
-{ #category : 'initialization' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onMouseDownEvent: anEvent [
 	anEvent consumed: true.
 	
@@ -540,10 +570,10 @@ GtTextEditorElement >> onMouseDownEvent: anEvent [
 		ifTrue: [ self addCursorAtVisualPoint: anEvent localPosition ]
 		ifFalse: [ self moveCursorToVisualPoint: anEvent localPosition ].
 		
-	self requestFocus. 
+	self requestFocus
 ]
 
-{ #category : 'initialization' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onMouseUpEvent: anEvent [
 	anEvent consumed: true
 ]
@@ -572,10 +602,12 @@ GtTextEditorElement >> onRemovedFromSceneGraph [
 GtTextEditorElement >> onTextInputEvent: anEvent [
 	(anEvent text allSatisfy: [ :aCharacter | Unicode isPrintable: aCharacter ])
 		ifFalse: [ ^ self ].
-
-    anEvent consumed: true.
-
-	editorModel insertStringAtCursor: anEvent text
+	
+	anEvent modifiers isPrimaryModifier
+		ifTrue: [ ^ self ].
+	
+	anEvent consumed: true.
+  editorModel insertStringAtCursor: anEvent text
 ]
 
 { #category : 'event handling' }
@@ -637,9 +669,9 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 							aChildElement fullPaintOn: aNewPainter offset: aNewOffset ] ] ]
 ]
 
-{ #category : 'as yet unclassified' }
-GtTextEditorElement >> pasteString [
-	editorModel insertStringAtCursor: Clipboard clipboardText asString
+{ #category : 'api - editing' }
+GtTextEditorElement >> pasteAtCarets [
+	editorModel pasteAtCarets
 ]
 
 { #category : 'private' }
@@ -660,6 +692,11 @@ GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
 	self stylerStrategy
 		styleTextInEditorElement: self
 		thenDo: aBlock
+]
+
+{ #category : 'api - editing' }
+GtTextEditorElement >> redo [
+	editorModel redo
 ]
 
 { #category : 'api - attributes' }
@@ -763,6 +800,11 @@ GtTextEditorElement >> text: aBlText [
 			adornments := textEditorText adornments collect: [ :eachAttribute | eachAttribute -> nil ].
 			self removeObsoleteAdornmentElements.
 			self editorModel text: textEditorText ]
+]
+
+{ #category : 'api - editing' }
+GtTextEditorElement >> undo [
+	editorModel undo
 ]
 
 { #category : 'styling' }

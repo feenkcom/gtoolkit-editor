@@ -54,6 +54,16 @@ GtTextEditorHandle >> addCursorAtVisualPoint: aPoint [
 		y: aPoint y
 ]
 
+{ #category : 'api - editing' }
+GtTextEditorHandle >> copySelected [
+	self primCopySelected
+]
+
+{ #category : 'api - editing' }
+GtTextEditorHandle >> cutSelected [
+	self primCutSelected
+]
+
 { #category : 'accessing' }
 GtTextEditorHandle >> defaultFontName: aFontFamilyName [
 	self ffiLibrary
@@ -130,7 +140,7 @@ GtTextEditorHandle >> height [
 	^ self primGetHeight
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - editing' }
 GtTextEditorHandle >> insertStringAtCursor: aString [
 	self ffiLibrary
 		newString: aString
@@ -199,6 +209,11 @@ GtTextEditorHandle >> moveCursorToVisualPoint: aPoint [
 		y: aPoint y
 ]
 
+{ #category : 'api - editing' }
+GtTextEditorHandle >> pasteAtCarets [
+	self primPaste
+]
+
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primAddAttribute: anAttribute overAdornment: anAdornmentTag [
 	self ffiBareCall: #(uint64 editor_handle_add_text_attribute_over_adornment(
@@ -225,8 +240,18 @@ GtTextEditorHandle >> primAddCursorAtVisualX: aX y: aY [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primCopySelected [
+	self ffiCall: #(void editor_handle_copy_selection(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primCreateAdornmentDynamicOffset: anAdornmentId [
 	^ self ffiCall: #(void* editor_handle_make_dynamic_offset_payload(self, uint64 anAdornmentId))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primCutSelected [
+	self ffiCall: #(void editor_handle_cut_selection(self))
 ]
 
 { #category : 'private - ffi' }
@@ -284,14 +309,14 @@ GtTextEditorHandle >> primGetUnstyledText [
 	self ffiCall: #(void* editor_handle_get_unstyled_text(self))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primInsertString: aStringBox [
 	^ self ffiCall: #(void editor_handle_insert_str(
 		self,
 		void* aStringBox))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primMeasureWidth: aWidth hasViewportTop: hasViewportTop viewportTop: viewportTop hasViewportHeight:  hasViewportHeight viewportHeight: viewportHeight [
 	self ffiCall: #(void editor_handle_resize(
 		self,
@@ -350,14 +375,24 @@ GtTextEditorHandle >> primMoveCursorToVisualX: aX y: aY [
 		float64 aY))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primPaste [
+	self ffiCall: #(void editor_handle_paste(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primQueryEditorClone [
 	^ self ffiCall: #(void* editor_handle_query_editor(self))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primQueryMetrics [
 	^ self ffiCall: #(void* editor_handle_query_metrics(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primRedo [
+	self ffiCall: #(void editor_handle_redo(self))
 ]
 
 { #category : 'private - ffi' }
@@ -368,7 +403,7 @@ GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag overAdornment: a
 		uint64 anAdornmentTag))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primResizeAdornment: anAttributeTag width: aWidth height: aHeight [
 	^ self ffiCall: #(void editor_handle_resize_adornment(
 		self,
@@ -377,7 +412,7 @@ GtTextEditorHandle >> primResizeAdornment: anAttributeTag width: aWidth height: 
 		float64 aHeight))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primScrollBy: aY [
 	self ffiCall: #(void editor_handle_scroll_by(self, float64 aY))
 ]
@@ -412,7 +447,7 @@ GtTextEditorHandle >> primSetMockedTextLayouter: aGlyphSize [
 	self ffiCall: #(void editor_handle_set_text_layouter_mocked(self, float64 aGlyphSize))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSetRenderThreadWakerThunk: thunk [
 	^ self ffiCall: #(void editor_handle_set_render_thread_thunk(self, void* thunk))
 ]
@@ -422,12 +457,12 @@ GtTextEditorHandle >> primSetSkiaTextLayouter [
 	self ffiCall: #(void editor_handle_set_text_layouter_skia(self))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSetStyledText: aGtTextEditorExternalText [
 	self ffiCall: #(void editor_handle_set_styled_text(self, void* aGtTextEditorExternalText))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSetText: aGtTextEditorExternalText [
 	self ffiCall: #(void editor_handle_set_text(self, void* aGtTextEditorExternalText))
 ]
@@ -441,11 +476,21 @@ GtTextEditorHandle >> primStartSelectionAtVisualX: aX y: aY [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primUndo [
+	self ffiCall: #(void editor_handle_undo(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primUpdateSelectionAtVisualX: aX y: aY [
 	self ffiCall: #(void editor_handle_update_selection_at_visual_point(
 		self,
 		float64 aX,
 		float64 aY))
+]
+
+{ #category : 'api - editing' }
+GtTextEditorHandle >> redo [
+	self primRedo
 ]
 
 { #category : 'api - attributes' }
@@ -491,6 +536,11 @@ GtTextEditorHandle >> styledText: aGtTextEditorExternalText [
 { #category : 'accessing' }
 GtTextEditorHandle >> text: aGtTextEditorExternalText [
 	self primSetText: aGtTextEditorExternalText
+]
+
+{ #category : 'api - editing' }
+GtTextEditorHandle >> undo [
+	self primUndo
 ]
 
 { #category : 'accessing' }

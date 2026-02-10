@@ -188,7 +188,7 @@ GtTextEditorElement >> initialize [
 		action: (MessageSend receiver: self selector: #pollEditorMessages).
 
 	self beInSeparateCompositionLayer.
-	self addAptitude: BrGlamorousTextAreaSpacingAptitude.
+	"self addAptitude: BrGlamorousTextAreaSpacingAptitude."
 	self when: BlMouseWheelEvent do: [ :anEvent | self onMouseWheelEvent: anEvent ].
 	self when: BlMouseDownEvent do: [ :anEvent | self onMouseDownEvent: anEvent ].
 	self when: BlMouseUpEvent do: [ :anEvent | self onMouseUpEvent: anEvent ].
@@ -416,18 +416,49 @@ GtTextEditorElement >> onDragStartEvent: anEvent [
 ]
 
 { #category : 'event handling' }
-GtTextEditorElement >> onEditorLayoutReady: aMessage [
-	self children
-		do: [ :eachChild | 
-			eachChild userData
-				at: #editorAdornmentId
-				ifPresent: [ :anAdornmentTag | 
-					aMessage
-						adornmentPosition: anAdornmentTag
-						ifPresent: [ :adornmentPosition | eachChild relocate: adornmentPosition ]
-						ifAbsent: [  ] ] ].
+GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
+	adornments
+		at: aMessage adornmentTag
+		ifPresent: [ :anAssociation |
+			| anAdornmentAttribute aTextPiece theAdornmentElements |
+			
+			anAdornmentAttribute := anAssociation key.
+			theAdornmentElements := anAssociation value.
+			theAdornmentElements ifNil: [
+				aTextPiece := GtTextEditorTextPiece new
+					initializeWith: (GtTextEditorTextOfAdornment new setEditorElement: self adornmentId: aMessage adornmentTag)
+					from: 0
+					to: 0
+					delimiter: 0.
+				
+				theAdornmentElements := (anAdornmentAttribute affect: aTextPiece in: self) asOrderedCollection.
+				theAdornmentElements do: [ :each |
+					each userData at: #editorAdornmentId put:aMessage adornmentTag
+				].
+				self addChildren: theAdornmentElements.
+				anAssociation value: theAdornmentElements
+			].
+		]
+		ifAbsent: [ ]
+]
 
-	self requestLayout
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorLayoutReady: aMessage [
+	self ignoreRequestLayoutDuring:  [
+	
+		self children
+			do: [ :eachChild | 
+				eachChild userData
+					at: #editorAdornmentId
+					ifPresent: [ :anAdornmentTag | 
+						aMessage
+							adornmentPosition: anAdornmentTag
+							ifPresent: [ :adornmentPosition | eachChild relocate: adornmentPosition ]
+							ifAbsent: [  ] ] ].
+	].
+
+	(aMessage editorExtent closeTo: self measuredExtent)
+		ifFalse: [ self requestLayout ]
 ]
 
 { #category : 'event handling' }
@@ -685,6 +716,11 @@ GtTextEditorElement >> styleText [
 		styleText: textToStyle
 		inEditorElement: self
 		thenDo: [ :aText | ]
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> styleTextAndAfterDo: aConstantBlockClosure1Arg [ 
+	self flag: #TODO.
 ]
 
 { #category : 'styling' }

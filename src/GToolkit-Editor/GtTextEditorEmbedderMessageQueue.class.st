@@ -31,6 +31,7 @@ GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsent
 	messageClasses := {
 			GtTextEditorEmbedderLayoutReadyMessage.
 			GtTextEditorEmbedderMeasureAdornmentMessage.
+			GtTextEditorEmbedderAdornmentMeasuredMessage.
 			GtTextEditorEmbedderReadyToStyleMessage}.
 
 	^ (messageClasses at: messageType ifAbsent: [ ^ self ])

@@ -847,7 +847,7 @@ GtNewTextualCoderElement >> text [
 { #category : 'TODO' }
 GtNewTextualCoderElement >> text: aBlText [
 	(self text equalsIgnoringAttributes: aBlText)
-		ifTrue: [ self editor history disableDuring: [ editorElement text: aBlText ] ].
+		ifTrue: [ "self editor history disableDuring: [ editorElement text: aBlText" ].
 	editorElement text: aBlText
 ]
 

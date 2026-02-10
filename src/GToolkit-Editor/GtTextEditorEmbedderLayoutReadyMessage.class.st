@@ -21,11 +21,25 @@ GtTextEditorEmbedderLayoutReadyMessage >> adornmentPosition: adornmentId ifPrese
 			ifFalse: [ ifAbsentBlock value ] ]
 ]
 
+{ #category : 'as yet unclassified' }
+GtTextEditorEmbedderLayoutReadyMessage >> editorExtent [
+	^ self ffiLibrary newPointF32During: [ :aBoxedPoint |
+		self primGetEditorSize: aBoxedPoint.
+		aBoxedPoint asPoint ]
+]
+
 { #category : 'private - ffi' }
 GtTextEditorEmbedderLayoutReadyMessage >> primGetAdornmentPosition: adornmentId point: boxerPoint [
 	^ self ffiCall: #(bool to_embedder_layout_ready_message_get_adornment_position(
 		self,
 		uint64 adornmentId,
+		void* boxerPoint))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorEmbedderLayoutReadyMessage >> primGetEditorSize: boxerPoint [
+	^ self ffiCall: #(bool to_embedder_layout_ready_message_get_size(
+		self,
 		void* boxerPoint))
 ]
 

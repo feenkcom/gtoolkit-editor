@@ -14,8 +14,8 @@ Class {
 GtTextEditorAttributeAnchor class >> fieldsDesc [
 	"self rebuildFieldAccessors"
 	^ #(
-	size_t offset;
-	uint8 bias;
+		size_t offset;
+		uint8 bias;
 	)
 ]
 

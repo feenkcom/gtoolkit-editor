@@ -524,6 +524,23 @@ GtTextEditorElement >> onEditorTextChanged: aMessage [
 	"self styleText"
 ]
 
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
+	NonInteractiveTranscript stdout
+		nextPutAll: 'id: ';
+		nextPutAll: aMessage documentId printString;
+		nextPutAll: '; trigger: ';
+		nextPutAll: aMessage trigger printString;
+		cr.
+		
+	
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorTextStylingRequest: aMessage [
+	
+]
+
 { #category : 'layout' }
 GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 	| heightSpec |

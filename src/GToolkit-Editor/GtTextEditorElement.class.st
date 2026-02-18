@@ -227,7 +227,7 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination delete;
 				action: [ self deleteNextAtCursor ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination enter;
@@ -237,7 +237,7 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination arrowLeft;
 				action: [ self moveCursorLeft ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination shiftArrowLeft;
@@ -483,10 +483,10 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 					ifPresent: [ :anAdornmentTag | 
 						aMessage
 							adornmentPosition: anAdornmentTag
-							ifPresent: [ :adornmentPosition | eachChild relocate: adornmentPosition ]
-							ifAbsent: [  ] ] ].
-	].
-
+							ifPresent: [ :adornmentPosition |
+								eachChild relocate: adornmentPosition ]
+							ifAbsent: [  ] ] ] ].
+	
 	(aMessage editorExtent closeTo: self measuredExtent)
 		ifFalse: [ self requestLayout ]
 ]

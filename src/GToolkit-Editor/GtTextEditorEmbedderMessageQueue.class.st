@@ -1,9 +1,9 @@
 Class {
 	#name : 'GtTextEditorEmbedderMessageQueue',
 	#superclass : 'GtBoxerValueBox',
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-Model-Messages',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'Model-Messages'
 }
 
 { #category : 'as yet unclassified' }
@@ -18,7 +18,7 @@ GtTextEditorEmbedderMessageQueue class >> primRelease: aHandle [
 	self ffiCall: #(void editor_embedder_messages_release(void* aHandle))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsentBlock [
 	| typeBuffer messageHandle messageType messageClasses |
 	
@@ -29,10 +29,12 @@ GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsent
 	messageType := typeBuffer unsignedByteAt: 1.
 	
 	messageClasses := {
-			GtTextEditorEmbedderLayoutReadyMessage.
-			GtTextEditorEmbedderMeasureAdornmentMessage.
-			GtTextEditorEmbedderAdornmentMeasuredMessage.
-			GtTextEditorEmbedderTextChangedMessage}.
+		GtTextEditorEmbedderLayoutReadyMessage.
+		GtTextEditorEmbedderMeasureAdornmentMessage.
+		GtTextEditorEmbedderAdornmentMeasuredMessage.
+		GtTextEditorEmbedderTextChangedMessage.
+		GtTextEditorEmbedderTextCompletionRequestMessage.
+		GtTextEditorEmbedderTextStylingRequestMessage }.
 
 	^ (messageClasses at: messageType ifAbsent: [ ^ self ])
 		fromNativeHandle: messageHandle

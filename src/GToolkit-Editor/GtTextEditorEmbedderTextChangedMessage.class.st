@@ -1,9 +1,9 @@
 Class {
 	#name : 'GtTextEditorEmbedderTextChangedMessage',
 	#superclass : 'GtTextEditorEmbedderMessage',
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-Model-Messages',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'Model-Messages'
 }
 
 { #category : 'as yet unclassified' }

@@ -18,4 +18,5 @@ BrTextAdornmentAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aB
 
 { #category : '*GToolkit-Editor' }
 BrTextAdornmentAttribute >> gtExternalTextConfigureAppendingAttribute: anAttribute [
+	anAttribute setOverwritableByStyler: self isOverwritableByStyler
 ]

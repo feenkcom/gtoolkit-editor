@@ -4,7 +4,6 @@ Class {
 	#traits : 'TBlAssertUIProcess + TGtWithTextualCoderViewModel + TBrLayoutResizable',
 	#classTraits : 'TBlAssertUIProcess classTrait + TGtWithTextualCoderViewModel classTrait + TBrLayoutResizable classTrait',
 	#instVars : [
-		'completion',
 		'evaluationHighlighter',
 		'evaluationPrinter',
 		'shortcuts',
@@ -180,7 +179,6 @@ GtNewTextualCoderElement >> initialize [
 	self id: GtSourceCoderEditorId.
 
 	shortcuts := #().
-	completion := GtCompletionController on: editorElement.
 
 	evaluationHighlighter := GtSourceCoderEvaluationHighlighter new editorElement: self.
 	evaluationPrinter := GtSourceCoderEvaluationPrinter new editorElement: self.
@@ -495,7 +493,7 @@ GtNewTextualCoderElement >> onTextualCoderViewModelChanged [
 	shortcuts := self textualCoderViewModel shortcuts copy.
 	self editor addEditorShortcuts: shortcuts.
 	
-	completion strategy: self textualCoderViewModel completionStrategy.
+	editorElement completionStrategy: self textualCoderViewModel completionStrategy.
 	
 	self textualCoderViewModel compositeStyler ifNotNil: [ :aStyler | 
 		self styler: aStyler ]
@@ -838,8 +836,6 @@ GtNewTextualCoderElement >> subscribeToTextualCoderViewModel [
 
 	self registerCoderModelAnnouncementsFor: self textualCoderViewModel coderModel.
 	self registerCoderViewModelAnnouncementsFor: self textualCoderViewModel.
-
-	completion install
 ]
 
 { #category : 'TODO' }
@@ -862,7 +858,6 @@ GtNewTextualCoderElement >> unsubscribeFromTextualCoderViewModel [
 	self textualCoderViewModel unsubscribe: self.
 	self textualCoderViewModel coderModel unsubscribe: self.
 	
-	completion uninstall.
 	self editor removeEditorShortcuts: shortcuts
 ]
 

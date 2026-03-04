@@ -66,14 +66,14 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2026-02-02T11:55:12.273726+01:00"
+						"dateAndTimeString" : "2026-02-09T22:09:04.847463+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "wUNuFy6lS4uCirN0L8gOMw=="
 				},
-				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: (String loremIpsum: 2000);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: (String loremIpsum: 10000);\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			},
 			{
 				"__type" : "pharoSnippet",
@@ -100,14 +100,14 @@
 					"__type" : "time",
 					"time" : {
 						"__type" : "dateAndTime",
-						"dateAndTimeString" : "2026-02-02T10:24:01.55995+01:00"
+						"dateAndTimeString" : "2026-02-23T09:25:23.000662+01:00"
 					}
 				},
 				"uid" : {
 					"__type" : "uid",
 					"uidString" : "tp935YqiSBiJC4wpfegZGQ=="
 				},
-				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: 'Hello😎World';\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+				"code" : "GtTextEditorElement new\r\tmatchParent;\r\ttext: 'Hello World';\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
 			},
 			{
 				"__type" : "pharoSnippet",
@@ -142,6 +142,74 @@
 					"uidString" : "Z1Y3tIGrQeS84aolkDcJvg=="
 				},
 				"code" : "SkiaCompositorPlatform allInstancesDo: #enableFPS."
+			},
+			{
+				"__type" : "pharoSnippet",
+				"children" : {
+					"__type" : "snippets",
+					"items" : [ ]
+				},
+				"createEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"createTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2026-02-23T09:31:30.087905+01:00"
+					}
+				},
+				"editEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"editTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2026-02-23T09:35:48.162657+01:00"
+					}
+				},
+				"uid" : {
+					"__type" : "uid",
+					"uidString" : "Sxi4hsSBR2WXKYB+w08HLw=="
+				},
+				"code" : "e := GtTextEditorElement new\r\tmatchParent;\r\ttext: 'Hello World';\r\tmoveCursorToBeginning;\r\trequestFocus;\r\tyourself"
+			},
+			{
+				"__type" : "pharoSnippet",
+				"children" : {
+					"__type" : "snippets",
+					"items" : [ ]
+				},
+				"createEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"createTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2026-02-23T09:44:20.128977+01:00"
+					}
+				},
+				"editEmail" : {
+					"__type" : "email",
+					"emailString" : "<unknown>"
+				},
+				"editTime" : {
+					"__type" : "time",
+					"time" : {
+						"__type" : "dateAndTime",
+						"dateAndTimeString" : "2026-02-23T09:44:28.953679+01:00"
+					}
+				},
+				"uid" : {
+					"__type" : "uid",
+					"uidString" : "Poy5iRiFSiC9JQe87l840g=="
+				},
+				"code" : "e addAttribute: (BrGlamorousTriangleExpanderTextAttribute new) from: 8 to: 9"
 			}
 		]
 	},

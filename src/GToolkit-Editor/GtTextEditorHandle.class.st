@@ -40,6 +40,18 @@ GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd [
 ]
 
 { #category : 'api - attributes' }
+GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
+	<return: #Number>
+
+	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
+		self
+			primAddAttribute: aTextAttribute
+			start: aStart - 1
+			end: anEnd - 1
+			documentId: documentId ].
+]
+
+{ #category : 'api - attributes' }
 GtTextEditorHandle >> addAttribute: anAttribute overAdornment: anAdornmentTag [
 	<return: #Number>
 	^ anAttribute
@@ -232,6 +244,16 @@ GtTextEditorHandle >> primAddAttribute: anAttribute start: aStart end: anEnd [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primAddAttribute: anAttribute start: aStart end: anEnd documentId: documentId [
+	self ffiBareCall: #(uint64 editor_handle_add_text_attribute_with_document_validation(
+		self,
+		void* anAttribute,
+		size_t aStart,
+		size_t anEnd,
+		void* documentId))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primAddCursorAtVisualX: aX y: aY [
 	self ffiCall: #(void editor_handle_add_cursor_at_visual_point(
 		self,
@@ -396,6 +418,13 @@ GtTextEditorHandle >> primRedo [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag [
+	self ffiBareCall: #(void editor_handle_remove_text_attribute(
+		self,
+		uint64 anAttributeTag))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
 	self ffiBareCall: #(void editor_handle_remove_text_attribute_over_adornment(
 		self,
@@ -491,6 +520,12 @@ GtTextEditorHandle >> primUpdateSelectionAtVisualX: aX y: aY [
 { #category : 'api - editing' }
 GtTextEditorHandle >> redo [
 	self primRedo
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorHandle >> removeAttributeTagged: anAttributeTag [
+	self
+			primRemoveAttributeTagged: anAttributeTag
 ]
 
 { #category : 'api - attributes' }

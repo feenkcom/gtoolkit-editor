@@ -12,13 +12,35 @@ GtTextEditorEmbedderTextCompletionRequestMessage class >> primRelease: aHandle [
 	self ffiCall: #(void to_embedder_text_completion_request_release(void* aHandle))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
+GtTextEditorEmbedderTextCompletionRequestMessage >> caretRawOffset [
+	^ self primGetCaretRawOffset
+]
+
+{ #category : 'accessing' }
+GtTextEditorEmbedderTextCompletionRequestMessage >> contextBeforeCaret [
+	<return: #String>
+
+	^ self ffiLibrary getStringFrom: [ :stringBox | self primGetContextBeforeCaret: stringBox]
+]
+
+{ #category : 'accessing' }
 GtTextEditorEmbedderTextCompletionRequestMessage >> documentId [
 	| documentId |
 	
 	documentId := GtTextEditorDocumentId new.
 	self primGetDocumentId: documentId.
 	^ documentId
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorEmbedderTextCompletionRequestMessage >> primGetCaretRawOffset [
+	^ self ffiCall: #(size_t to_embedder_text_completion_request_get_active_caret_raw_offset(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorEmbedderTextCompletionRequestMessage >> primGetContextBeforeCaret: aStringBox [
+	^ self ffiCall: #(void to_embedder_text_completion_request_get_context_before_caret(self, void* aStringBox))
 ]
 
 { #category : 'private - ffi' }

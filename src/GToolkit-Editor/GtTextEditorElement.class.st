@@ -14,7 +14,9 @@ Class {
 		'adornments',
 		'stylerStrategy',
 		'styler',
-		'currentStyledText'
+		'currentStyledText',
+		'completionStrategy',
+		'completionAttributeTag'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -23,7 +25,7 @@ Class {
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd [
-	anAttribute
+	^ anAttribute
 		asGtExternalTextAttributeForTheme: self theme
 		during: [ :externalAttribute |
 			| attributeTag |
@@ -32,6 +34,29 @@ GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd [
 				addAttribute: externalAttribute
 				from: aStart
 				to: anEnd.
+			
+			externalAttribute isAdornmentAttribute
+				ifTrue: [
+					adornments
+						at: attributeTag
+						put: (externalAttribute adornmentAttribute -> nil) ].
+
+			attributeTag ].
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
+	<return: #Number>
+	^ anAttribute
+		asGtExternalTextAttributeForTheme: self theme
+		during: [ :externalAttribute |
+			| attributeTag |
+			
+			attributeTag := editorModel
+				addAttribute: externalAttribute
+				from: aStart
+				to: anEnd
+				documentId: documentId.
 			
 			externalAttribute isAdornmentAttribute
 				ifTrue: [
@@ -76,6 +101,16 @@ GtTextEditorElement >> addEditorShortcuts: aCollection [
 { #category : 'as yet unclassified' }
 GtTextEditorElement >> beReadOnlyWithSelection [
 	
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> completionStrategy [
+	^ completionStrategy
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> completionStrategy: anObject [
+	completionStrategy := anObject
 ]
 
 { #category : 'api - editing' }
@@ -187,6 +222,8 @@ GtTextEditorElement >> initialize [
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
 	
+	completionStrategy := GtCompletionStrategy new.
+	
 	editorModel := (GtTextEditorEmbedder
 			forSemaphoreIndex: semaphoreIndex
 			during: [ :pharoEmbedder |
@@ -198,7 +235,6 @@ GtTextEditorElement >> initialize [
 		action: (MessageSend receiver: self selector: #pollEditorMessages).
 
 	self beInSeparateCompositionLayer.
-	"self addAptitude: BrGlamorousTextAreaSpacingAptitude."
 	self when: BlMouseWheelEvent do: [ :anEvent | self onMouseWheelEvent: anEvent ].
 	self when: BlMouseDownEvent do: [ :anEvent | self onMouseDownEvent: anEvent ].
 	self when: BlMouseUpEvent do: [ :anEvent | self onMouseUpEvent: anEvent ].
@@ -447,6 +483,8 @@ GtTextEditorElement >> onDragStartEvent: anEvent [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
+	GtJustContextStackSignal emit.
+
 	adornments
 		at: aMessage adornmentTag
 		ifPresent: [ :anAssociation |
@@ -474,6 +512,8 @@ GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorLayoutReady: aMessage [
+	GtJustContextStackSignal emit.
+	
 	self ignoreRequestLayoutDuring:  [
 	
 		self children
@@ -521,19 +561,39 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextChanged: aMessage [
 	self dispatchEvent: BrTextEditorModifiedEvent new.
+	
+	"
+	
+	"
+	
 	"self styleText"
 ]
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
-	NonInteractiveTranscript stdout
-		nextPutAll: 'id: ';
-		nextPutAll: aMessage documentId printString;
-		nextPutAll: '; trigger: ';
-		nextPutAll: aMessage trigger printString;
-		cr.
-		
+	| contextBeforeCaret completionPrefix completionResult completionOffset |
 	
+	contextBeforeCaret := aMessage contextBeforeCaret.
+	
+	completionPrefix := (completionStrategy
+		completionPrefixAt: contextBeforeCaret size
+		in: contextBeforeCaret ) ifNil: [ '' ].
+		
+	completionOffset := (ZnUTF8Encoder default encodeString: completionPrefix) size.
+		
+	completionResult := completionStrategy
+		completionResultFor: contextBeforeCaret
+		at: contextBeforeCaret size
+		requested: aMessage trigger isManual.
+		
+	completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
+
+	completionAttributeTag := self
+		addAttribute: (GtTextEditorCompletionAttachmentAttribute new
+			completionResult: completionResult)
+		from: ((aMessage caretRawOffset + 1 - completionOffset) max: 0)
+		to: ((aMessage caretRawOffset + 1 - completionOffset) max: 0)
+		documentId: aMessage documentId
 ]
 
 { #category : 'event handling' }
@@ -714,6 +774,15 @@ GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
 { #category : 'api - editing' }
 GtTextEditorElement >> redo [
 	editorModel redo
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
+	(adornments removeKey: anAttributeTag ifAbsent: [ nil ]) ifNotNil: [ :anAssociation |
+		anAssociation value ifNotNil: [ :anElement | self removeChildren: anElement ] ].
+
+	editorModel
+		removeAttributeTagged: anAttributeTag
 ]
 
 { #category : 'api - attributes' }

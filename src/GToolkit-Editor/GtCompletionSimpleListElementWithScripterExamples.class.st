@@ -194,6 +194,83 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 ]
 
 { #category : 'examples' }
+GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_arrowDown [
+	<gtExample>
+	| anAnchor aList aScripter anItem |
+	aScripter := self someClassesCompletionPopover.
+	anAnchor := aScripter element.
+	aList := anAnchor userData at: #completionList.
+
+	aScripter shortcut
+		combination: BlKeyCombination arrowDown;
+		onPopover;
+		// GtCompletionListId;
+		play.
+
+	anItem := (aScripter root query // (GtCompletionListItemId indexed: 1))
+			anyOne.
+	self assert: anItem states isSelected not.
+	anItem := (aScripter root query // (GtCompletionListItemId indexed: 2))
+			anyOne.
+	self assert: anItem states isSelected.
+	self
+		assert: (aScripter root query // GtCompletionListId) anyOne selectedItems anyOne
+		equals: anItem viewModel model.
+
+	^ aScripter
+]
+
+{ #category : 'examples' }
+GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_arrowDown_arrowUp [
+	<gtExample>
+	| anAnchor aList aScripter anItem |
+	aScripter := self someClassesCompletionPopover_arrowDown.
+	anAnchor := aScripter element.
+	aList := anAnchor userData at: #completionList.
+
+	aScripter shortcut
+		combination: BlKeyCombination arrowUp;
+		onPopover;
+		// GtCompletionListId;
+		play.
+
+	anItem := (aScripter root query // (GtCompletionListItemId indexed: 2))
+			anyOne.
+	self assert: anItem states isSelected not.
+	anItem := (aScripter root query // (GtCompletionListItemId indexed: 1))
+			anyOne.
+	self assert: anItem states isSelected.
+	self
+		assert: (aScripter root query // GtCompletionListId) anyOne selectedItems anyOne
+		equals: anItem viewModel model.
+
+	^ aScripter
+]
+
+{ #category : 'examples' }
+GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_escape [
+	<gtExample>
+	| anAnchor aList aScripter |
+	aScripter := self someClassesCompletionPopover.
+	anAnchor := aScripter element.
+	aList := anAnchor userData at: #completionList.
+
+	aScripter shortcut
+		combination: BlKeyCombination escape;
+		onPopover;
+		// GtCompletionListId;
+		play.
+
+	aScripter menuStep
+		assertClosedMenuContainer;
+		play.
+
+	self assert: (aScripter root query // GtCompletionListId) isEmpty.
+
+	^ aScripter
+]
+
+{ #category : 'examples' }
 GtCompletionSimpleListElementWithScripterExamples >> someClassesStream [
 	<gtExample>
 	^ (self class package classes sorted: [ :a :b | a name < b name ])

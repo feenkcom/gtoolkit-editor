@@ -15,7 +15,9 @@ GtTextEditorCompletionAttachmentAttribute >> affect: aTBrTextEditorTextualPiece 
 	element := BlElement new.
 	element size: 5 @ 16.
 	element background: Color red.
-	element addAptitude: self newAptitude.
+	GtCompletionSimpleListElement 
+		installAptitudeOnAnchor: element 
+		stencil: [ completionElement removeFromParent ].
 	element when: BlElementAddedToSceneGraphEvent do: [ :anEvent |
 		anEvent currentTarget dispatchEvent: (BrDropdownShowWish new).
 	].
@@ -50,17 +52,4 @@ GtTextEditorCompletionAttachmentAttribute >> initialize [
 	self beNotOverwritableByStyler.
 	self placeholderAlignment: #alignBottom.
 	self shouldPropagate: false
-]
-
-{ #category : 'accessing' }
-GtTextEditorCompletionAttachmentAttribute >> newAptitude [
-	^ BrGlamorousWithExplicitDropdownAptitude new
-		withoutGainFocusOnShow;
-		withoutHandle;
-		withoutMouseEventHandler;
-		withContainerAreaBuilders: {BlSteppedLayoutAreaBuilder dropdownBottomRight.
-				BlSteppedLayoutAreaBuilder dropdownUpRight.
-				BlSteppedLayoutAreaBuilder dropdownBottomLeft.
-				BlSteppedLayoutAreaBuilder dropdownUpLeft.};
-		stencil: [ :aBrMenuInitialContext | BrMenuExplicit new stencil: [ completionElement removeFromParent ] ] "relocator: BrEditorSearchTextPopoverContainerRelocator new;"
 ]

@@ -10,7 +10,18 @@ Class {
 GtCompletionSimpleListElementWithScripterExamples >> basicAnchorElement [
 	<gtExample>
 	| anElement |
-	anElement := BrFrame new exact: 5 @ 10.
+	anElement := BrFrame new
+			id: #anchor;
+			beFocusable;
+			requestFocus;
+			relocate: 100 @ 150;
+			when: BlClickEvent
+				do: [ :anEvent | 
+					anEvent consumed: true.
+					anEvent currentTarget requestFocus ];
+			exact: 15 @ 15;
+			background: Color red;
+			addEventHandler: BlPullHandler new disallowOutOfBounds.
 
 	^ anElement
 ]
@@ -35,6 +46,26 @@ GtCompletionSimpleListElementWithScripterExamples >> emptyCompletionElement [
 	self assert: anElement size equals: 0@0.
 
 	^ aScripter
+]
+
+{ #category : 'examples' }
+GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionAnchor [
+	<gtExample>
+	| anAnchor aList |
+	anAnchor := self basicAnchorElement.
+	aList := self basicCompletionElement.
+	aList stream: self someClassesStream.
+	anAnchor userData at: #completionList put: aList.
+	GtCompletionSimpleListElement installAptitudeOnAnchor: anAnchor stencil: aList.
+	anAnchor eventDispatcher forwardShortcuts
+		targetObject: aList;
+		// GtCompletionListId;
+		forwardWhen: [ :anElement | anElement isAddedToSceneGraph ].
+
+	"We allow the mouse up event so that users can play with it."
+	anAnchor aptitude withMouseUpEventHandler.
+
+	^ anAnchor
 ]
 
 { #category : 'examples' }
@@ -145,16 +176,19 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElemen
 { #category : 'examples' }
 GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover [
 	<gtExample>
-	| anElement aScripter |
-	anElement := self basicCompletionElement.
-	anElement stream: self someClassesStream.
-	aScripter := BlScripter new element: anElement.
+	| anAnchor aList aScripter |
+	anAnchor := self someClassesCompletionAnchor.
+	aList := anAnchor userData at: #completionList.
+	aScripter := BlScripter new element: anAnchor.
 
-	self
-		assert: (aScripter element query // GtCompletionListId / #scrollable / BrLabel) all size
-				> 10.
-	self assert: aScripter element width > 100.
-	self assert: aScripter element height > 100.
+	aScripter do
+		block: [ :anElement | anElement dispatchEvent: BrDropdownShowWish new ];
+		play.
+
+	self assert: aList isAddedToSceneGraph.
+	self assert: (aList query // #scrollable / BrLabel) all size > 10.
+	self assert: aList width > 100.
+	self assert: aList height > 100.
 
 	^ aScripter
 ]

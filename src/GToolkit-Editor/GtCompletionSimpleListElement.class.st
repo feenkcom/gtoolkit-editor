@@ -12,6 +12,28 @@ Class {
 	#tag : 'UI'
 }
 
+{ #category : 'factory' }
+GtCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil: aListElementOrStencil [
+	| anAptitude |
+	anAptitude := BrGlamorousWithExplicitDropdownAptitude new
+			withoutGainFocusOnShow;
+			withoutHandle;
+			withoutMouseEventHandler;
+			withContainerAreaBuilders: {
+					BlSteppedLayoutAreaBuilder dropdownBottomRight.
+					BlSteppedLayoutAreaBuilder allToBottom alignBottomRight.
+					BlSteppedLayoutAreaBuilder dropdownUpRight.
+					BlSteppedLayoutAreaBuilder allToUp alignBottomRight };
+			stencil: [ :aBrMenuInitialContext | 
+				BrMenuExplicit new
+					stencil: [ aListElementOrStencil asStencil asElement removeFromParent ] ].
+
+	false
+		ifTrue: [ anAptitude relocator: BrEditorSearchTextPopoverContainerRelocator new ].
+
+	anAnchor addAptitude: anAptitude
+]
+
 { #category : 'initialization' }
 GtCompletionSimpleListElement >> defaultLayout [
 	^ BlLinearLayout horizontal

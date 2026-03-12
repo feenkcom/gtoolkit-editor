@@ -16,7 +16,8 @@ Class {
 		'styler',
 		'currentStyledText',
 		'completionStrategy',
-		'completionAttributeTag'
+		'completionAttributeTag',
+		'completionElement'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -223,6 +224,11 @@ GtTextEditorElement >> initialize [
 	stylerStrategy := self defaultStylerStrategy.
 	
 	completionStrategy := GtCompletionStrategy new.
+	completionElement := self newCompletionList.
+	
+	self eventDispatcher forwardShortcuts 
+		targetObject: completionElement;
+		forwardWhen: [ :aTargetElement | aTargetElement isAddedToSceneGraph ].
 	
 	editorModel := (GtTextEditorEmbedder
 			forSemaphoreIndex: semaphoreIndex
@@ -437,6 +443,32 @@ GtTextEditorElement >> moveCursorToVisualPoint: aPoint [
 	editorModel moveCursorToVisualPoint: aPoint
 ]
 
+{ #category : 'initialization' }
+GtTextEditorElement >> newCompletionList [
+	^ BrSimpleList new
+		id: #'completer--list';
+		hMatchParent;
+		hFitContentLimited;
+		vFitContentLimited;
+		itemStencil: [ BrLabel new
+				hMatchParent;
+				aptitude: BrGlamorousLabelAptitude + BrGlamorousListItemAptitude ];
+		itemDataBinder: [ :eachLabel :eachItem | eachLabel text: eachItem label ];
+		selectOne: 1;
+		addShortcut: (BlShortcutWithAction new
+				name: 'Complete with the selected item';
+				combination: BlKeyCombination tab;
+				action: [ :aShortcutEvent :aShortcut | 
+					self onCompleteWithSelectedItems: aShortcutEvent currentTarget selectedItems ]);
+		addShortcut: (BlShortcutWithAction new
+				name: 'Complete with the selected item';
+				combination: BlKeyCombination enter;
+				action: [ :aShortcutEvent :aShortcut | 
+					GtCompletionController completeOnReturn
+						ifTrue: [ self onCompleteWithSelectedItems: aShortcutEvent currentTarget selectedItems ]
+						ifFalse: [ aShortcutEvent beNotConsumed ] ])
+]
+
 { #category : 'hooks - children' }
 GtTextEditorElement >> onAddedToSceneGraph [
 	| window |
@@ -458,6 +490,13 @@ GtTextEditorElement >> onAddedToSceneGraph [
 { #category : 'event handling' }
 GtTextEditorElement >> onClickEvent: anEvent [
 	anEvent consumed: true
+]
+
+{ #category : 'private - event handling' }
+GtTextEditorElement >> onCompleteWithSelectedItems: someSelectedItems [
+	someSelectedItems ifEmpty: [ ^ self ].
+
+	self phlow spawnObject: someSelectedItems anyOne
 ]
 
 { #category : 'event handling' }
@@ -578,14 +617,18 @@ GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
 		at: contextBeforeCaret size
 		requested: aMessage trigger isManual.
 		
-	"completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
+	completionElement 
+		stream: completionResult asAsyncStream; 
+		selectOne: 1.
+	
+	completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
 
 	completionAttributeTag := self
 		addAttribute: (GtTextEditorCompletionAttachmentAttribute new
-			completionResult: completionResult)
+			completionElement: completionElement)
 		from: ((aMessage caretRawOffset + 1 - completionOffset) max: 0)
 		to: ((aMessage caretRawOffset + 1 - completionOffset) max: 0)
-		documentId: aMessage documentId"
+		documentId: aMessage documentId
 ]
 
 { #category : 'event handling' }

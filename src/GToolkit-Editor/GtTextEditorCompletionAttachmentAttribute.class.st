@@ -2,7 +2,7 @@ Class {
 	#name : 'GtTextEditorCompletionAttachmentAttribute',
 	#superclass : 'BrTextAdornmentAttribute',
 	#instVars : [
-		'completionResult'
+		'completionElement'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -26,13 +26,13 @@ GtTextEditorCompletionAttachmentAttribute >> affect: aTBrTextEditorTextualPiece 
 ]
 
 { #category : 'accessing' }
-GtTextEditorCompletionAttachmentAttribute >> completionResult [
-	^ completionResult
+GtTextEditorCompletionAttachmentAttribute >> completionElement [
+	^ completionElement
 ]
 
 { #category : 'accessing' }
-GtTextEditorCompletionAttachmentAttribute >> completionResult: anObject [
-	completionResult := anObject
+GtTextEditorCompletionAttachmentAttribute >> completionElement: anObject [
+	completionElement := anObject
 ]
 
 { #category : 'as yet unclassified' }
@@ -55,16 +55,12 @@ GtTextEditorCompletionAttachmentAttribute >> initialize [
 { #category : 'accessing' }
 GtTextEditorCompletionAttachmentAttribute >> newAptitude [
 	^ BrGlamorousWithExplicitDropdownAptitude new
+		withoutGainFocusOnShow;
 		withoutHandle;
 		withoutMouseEventHandler;
-		stencil: [ :aBrMenuInitialContext | BrMenuExplicit new stencil: [ self newCompletionList ] ]	"relocator: BrEditorSearchTextPopoverContainerRelocator new;"
-]
-
-{ #category : 'accessing' }
-GtTextEditorCompletionAttachmentAttribute >> newCompletionList [
-	^ BrSimpleList new
-		exact: 200@200;
-		itemStencil: [ BrLabel new aptitude: BrGlamorousLabelAptitude ];
-		itemDataBinder: [ :eachLabel :eachItem | eachLabel text: eachItem label ];
-		stream: completionResult asAsyncStream
+		withContainerAreaBuilders: {BlSteppedLayoutAreaBuilder dropdownBottomRight.
+				BlSteppedLayoutAreaBuilder dropdownUpRight.
+				BlSteppedLayoutAreaBuilder dropdownBottomLeft.
+				BlSteppedLayoutAreaBuilder dropdownUpLeft.};
+		stencil: [ :aBrMenuInitialContext | BrMenuExplicit new stencil: [ completionElement removeFromParent ] ] "relocator: BrEditorSearchTextPopoverContainerRelocator new;"
 ]

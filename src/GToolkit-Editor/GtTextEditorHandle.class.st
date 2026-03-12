@@ -6,7 +6,7 @@ Class {
 	#tag : 'Model'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'library path' }
 GtTextEditorHandle class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
@@ -16,12 +16,12 @@ GtTextEditorHandle class >> forEmbedder: aTextEditorEmbedder [
 	^ self fromNativeHandle: (self primNew: aTextEditorEmbedder)
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle class >> primNew: pharoEditorEmbedder [
 	^ self ffiCall: #(void* editor_handle_new(void* pharoEditorEmbedder))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorHandle class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
@@ -59,7 +59,7 @@ GtTextEditorHandle >> addAttribute: anAttribute overAdornment: anAdornmentTag [
 			self primAddAttribute: aTextAttribute overAdornment: anAdornmentTag ]
 ]
 
-{ #category : 'adding' }
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> addCursorAtVisualPoint: aPoint [
 	self
 		primAddCursorAtVisualX: aPoint x
@@ -107,7 +107,7 @@ GtTextEditorHandle >> deletePreviousAtCursor [
 	self primDeletePreviousAtCursor
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorHandle >> editorClone [
 	^ GtTextEditorModel fromNativeHandle: self primQueryEditorClone
 ]
@@ -433,6 +433,11 @@ GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag overAdornment: a
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primRequestStyling: aStylingTrigger [
+	self ffiCall: #(void editor_handle_request_styling(self, GtTextEditorStylingTrigger aStylingTrigger))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primResizeAdornment: anAttributeTag width: aWidth height: aHeight [
 	^ self ffiCall: #(void editor_handle_resize_adornment(
 		self,
@@ -487,8 +492,8 @@ GtTextEditorHandle >> primSetSkiaTextLayouter [
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorHandle >> primSetStyledText: aGtTextEditorExternalText [
-	self ffiCall: #(void editor_handle_set_styled_text(self, void* aGtTextEditorExternalText))
+GtTextEditorHandle >> primSetStyledText: aGtTextEditorExternalText documentId: aDocumentId [
+	self ffiBareCall: #(void editor_handle_set_styled_text(self, void* aGtTextEditorExternalText, void* aDocumentId))
 ]
 
 { #category : 'private - ffi' }
@@ -535,6 +540,11 @@ GtTextEditorHandle >> removeAttributeTagged: anAttributeTag overAdornment: anAdo
 			overAdornment: anAdornmentTag
 ]
 
+{ #category : 'api - styling' }
+GtTextEditorHandle >> requestStyling: aStylingTrigger [
+	self primRequestStyling: aStylingTrigger
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> resizeAdornment: anAttributeTag extent: aPoint [
 	self
@@ -564,8 +574,8 @@ GtTextEditorHandle >> startSelectionAtVisualPoint: aPoint [
 ]
 
 { #category : 'accessing' }
-GtTextEditorHandle >> styledText: aGtTextEditorExternalText [
-	self primSetStyledText: aGtTextEditorExternalText
+GtTextEditorHandle >> styledText: aGtTextEditorExternalText documentId: aDocumentId [
+	self primSetStyledText: aGtTextEditorExternalText documentId: aDocumentId
 ]
 
 { #category : 'accessing' }
@@ -588,12 +598,12 @@ GtTextEditorHandle >> updateSelectionAtVisualPoint: aPoint [
 	self primUpdateSelectionAtVisualX: aPoint x y: aPoint y
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorHandle >> useMockedTextLayouter: aGlyphSize [
 	self primSetMockedTextLayouter: aGlyphSize
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorHandle >> useSkiaTextLayouter [
 	self primSetSkiaTextLayouter
 ]

@@ -454,9 +454,7 @@ GtNewTextualCoderElement >> onTextModifiedDueToEvent: aTextModifiedEvent [
 		sourceText: self text
 		from: self
 		synchronously: true
-		dueToEvent: aTextModifiedEvent.
-		
-	self styleText
+		dueToEvent: aTextModifiedEvent
 ]
 
 { #category : 'private - event handling' }
@@ -815,7 +813,7 @@ GtNewTextualCoderElement >> showScrollbars [
 
 { #category : 'private' }
 GtNewTextualCoderElement >> styleText [
-	self editor styleText
+	self editor requestManualStyling
 ]
 
 { #category : 'private' }

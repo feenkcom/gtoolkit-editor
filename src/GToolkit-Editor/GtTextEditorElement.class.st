@@ -511,9 +511,7 @@ GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
 ]
 
 { #category : 'event handling' }
-GtTextEditorElement >> onEditorLayoutReady: aMessage [
-	GtJustContextStackSignal emit.
-	
+GtTextEditorElement >> onEditorLayoutReady: aMessage [	
 	self ignoreRequestLayoutDuring:  [
 	
 		self children
@@ -561,12 +559,6 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextChanged: aMessage [
 	self dispatchEvent: BrTextEditorModifiedEvent new.
-	
-	"
-	
-	"
-	
-	"self styleText"
 ]
 
 { #category : 'event handling' }
@@ -586,19 +578,29 @@ GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
 		at: contextBeforeCaret size
 		requested: aMessage trigger isManual.
 		
-	completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
+	"completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
 
 	completionAttributeTag := self
 		addAttribute: (GtTextEditorCompletionAttachmentAttribute new
 			completionResult: completionResult)
 		from: ((aMessage caretRawOffset + 1 - completionOffset) max: 0)
 		to: ((aMessage caretRawOffset + 1 - completionOffset) max: 0)
-		documentId: aMessage documentId
+		documentId: aMessage documentId"
 ]
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextStylingRequest: aMessage [
+	| textToStyle |
 	
+	textToStyle := GtTextEditorTextToStyle new
+		setExternalText: aMessage unstyledText
+		documentId: aMessage documentId
+		theme: self theme.
+	
+	self stylerStrategy
+		styleText: textToStyle
+		inEditorElement: self
+		thenDo: [ :aText | ]
 ]
 
 { #category : 'layout' }
@@ -818,6 +820,16 @@ GtTextEditorElement >> removeTextAttribute: aGtCompletionAttachmentAttribute [
 	
 ]
 
+{ #category : 'styling' }
+GtTextEditorElement >> requestAutoStyling [
+	editorModel requestStyling: GtTextEditorStylingTrigger Auto
+]
+
+{ #category : 'styling' }
+GtTextEditorElement >> requestManualStyling [
+	editorModel requestStyling: GtTextEditorStylingTrigger Manual
+]
+
 { #category : 'private' }
 GtTextEditorElement >> runEditorProcess [
 	[
@@ -831,17 +843,12 @@ GtTextEditorElement >> selectAll [
 	editorModel selectAll
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'styling' }
 GtTextEditorElement >> styleText [
-	| textToStyle |
-	textToStyle := GtTextEditorTextToStyle new setExternalText: self unstyledText theme: self theme.
-	self stylerStrategy
-		styleText: textToStyle
-		inEditorElement: self
-		thenDo: [ :aText | ]
+	GtJustContextStackSignal emit.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'styling' }
 GtTextEditorElement >> styleTextAndAfterDo: aConstantBlockClosure1Arg [ 
 	self flag: #TODO.
 ]
@@ -853,9 +860,14 @@ GtTextEditorElement >> styledText: aTextToStyle [
 	aTextToStyle
 		asGtTextEditorTextForTheme: self theme
 		during: [ :textEditorText |
+			self flag: #TODO.
+			"questionable! What should we do when the styled text is rejected because of the wrong document id"
 			adornments := textEditorText adornments collect: [ :eachAttribute | eachAttribute -> nil ].
 			self removeObsoleteAdornmentElements.
-			self editorModel styledText: textEditorText ]
+			
+			self editorModel
+				styledText: textEditorText
+				documentId: aTextToStyle documentId ]
 ]
 
 { #category : 'styling' }

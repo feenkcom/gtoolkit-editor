@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'theme',
 		'externalText',
-		'allAttributes'
+		'allAttributes',
+		'documentId'
 	],
 	#category : 'GToolkit-Editor-Model',
 	#package : 'GToolkit-Editor',
@@ -34,8 +35,13 @@ GtTextEditorTextToStyle >> attributes: anAttributesCollection from: aFromIndex t
 ]
 
 { #category : 'as yet unclassified' }
+GtTextEditorTextToStyle >> documentId [
+	^ documentId
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorTextToStyle >> generation [
-	^ self
+	^ self documentId
 ]
 
 { #category : 'as yet unclassified' }
@@ -56,8 +62,9 @@ GtTextEditorTextToStyle >> nextGeneration [
 ]
 
 { #category : 'as yet unclassified' }
-GtTextEditorTextToStyle >> setExternalText: anExternalText theme: aTheme [
+GtTextEditorTextToStyle >> setExternalText: anExternalText documentId: aDocumentId theme: aTheme [
 	externalText := anExternalText.
+	documentId := aDocumentId.
 	theme := aTheme
 ]
 

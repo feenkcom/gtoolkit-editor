@@ -217,28 +217,29 @@ GtTextEditorElement >> initialize [
 	self beFocusable.
 	semaphore := Semaphore new.
 	semaphoreIndex := Smalltalk registerExternalObject: semaphore.
-	
+
 	adornments := OrderedDictionary new.
-	
+
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
-	
+
 	completionStrategy := GtCompletionStrategy new.
 	completionElement := self newCompletionList.
-	
-	self eventDispatcher forwardShortcuts 
+
+	self eventDispatcher forwardShortcuts
 		targetObject: completionElement;
+		// GtCompletionListId;
 		forwardWhen: [ :aTargetElement | aTargetElement isAddedToSceneGraph ].
-	
-	editorModel := (GtTextEditorEmbedder
+
+	editorModel := GtTextEditorEmbedder
 			forSemaphoreIndex: semaphoreIndex
-			during: [ :pharoEmbedder |
-					messagesQueue := pharoEmbedder messagesQueue.
-					GtTextEditorHandle forEmbedder: pharoEmbedder ]).
+			during: [ :pharoEmbedder | 
+				messagesQueue := pharoEmbedder messagesQueue.
+				GtTextEditorHandle forEmbedder: pharoEmbedder ].
 
 	messagesQueueUpdater := BrElementUpdater new
-		element: self;
-		action: (MessageSend receiver: self selector: #pollEditorMessages).
+			element: self;
+			action: (MessageSend receiver: self selector: #pollEditorMessages).
 
 	self beInSeparateCompositionLayer.
 	self when: BlMouseWheelEvent do: [ :anEvent | self onMouseWheelEvent: anEvent ].
@@ -253,7 +254,7 @@ GtTextEditorElement >> initialize [
 	self when: BlDragEndEvent do: [ :anEvent | self onDragEndEvent: anEvent ].
 
 	self when: BlTextInputEvent do: [ :anEvent | self onTextInputEvent: anEvent ].
-	
+
 	self when: BrTextStyledEvent do: [ :anEvent | self onTextStyledEvent: anEvent ].
 	self initializeShortcuts
 ]
@@ -445,28 +446,8 @@ GtTextEditorElement >> moveCursorToVisualPoint: aPoint [
 
 { #category : 'initialization' }
 GtTextEditorElement >> newCompletionList [
-	^ BrSimpleList new
-		id: #'completer--list';
-		hMatchParent;
-		hFitContentLimited;
-		vFitContentLimited;
-		itemStencil: [ BrLabel new
-				hMatchParent;
-				aptitude: BrGlamorousLabelAptitude + BrGlamorousListItemAptitude ];
-		itemDataBinder: [ :eachLabel :eachItem | eachLabel text: eachItem label ];
-		selectOne: 1;
-		addShortcut: (BlShortcutWithAction new
-				name: 'Complete with the selected item';
-				combination: BlKeyCombination tab;
-				action: [ :aShortcutEvent :aShortcut | 
-					self onCompleteWithSelectedItems: aShortcutEvent currentTarget selectedItems ]);
-		addShortcut: (BlShortcutWithAction new
-				name: 'Complete with the selected item';
-				combination: BlKeyCombination enter;
-				action: [ :aShortcutEvent :aShortcut | 
-					GtCompletionController completeOnReturn
-						ifTrue: [ self onCompleteWithSelectedItems: aShortcutEvent currentTarget selectedItems ]
-						ifFalse: [ aShortcutEvent beNotConsumed ] ])
+	^ GtCompletionSimpleListElement new
+		onComplete: [ :selectedItem | self onCompleteWithSelectedItems: selectedItem ]
 ]
 
 { #category : 'hooks - children' }
@@ -493,10 +474,8 @@ GtTextEditorElement >> onClickEvent: anEvent [
 ]
 
 { #category : 'private - event handling' }
-GtTextEditorElement >> onCompleteWithSelectedItems: someSelectedItems [
-	someSelectedItems ifEmpty: [ ^ self ].
-
-	self phlow spawnObject: someSelectedItems anyOne
+GtTextEditorElement >> onCompleteWithSelectedItems: selectedItem [
+	self phlow spawnObject: selectedItem
 ]
 
 { #category : 'event handling' }
@@ -617,9 +596,7 @@ GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
 		at: contextBeforeCaret size
 		requested: aMessage trigger isManual.
 		
-	completionElement 
-		stream: completionResult asAsyncStream; 
-		selectOne: 1.
+	completionElement stream: completionResult asAsyncStream.
 	
 	completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
 

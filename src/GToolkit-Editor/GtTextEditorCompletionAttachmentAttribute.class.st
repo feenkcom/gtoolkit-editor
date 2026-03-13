@@ -13,7 +13,7 @@ Class {
 GtTextEditorCompletionAttachmentAttribute >> affect: aTBrTextEditorTextualPiece in: anEditorElement [
 	| element |
 	element := BlElement new.
-	element size: 5 @ 16.
+	element size: 0 @ 16.
 	element background: Color red.
 	GtCompletionSimpleListElement 
 		installAptitudeOnAnchor: element 
@@ -41,7 +41,7 @@ GtTextEditorCompletionAttachmentAttribute >> completionElement: anObject [
 GtTextEditorCompletionAttachmentAttribute >> gtExternalTextConfigureAppendingAttribute: anAttribute [
 	super gtExternalTextConfigureAppendingAttribute: anAttribute.
 	
-	anAttribute beExactWidth: 5.
+	anAttribute beExactWidth: 0.
 	anAttribute beExactHeight: 16.
 ]
 

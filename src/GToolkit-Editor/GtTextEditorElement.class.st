@@ -17,7 +17,8 @@ Class {
 		'currentStyledText',
 		'completionStrategy',
 		'completionAttributeTag',
-		'completionElement'
+		'completionElement',
+		'completionFuture'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -225,6 +226,7 @@ GtTextEditorElement >> initialize [
 
 	completionStrategy := GtCompletionStrategy new.
 	completionElement := self newCompletionList.
+	completionFuture := self newCompletionFuture.
 
 	self eventDispatcher forwardShortcuts
 		targetObject: completionElement;
@@ -275,6 +277,11 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination enter;
 				action: [ self insertLineBreakAtCarets ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination tab;
+				action: [ self insertTabAtCarets ]).
 
 	self
 		addShortcut: (BlShortcutWithAction new
@@ -387,6 +394,11 @@ GtTextEditorElement >> insertStringAtCursor: aString [
 	editorModel insertStringAtCursor: aString
 ]
 
+{ #category : 'api - editing' }
+GtTextEditorElement >> insertTabAtCarets [
+	self insertStringAtCursor: String tab
+]
+
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCaretsDown [
 	editorModel moveCaretsDown
@@ -445,6 +457,25 @@ GtTextEditorElement >> moveCursorToVisualPoint: aPoint [
 ]
 
 { #category : 'initialization' }
+GtTextEditorElement >> newCompletionFuture [
+	^ (BrAsyncElementFuture on: self)
+		whenSuccess: [ :thisEditor :aCompletionRequest | 
+			completionAttributeTag ifNotNil: [ :aTag |
+				self removeAttributeTagged: aTag.
+				completionAttributeTag := nil ].
+			aCompletionRequest ifNotNil: [ 
+				completionElement stream: aCompletionRequest completionStream.
+				completionAttributeTag := self
+						addAttribute: (GtTextEditorCompletionAttachmentAttribute new completionElement: completionElement)
+						from: aCompletionRequest byteOffset
+						to: aCompletionRequest byteOffset
+						documentId: aCompletionRequest documentId ] ];
+		whenError: [ :thisEditor :anError | completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ] ];
+		whenPending: [ :thisEditor | ];
+		yourself
+]
+
+{ #category : 'initialization' }
 GtTextEditorElement >> newCompletionList [
 	^ GtCompletionSimpleListElement new
 		onComplete: [ :selectedItem | self onCompleteWithSelectedItems: selectedItem ]
@@ -473,9 +504,13 @@ GtTextEditorElement >> onClickEvent: anEvent [
 	anEvent consumed: true
 ]
 
-{ #category : 'private - event handling' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onCompleteWithSelectedItems: selectedItem [
-	self phlow spawnObject: selectedItem
+	
+	(selectedItem isNil or: [ selectedItem isEmpty ])
+		ifFalse: [ "self phlow spawnObject: selectedItem" ].
+
+		completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
 ]
 
 { #category : 'event handling' }
@@ -581,7 +616,7 @@ GtTextEditorElement >> onEditorTextChanged: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
-	| contextBeforeCaret completionPrefix completionResult completionOffset |
+	| contextBeforeCaret completionPrefix completionResult completionOffset completionRequest hasCompletionsFuture|
 	
 	contextBeforeCaret := aMessage contextBeforeCaret.
 	
@@ -596,16 +631,17 @@ GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
 		at: contextBeforeCaret size
 		requested: aMessage trigger isManual.
 		
-	completionElement stream: completionResult asAsyncStream.
-	
-	completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
+	completionRequest := GtTextEditorCompletionRequest new
+		completionStream: completionResult asAsyncStream;
+		byteOffset: ((aMessage caretRawOffset + 1 - completionOffset) max: 0);
+		documentId: aMessage documentId.
+		
+	hasCompletionsFuture := completionResult asAsyncStream hasNext map: [ :hasNext |
+		hasNext
+			ifTrue: [ completionRequest ]
+			ifFalse: [ nil ] ].
 
-	completionAttributeTag := self
-		addAttribute: (GtTextEditorCompletionAttachmentAttribute new
-			completionElement: completionElement)
-		from: ((aMessage caretRawOffset + 1 - completionOffset) max: 0)
-		to: ((aMessage caretRawOffset + 1 - completionOffset) max: 0)
-		documentId: aMessage documentId
+	completionFuture future: hasCompletionsFuture
 ]
 
 { #category : 'event handling' }
@@ -617,10 +653,10 @@ GtTextEditorElement >> onEditorTextStylingRequest: aMessage [
 		documentId: aMessage documentId
 		theme: self theme.
 	
-	self stylerStrategy
+	"self stylerStrategy
 		styleText: textToStyle
 		inEditorElement: self
-		thenDo: [ :aText | ]
+		thenDo: [ :aText | ]"
 ]
 
 { #category : 'layout' }

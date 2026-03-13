@@ -34,11 +34,6 @@ GtCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil
 	anAnchor addAptitude: anAptitude
 ]
 
-{ #category : 'initialization' }
-GtCompletionSimpleListElement >> defaultLayout [
-	^ BlLinearLayout horizontal
-]
-
 { #category : 'focus requesting' }
 GtCompletionSimpleListElement >> focusTarget [
 	^ listElement focusTarget
@@ -51,7 +46,9 @@ GtCompletionSimpleListElement >> initialize [
 	onCompleteBlock := [ :someItems | self phlow spawnObject: someItems ].
 	
 	self
-		hFitContentLimited;
+		layout: BlFrameLayout new;
+		width: 600;
+		constraintsDo: [ :c | c maxHeight: 400 ];
 		vFitContentLimited.
 
 	self initializeSimpleListElement.

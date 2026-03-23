@@ -5,7 +5,8 @@ Class {
 	#classTraits : 'TBrLayoutResizable classTrait',
 	#instVars : [
 		'listElement',
-		'onCompleteBlock'
+		'onCompleteBlock',
+		'settings'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -19,11 +20,14 @@ GtCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil
 			withoutGainFocusOnShow;
 			withoutHandle;
 			withoutMouseEventHandler;
-			withContainerAreaBuilders: {
-					BlSteppedLayoutAreaBuilder dropdownBottomRight.
-					BlSteppedLayoutAreaBuilder allToBottom alignBottomRight.
+			withContainerAreaBuilders: {BlSteppedLayoutAreaBuilder dropdownBottomRight.
+					BlSteppedLayoutAreaBuilder allToBottom
+						alignTopRight;
+						mark: BlSteppedLayoutMark bottomLeft.
 					BlSteppedLayoutAreaBuilder dropdownUpRight.
-					BlSteppedLayoutAreaBuilder allToUp alignBottomRight };
+					BlSteppedLayoutAreaBuilder allToUp
+						alignBottomRight;
+						mark: BlSteppedLayoutMark upLeft};
 			stencil: [ :aBrMenuInitialContext | 
 				BrMenuExplicit new
 					stencil: [ aListElementOrStencil asStencil asElement removeFromParent ] ].
@@ -34,6 +38,11 @@ GtCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil
 	anAnchor addAptitude: anAptitude
 ]
 
+{ #category : 'initialization' }
+GtCompletionSimpleListElement >> defaultLayout [
+	^ BlFrameLayout new
+]
+
 { #category : 'focus requesting' }
 GtCompletionSimpleListElement >> focusTarget [
 	^ listElement focusTarget
@@ -42,31 +51,44 @@ GtCompletionSimpleListElement >> focusTarget [
 { #category : 'initialization' }
 GtCompletionSimpleListElement >> initialize [
 	super initialize.
-	
+
+	settings := GtCompletionSettings.
 	onCompleteBlock := [ :someItems | self phlow spawnObject: someItems ].
-	
-	self
-		layout: BlFrameLayout new;
-		width: 600;
-		constraintsDo: [ :c | c maxHeight: 400 ];
-		vFitContentLimited.
+
+	self initializeSettings.
+	self vFitContentLimited.
 
 	self initializeSimpleListElement.
+	self addChild: listElement.
+
 	self addAptitude: (BrLayoutResizerAptitude new common: listElement).
-	
-	self addChild: listElement
+	self
+		addAptitude: (BrGlamorousPopoverResizableAptitude new
+				whenResizedDo: [ :anEvent | 
+					settings completionWidth: anEvent extent x.
+					self constraints vertical resizer isExact ifTrue: [
+						settings completionMaxHeight: anEvent extent y.
+						self constraintsDo: [ :c | c maxHeight: Float infinity ] ] ])
+]
+
+{ #category : 'initialization' }
+GtCompletionSimpleListElement >> initializeSettings [
+	self
+		width: settings completionWidth;
+		constraintsDo: [ :c | c maxHeight: settings completionMaxHeight ]
 ]
 
 { #category : 'initialization' }
 GtCompletionSimpleListElement >> initializeSimpleListElement [
 	listElement := BrSimpleList new
 			id: GtCompletionListId;
-			hFitContentLimited;
+			hMatchParent;
 			vFitContentLimited;
 			itemStencil: [ BrLabel new
 					padding: (BlInsets left: 5 right: 5);
 					hMatchParent;
-					aptitude: BrGlamorousLabelAptitude + BrGlamorousListItemAptitude ];
+					aptitude: BrGlamorousLabelAptitude + BrGlamorousListItemAptitude;
+					when: BlDoubleClickEvent do: [ :anEvent | self onDoubleClickEvent: anEvent ] ];
 			itemDataBinder: [ :eachLabel :eachItem :eachIndex | 
 				eachLabel text: eachItem label.
 				eachLabel id: (GtCompletionListItemId indexed: eachIndex).
@@ -85,7 +107,7 @@ GtCompletionSimpleListElement >> initializeSimpleListElement [
 							ifFalse: [ aShortcutEvent beNotConsumed ] ])
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - initializationF' }
 GtCompletionSimpleListElement >> onComplete: aBlock [
 	"Set a block that is called on completion request.
 	It receives a selected item [ :aSelectedItem | ... ]."
@@ -93,16 +115,41 @@ GtCompletionSimpleListElement >> onComplete: aBlock [
 	onCompleteBlock := aBlock
 ]
 
-{ #category : 'initialization' }
+{ #category : 'private - event handling' }
 GtCompletionSimpleListElement >> onCompleteWithSelectedItems: someSelectedItems [
 	someSelectedItems ifEmpty: [ ^ self ].
 
 	onCompleteBlock value: someSelectedItems anyOne
 ]
 
+{ #category : 'private - event handling' }
+GtCompletionSimpleListElement >> onDoubleClickEvent: anEvent [
+	anEvent consumed: true.
+	self onCompleteWithSelectedItems: listElement selectedItems
+]
+
 { #category : 'hooks' }
 GtCompletionSimpleListElement >> onStreamChanged [
 	listElement selectOne: 1
+]
+
+{ #category : 'accessing' }
+GtCompletionSimpleListElement >> settings [
+	<return: #GtCompletionSettings>
+	^ settings
+]
+
+{ #category : 'accessing' }
+GtCompletionSimpleListElement >> settings: anObject [
+	"Set settings object that stores user values related to the completion element.
+	The object must understand:
+	- completionMaxHeight, and completionMaxHeight:,
+	- completionWidth, and completionWidth:.
+	Note: I should be called just during the element initialization.
+	Calling this method while being displayed may result in unexpected behavior."
+
+	settings := anObject.
+	self initializeSettings
 ]
 
 { #category : 'api - accessing' }

@@ -653,10 +653,10 @@ GtTextEditorElement >> onEditorTextStylingRequest: aMessage [
 		documentId: aMessage documentId
 		theme: self theme.
 	
-	"self stylerStrategy
+	self stylerStrategy
 		styleText: textToStyle
 		inEditorElement: self
-		thenDo: [ :aText | ]"
+		thenDo: [ :aText | ]
 ]
 
 { #category : 'layout' }

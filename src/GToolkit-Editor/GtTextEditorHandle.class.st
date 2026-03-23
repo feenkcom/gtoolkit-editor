@@ -1,6 +1,9 @@
 Class {
 	#name : 'GtTextEditorHandle',
 	#superclass : 'GtBoxerValueBox',
+	#instVars : [
+		'commandsRecorder'
+	],
 	#category : 'GToolkit-Editor-Model',
 	#package : 'GToolkit-Editor',
 	#tag : 'Model'
@@ -13,7 +16,7 @@ GtTextEditorHandle class >> ffiLibrary [
 
 { #category : 'as yet unclassified' }
 GtTextEditorHandle class >> forEmbedder: aTextEditorEmbedder [
-	^ self fromNativeHandle: (self primNew: aTextEditorEmbedder)
+	^ self fromNativeHandle: (self primNew: aTextEditorEmbedder transferOwnership)
 ]
 
 { #category : 'private - ffi' }
@@ -66,6 +69,11 @@ GtTextEditorHandle >> addCursorAtVisualPoint: aPoint [
 		y: aPoint y
 ]
 
+{ #category : 'api - debugging' }
+GtTextEditorHandle >> commandsRecorder [
+	^ commandsRecorder
+]
+
 { #category : 'api - editing' }
 GtTextEditorHandle >> copySelected [
 	self primCopySelected
@@ -107,9 +115,14 @@ GtTextEditorHandle >> deletePreviousAtCursor [
 	self primDeletePreviousAtCursor
 ]
 
-{ #category : 'accessing' }
+{ #category : 'api - debugging' }
 GtTextEditorHandle >> editorClone [
 	^ GtTextEditorModel fromNativeHandle: self primQueryEditorClone
+]
+
+{ #category : 'api - debugging' }
+GtTextEditorHandle >> enableInMemoryCommandsRecorder [
+	commandsRecorder := GtTextEditorInMemoryCommandsRecorder fromNativeHandle: self primCommandsRecorderSetInMemory
 ]
 
 { #category : 'api - selection' }
@@ -152,6 +165,13 @@ GtTextEditorHandle >> height [
 	^ self primGetHeight
 ]
 
+{ #category : 'as yet unclassified' }
+GtTextEditorHandle >> initialize [
+	super initialize.
+	
+	commandsRecorder := nil
+]
+
 { #category : 'api - editing' }
 GtTextEditorHandle >> insertStringAtCursor: aString [
 	self ffiLibrary
@@ -169,7 +189,7 @@ GtTextEditorHandle >> measureWidth: aWidth top: aTopOrNil height: aHeightOrNil [
 		viewportHeight: (aHeightOrNil ifNil: [ 0.0])
 ]
 
-{ #category : 'accessing' }
+{ #category : 'api - debugging' }
 GtTextEditorHandle >> metrics [
 	^ GtTextEditorMetrics fromNativeHandle: self primQueryMetrics
 ]
@@ -259,6 +279,16 @@ GtTextEditorHandle >> primAddCursorAtVisualX: aX y: aY [
 		self,
 		float64 aX,
 		float64 aY))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primCommandsRecorderReset [
+	self ffiCall: #(void editor_handle_reset_commands_recorder(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primCommandsRecorderSetInMemory [
+	^ self ffiCall: #(void* editor_handle_set_in_memory_commands_recorder(self))
 ]
 
 { #category : 'private - ffi' }
@@ -545,6 +575,12 @@ GtTextEditorHandle >> requestStyling: aStylingTrigger [
 	self primRequestStyling: aStylingTrigger
 ]
 
+{ #category : 'api - debugging' }
+GtTextEditorHandle >> resetCommandsRecorder [
+	self primCommandsRecorderReset.
+	commandsRecorder := nil
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> resizeAdornment: anAttributeTag extent: aPoint [
 	self
@@ -588,7 +624,7 @@ GtTextEditorHandle >> undo [
 	self primUndo
 ]
 
-{ #category : 'accessing' }
+{ #category : 'api - debugging' }
 GtTextEditorHandle >> unstyledText [
 	^ GtTextEditorExternalText fromNativeHandle: self primGetUnstyledText
 ]
@@ -598,12 +634,12 @@ GtTextEditorHandle >> updateSelectionAtVisualPoint: aPoint [
 	self primUpdateSelectionAtVisualX: aPoint x y: aPoint y
 ]
 
-{ #category : 'accessing' }
+{ #category : 'api - debugging' }
 GtTextEditorHandle >> useMockedTextLayouter: aGlyphSize [
 	self primSetMockedTextLayouter: aGlyphSize
 ]
 
-{ #category : 'accessing' }
+{ #category : 'api - debugging' }
 GtTextEditorHandle >> useSkiaTextLayouter [
 	self primSetSkiaTextLayouter
 ]

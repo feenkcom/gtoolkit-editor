@@ -160,6 +160,7 @@ GtNewTextualCoderElement >> initialize [
 	super initialize.
 	
 	editorElement := GtTextEditorElement new.
+	editorElement editorModel enableInMemoryCommandsRecorder.
 	editorElement
 		defaultFontName: 'Source Code Pro';
 		defaultFontSize: 14;

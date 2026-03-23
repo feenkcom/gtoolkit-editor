@@ -216,6 +216,11 @@ GtTextEditorExternalText >> primCloneAttributes [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorExternalText >> primGetPhlowVTable [
+	^ self ffiCall: #(void* text_phlow_vtable(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorExternalText >> primInsertString: aStringBox offset: anOffset [
 	^ self ffiCall: #(void text_insert_str(
 		self,

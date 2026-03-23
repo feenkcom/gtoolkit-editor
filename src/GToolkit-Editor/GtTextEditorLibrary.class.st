@@ -1,8 +1,8 @@
 Class {
 	#name : 'GtTextEditorLibrary',
 	#superclass : 'FFILibrary',
-	#traits : 'TGtWithStringBox + TGtWithPointBoxF32 + TGtWithPhlow3Rust',
-	#classTraits : 'TGtWithStringBox classTrait + TGtWithPointBoxF32 classTrait + TGtWithPhlow3Rust classTrait',
+	#traits : 'TGtWithStringBox + TGtWithPointBoxF32 + TGtWithPhlowRust',
+	#classTraits : 'TGtWithStringBox classTrait + TGtWithPointBoxF32 classTrait + TGtWithPhlowRust classTrait',
 	#category : 'GToolkit-Editor-Model',
 	#package : 'GToolkit-Editor',
 	#tag : 'Model'

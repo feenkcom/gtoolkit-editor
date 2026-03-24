@@ -22,7 +22,11 @@ BaselineOfGToolkitEditor class >> loadLepiter [
 { #category : #baseline }
 BaselineOfGToolkitEditor >> baseline: spec [
 	<baseline>
+		spec 
+			baseline: 'GToolkitPhlowForRust' with: [
+				spec repository: 'github://feenkcom/gt4phlow-rs:main/src' ].
 		^ spec for: #common do: [
-			spec package: 'GToolkit-Editor'
+			spec package: 'GToolkit-Editor' with: [
+				spec requires: #('GToolkitPhlowForRust'). ]
 		]
 ]

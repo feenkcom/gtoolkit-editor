@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'editorStylingFuture'
 	],
-	#category : 'GToolkit-Editor-Styler',
+	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
-	#tag : 'Styler'
+	#tag : 'UI'
 }
 
 { #category : 'initialization' }

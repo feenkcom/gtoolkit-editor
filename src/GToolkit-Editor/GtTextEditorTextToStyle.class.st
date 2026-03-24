@@ -7,9 +7,9 @@ Class {
 		'allAttributes',
 		'documentId'
 	],
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-FFI-Text',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'FFI-Text'
 }
 
 { #category : 'as yet unclassified' }

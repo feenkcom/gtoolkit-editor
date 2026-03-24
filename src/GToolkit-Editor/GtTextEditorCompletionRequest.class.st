@@ -6,9 +6,9 @@ Class {
 		'byteOffset',
 		'documentId'
 	],
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-Model-Messages',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'Model-Messages'
 }
 
 { #category : 'accessing' }

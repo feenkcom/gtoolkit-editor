@@ -203,14 +203,6 @@ GtTextEditorElement >> extendSelectionUp [
 	editorModel extendSelectionUp
 ]
 
-{ #category : 'as yet unclassified' }
-GtTextEditorElement >> gtDefaultInspectorTool [
-	^ GtPhlowCompositeTool new
-		addTool: super gtDefaultInspectorTool;
-		addTool: (GtTextEditorInspectorTool new
-				object: (GtWrappedTextEditorElementForInspector new editorElement: self))
-]
-
 { #category : 'initialization' }
 GtTextEditorElement >> initialize [
 	| semaphoreIndex |

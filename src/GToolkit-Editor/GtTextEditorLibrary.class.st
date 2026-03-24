@@ -3,9 +3,9 @@ Class {
 	#superclass : 'FFILibrary',
 	#traits : 'TGtWithStringBox + TGtWithPointBoxF32 + TGtWithPhlowRust',
 	#classTraits : 'TGtWithStringBox classTrait + TGtWithPointBoxF32 classTrait + TGtWithPhlowRust classTrait',
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-Library',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'Library'
 }
 
 { #category : 'as yet unclassified' }

@@ -3,7 +3,7 @@ Class {
 	#superclass : 'Object',
 	#traits : 'TBrTextEditorTextualPiece',
 	#classTraits : 'TBrTextEditorTextualPiece classTrait',
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-FFI-Text',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'FFI-Text'
 }

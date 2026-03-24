@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'adornments'
 	],
-	#category : 'GToolkit-Editor-FFI-Text',
+	#category : 'GToolkit-Editor-Text',
 	#package : 'GToolkit-Editor',
-	#tag : 'FFI-Text'
+	#tag : 'Text'
 }
 
 { #category : 'as yet unclassified' }
@@ -111,16 +111,6 @@ GtTextEditorExternalText >> attribute: aTextAttribute from: aStart to: anEnd [
 			end: anEnd ]
 ]
 
-{ #category : 'accessing' }
-GtTextEditorExternalText >> attributes [
-	^ GtTextEditorRunTree fromNativeHandle: self primCloneAttributes
-]
-
-{ #category : 'accessing' }
-GtTextEditorExternalText >> chunksToMeasure: chunkSize [
-	^ GtTextEditorChunksToMeasure fromNativeHandle: (self primChunksToMeasure: chunkSize)
-]
-
 { #category : 'text - attributes' }
 GtTextEditorExternalText >> foreground: aColor [
 	GtTextEditorAttribute
@@ -206,16 +196,6 @@ GtTextEditorExternalText >> primAddAttribute: anAttribute start: aStart end: anE
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorExternalText >> primChunksToMeasure: aChunkSize [
-	^ self ffiCall: #(void* text_chunks_to_measure(self, size_t aChunkSize))
-]
-
-{ #category : 'private - ffi' }
-GtTextEditorExternalText >> primCloneAttributes [
-	^ self ffiCall: #(void* text_clone_attributes(self))
-]
-
-{ #category : 'private - ffi' }
 GtTextEditorExternalText >> primGetPhlowVTable [
 	^ self ffiCall: #(void* text_phlow_vtable(self))
 ]
@@ -234,11 +214,6 @@ GtTextEditorExternalText >> primLen [
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorExternalText >> primTextWithReplacements [
-	^ self ffiCall: #(void* text_with_replacements(self))
-]
-
-{ #category : 'private - ffi' }
 GtTextEditorExternalText >> primToString: aStringBox [
 	^ self ffiCall: #(void text_to_string(self, void* aStringBox))
 ]
@@ -246,9 +221,4 @@ GtTextEditorExternalText >> primToString: aStringBox [
 { #category : 'accessing' }
 GtTextEditorExternalText >> size [
 	^ self primLen
-]
-
-{ #category : 'accessing' }
-GtTextEditorExternalText >> textWithReplacements [
-	^ GtTextEditorTextWithReplacements fromNativeHandle: self primTextWithReplacements
 ]

@@ -1,9 +1,9 @@
 Class {
 	#name : 'GtTextEditorModel',
 	#superclass : 'GtBoxerValueBox',
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-FFI',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'FFI'
 }
 
 { #category : 'as yet unclassified' }
@@ -129,14 +129,6 @@ GtTextEditorModel >> primGetParagraphs [
 ]
 
 { #category : 'as yet unclassified' }
-GtTextEditorModel >> primGetTextAroundByteOffset: byteOffset amountOfChars: amountOfCharsFromEachSide [
-	^ self ffiCall: #(void* editor_line_text_around_byte_offset(
-			self,
-			size_t byteOffset,
-			size_t amountOfCharsFromEachSide))
-]
-
-{ #category : 'as yet unclassified' }
 GtTextEditorModel >> primInsertString: aStringBox offset: anOffset [
 	^ self ffiCall: #(void editor_insert_str(
 		self,
@@ -178,13 +170,4 @@ GtTextEditorModel >> size [
 { #category : 'as yet unclassified' }
 GtTextEditorModel >> text [
 	^ GtTextEditorExternalText fromNativeHandle: self primCloneText
-]
-
-{ #category : 'as yet unclassified' }
-GtTextEditorModel >> textAroundByteOffset: byteOffset amountOfChars: amountOfCharsFromEachSide during: aBlock [
-	^ GtTextEditorTextAroundByteOffset
-		fromNativeHandle: (self
-				primGetTextAroundByteOffset: byteOffset
-				amountOfChars: amountOfCharsFromEachSide)
-		during: aBlock
 ]

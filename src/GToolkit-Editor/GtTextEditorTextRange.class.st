@@ -5,9 +5,9 @@ Class {
 		'start',
 		'end'
 	],
-	#category : 'GToolkit-Editor-FFI',
+	#category : 'GToolkit-Editor-Text',
 	#package : 'GToolkit-Editor',
-	#tag : 'FFI'
+	#tag : 'Text'
 }
 
 { #category : 'as yet unclassified' }

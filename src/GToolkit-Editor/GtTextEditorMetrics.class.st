@@ -1,9 +1,9 @@
 Class {
 	#name : 'GtTextEditorMetrics',
 	#superclass : 'GtBoxerValueBox',
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-FFI',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'FFI'
 }
 
 { #category : 'as yet unclassified' }

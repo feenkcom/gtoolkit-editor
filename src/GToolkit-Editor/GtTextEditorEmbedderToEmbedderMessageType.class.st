@@ -1,9 +1,9 @@
 Class {
 	#name : 'GtTextEditorEmbedderToEmbedderMessageType',
 	#superclass : 'GtExternalEnumeration',
-	#category : 'GToolkit-Editor-Model-Messages',
+	#category : 'GToolkit-Editor-Messages',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model-Messages'
+	#tag : 'Messages'
 }
 
 { #category : 'ffi' }

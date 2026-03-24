@@ -5,9 +5,9 @@ Class {
 		'OFFSET_REVISIONID',
 		'OFFSET_TEXTID'
 	],
-	#category : 'GToolkit-Editor-FFI-Text',
+	#category : 'GToolkit-Editor-Text',
 	#package : 'GToolkit-Editor',
-	#tag : 'FFI-Text'
+	#tag : 'Text'
 }
 
 { #category : 'field definition' }

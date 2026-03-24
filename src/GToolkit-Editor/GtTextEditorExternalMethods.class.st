@@ -11,9 +11,9 @@ Class {
 	#classVars : [
 		'Current'
 	],
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-FFI',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'FFI'
 }
 
 { #category : 'as yet unclassified' }

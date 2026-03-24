@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'commandsRecorder'
 	],
-	#category : 'GToolkit-Editor-Model',
+	#category : 'GToolkit-Editor-FFI',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model'
+	#tag : 'FFI'
 }
 
 { #category : 'library path' }

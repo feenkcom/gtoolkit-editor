@@ -6,9 +6,9 @@ Class {
 		'Insertion',
 		'Unknown'
 	],
-	#category : 'GToolkit-Editor-Model-Messages',
+	#category : 'GToolkit-Editor-Messages',
 	#package : 'GToolkit-Editor',
-	#tag : 'Model-Messages'
+	#tag : 'Messages'
 }
 
 { #category : 'accessing enum' }

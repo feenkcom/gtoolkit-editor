@@ -116,11 +116,6 @@ GtTextEditorHandle >> deletePreviousAtCursor [
 ]
 
 { #category : 'api - debugging' }
-GtTextEditorHandle >> editorClone [
-	^ GtTextEditorModel fromNativeHandle: self primQueryEditorClone
-]
-
-{ #category : 'api - debugging' }
 GtTextEditorHandle >> enableInMemoryCommandsRecorder [
 	commandsRecorder := GtTextEditorInMemoryCommandsRecorder fromNativeHandle: self primCommandsRecorderSetInMemory
 ]
@@ -187,11 +182,6 @@ GtTextEditorHandle >> measureWidth: aWidth top: aTopOrNil height: aHeightOrNil [
 		viewportTop: (aTopOrNil ifNil: [ 0.0])
 		hasViewportHeight:  aHeightOrNil isNotNil
 		viewportHeight: (aHeightOrNil ifNil: [ 0.0])
-]
-
-{ #category : 'api - debugging' }
-GtTextEditorHandle >> metrics [
-	^ GtTextEditorMetrics fromNativeHandle: self primQueryMetrics
 ]
 
 { #category : 'api - navigation' }
@@ -354,6 +344,11 @@ GtTextEditorHandle >> primExtendSelectionUp [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primGetHeight [
 	self ffiCall: #(float64 editor_handle_get_height(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primGetPhlowVTable [
+	^ self ffiCall: #(void* editor_handle_phlow_vtable(self))
 ]
 
 { #category : 'private - ffi' }

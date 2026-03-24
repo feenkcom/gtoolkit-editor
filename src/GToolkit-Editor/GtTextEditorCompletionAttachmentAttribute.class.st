@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'completionElement'
 	],
-	#category : 'GToolkit-Editor-UI',
+	#category : 'GToolkit-Editor-Completion',
 	#package : 'GToolkit-Editor',
-	#tag : 'UI'
+	#tag : 'Completion'
 }
 
 { #category : 'accessing' }
@@ -15,7 +15,7 @@ GtTextEditorCompletionAttachmentAttribute >> affect: aTBrTextEditorTextualPiece 
 	element := BlElement new.
 	element size: 0 @ 16.
 	element background: Color red.
-	GtCompletionSimpleListElement 
+	GtTextEditorCompletionSimpleListElement 
 		installAptitudeOnAnchor: element 
 		stencil: [ completionElement removeFromParent ].
 	element when: BlElementAddedToSceneGraphEvent do: [ :anEvent |

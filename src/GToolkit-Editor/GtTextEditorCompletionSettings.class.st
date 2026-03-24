@@ -1,31 +1,31 @@
 Class {
-	#name : 'GtCompletionSettings',
+	#name : 'GtTextEditorCompletionSettings',
 	#superclass : 'Object',
 	#classVars : [
 		'CompletionMaxHeight',
 		'CompletionWidth'
 	],
-	#category : 'GToolkit-Editor-UI',
+	#category : 'GToolkit-Editor-Completion',
 	#package : 'GToolkit-Editor',
-	#tag : 'UI'
+	#tag : 'Completion'
 }
 
 { #category : 'settings' }
-GtCompletionSettings class >> completionMaxHeight [
+GtTextEditorCompletionSettings class >> completionMaxHeight [
 	^ CompletionMaxHeight ifNil: [ CompletionMaxHeight := 400 ]
 ]
 
 { #category : 'settings' }
-GtCompletionSettings class >> completionMaxHeight: aNumber [
+GtTextEditorCompletionSettings class >> completionMaxHeight: aNumber [
 	CompletionMaxHeight := aNumber
 ]
 
 { #category : 'settings' }
-GtCompletionSettings class >> completionWidth [
+GtTextEditorCompletionSettings class >> completionWidth [
 	^ CompletionWidth ifNil: [ CompletionWidth := 600 ]
 ]
 
 { #category : 'settings' }
-GtCompletionSettings class >> completionWidth: aNumber [
+GtTextEditorCompletionSettings class >> completionWidth: aNumber [
 	CompletionWidth := aNumber
 ]

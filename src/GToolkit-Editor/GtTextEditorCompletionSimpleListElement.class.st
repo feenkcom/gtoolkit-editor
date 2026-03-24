@@ -1,5 +1,5 @@
 Class {
-	#name : 'GtCompletionSimpleListElement',
+	#name : 'GtTextEditorCompletionSimpleListElement',
 	#superclass : 'BlElement',
 	#traits : 'TBrLayoutResizable',
 	#classTraits : 'TBrLayoutResizable classTrait',
@@ -8,13 +8,13 @@ Class {
 		'onCompleteBlock',
 		'settings'
 	],
-	#category : 'GToolkit-Editor-UI',
+	#category : 'GToolkit-Editor-Completion',
 	#package : 'GToolkit-Editor',
-	#tag : 'UI'
+	#tag : 'Completion'
 }
 
 { #category : 'factory' }
-GtCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil: aListElementOrStencil [
+GtTextEditorCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil: aListElementOrStencil [
 	| anAptitude |
 	anAptitude := BrGlamorousWithExplicitDropdownAptitude new
 			withoutGainFocusOnShow;
@@ -39,20 +39,20 @@ GtCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil
 ]
 
 { #category : 'initialization' }
-GtCompletionSimpleListElement >> defaultLayout [
+GtTextEditorCompletionSimpleListElement >> defaultLayout [
 	^ BlFrameLayout new
 ]
 
 { #category : 'focus requesting' }
-GtCompletionSimpleListElement >> focusTarget [
+GtTextEditorCompletionSimpleListElement >> focusTarget [
 	^ listElement focusTarget
 ]
 
 { #category : 'initialization' }
-GtCompletionSimpleListElement >> initialize [
+GtTextEditorCompletionSimpleListElement >> initialize [
 	super initialize.
 
-	settings := GtCompletionSettings.
+	settings := GtTextEditorCompletionSettings.
 	onCompleteBlock := [ :someItems | self phlow spawnObject: someItems ].
 
 	self initializeSettings.
@@ -72,16 +72,16 @@ GtCompletionSimpleListElement >> initialize [
 ]
 
 { #category : 'initialization' }
-GtCompletionSimpleListElement >> initializeSettings [
+GtTextEditorCompletionSimpleListElement >> initializeSettings [
 	self
 		width: settings completionWidth;
 		constraintsDo: [ :c | c maxHeight: settings completionMaxHeight ]
 ]
 
 { #category : 'initialization' }
-GtCompletionSimpleListElement >> initializeSimpleListElement [
+GtTextEditorCompletionSimpleListElement >> initializeSimpleListElement [
 	listElement := BrSimpleList new
-			id: GtCompletionListId;
+			id: GtTextEditorCompletionListId;
 			hMatchParent;
 			vFitContentLimited;
 			itemStencil: [ BrLabel new
@@ -91,7 +91,7 @@ GtCompletionSimpleListElement >> initializeSimpleListElement [
 					when: BlDoubleClickEvent do: [ :anEvent | self onDoubleClickEvent: anEvent ] ];
 			itemDataBinder: [ :eachLabel :eachItem :eachIndex | 
 				eachLabel text: eachItem label.
-				eachLabel id: (GtCompletionListItemId indexed: eachIndex).
+				eachLabel id: (GtTextEditorCompletionListItemId indexed: eachIndex).
 				eachLabel viewModel model: eachItem.
 				eachLabel ];
 			addShortcut: (BlShortcutWithAction new
@@ -108,7 +108,7 @@ GtCompletionSimpleListElement >> initializeSimpleListElement [
 ]
 
 { #category : 'api - initializationF' }
-GtCompletionSimpleListElement >> onComplete: aBlock [
+GtTextEditorCompletionSimpleListElement >> onComplete: aBlock [
 	"Set a block that is called on completion request.
 	It receives a selected item [ :aSelectedItem | ... ]."
 
@@ -116,31 +116,31 @@ GtCompletionSimpleListElement >> onComplete: aBlock [
 ]
 
 { #category : 'private - event handling' }
-GtCompletionSimpleListElement >> onCompleteWithSelectedItems: someSelectedItems [
+GtTextEditorCompletionSimpleListElement >> onCompleteWithSelectedItems: someSelectedItems [
 	someSelectedItems ifEmpty: [ ^ self ].
 
 	onCompleteBlock value: someSelectedItems anyOne
 ]
 
 { #category : 'private - event handling' }
-GtCompletionSimpleListElement >> onDoubleClickEvent: anEvent [
+GtTextEditorCompletionSimpleListElement >> onDoubleClickEvent: anEvent [
 	anEvent consumed: true.
 	self onCompleteWithSelectedItems: listElement selectedItems
 ]
 
 { #category : 'hooks' }
-GtCompletionSimpleListElement >> onStreamChanged [
+GtTextEditorCompletionSimpleListElement >> onStreamChanged [
 	listElement selectOne: 1
 ]
 
 { #category : 'accessing' }
-GtCompletionSimpleListElement >> settings [
-	<return: #GtCompletionSettings>
+GtTextEditorCompletionSimpleListElement >> settings [
+	<return: #GtTextEditorCompletionSettings>
 	^ settings
 ]
 
 { #category : 'accessing' }
-GtCompletionSimpleListElement >> settings: anObject [
+GtTextEditorCompletionSimpleListElement >> settings: anObject [
 	"Set settings object that stores user values related to the completion element.
 	The object must understand:
 	- completionMaxHeight, and completionMaxHeight:,
@@ -153,7 +153,7 @@ GtCompletionSimpleListElement >> settings: anObject [
 ]
 
 { #category : 'api - accessing' }
-GtCompletionSimpleListElement >> stream: aStream [
+GtTextEditorCompletionSimpleListElement >> stream: aStream [
 	"Set a stream of GtCompletionAction instances 
 	(or any other instances that respond to #label calls)."
 
@@ -162,7 +162,7 @@ GtCompletionSimpleListElement >> stream: aStream [
 ]
 
 { #category : 'api - accessing' }
-GtCompletionSimpleListElement >> stream: anAsyncStream executionConfiguration: anAsyncFutureExecutionConfiguration [
+GtTextEditorCompletionSimpleListElement >> stream: anAsyncStream executionConfiguration: anAsyncFutureExecutionConfiguration [
 	listElement
 		stream: anAsyncStream
 		executionConfiguration: anAsyncFutureExecutionConfiguration.

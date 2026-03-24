@@ -1,5 +1,5 @@
 Class {
-	#name : 'GtCompletionDummySettings',
+	#name : 'GtTextEditorCompletionDummySettings',
 	#superclass : 'Object',
 	#instVars : [
 		'completionMaxHeight',
@@ -11,21 +11,21 @@ Class {
 }
 
 { #category : 'settings' }
-GtCompletionDummySettings >> completionMaxHeight [
+GtTextEditorCompletionDummySettings >> completionMaxHeight [
 	^ completionMaxHeight ifNil: [ completionMaxHeight := 400 ]
 ]
 
 { #category : 'settings' }
-GtCompletionDummySettings >> completionMaxHeight: aNumber [
+GtTextEditorCompletionDummySettings >> completionMaxHeight: aNumber [
 	completionMaxHeight := aNumber
 ]
 
 { #category : 'settings' }
-GtCompletionDummySettings >> completionWidth [
+GtTextEditorCompletionDummySettings >> completionWidth [
 	^ completionWidth ifNil: [ completionWidth := 600 ]
 ]
 
 { #category : 'settings' }
-GtCompletionDummySettings >> completionWidth: aNumber [
+GtTextEditorCompletionDummySettings >> completionWidth: aNumber [
 	completionWidth := aNumber
 ]

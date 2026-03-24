@@ -222,7 +222,7 @@ GtTextEditorElement >> initialize [
 
 	self eventDispatcher forwardShortcuts
 		targetObject: completionElement;
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		forwardWhen: [ :aTargetElement | aTargetElement isAddedToSceneGraph ].
 
 	editorModel := GtTextEditorEmbedder
@@ -469,7 +469,7 @@ GtTextEditorElement >> newCompletionFuture [
 
 { #category : 'initialization' }
 GtTextEditorElement >> newCompletionList [
-	^ GtCompletionSimpleListElement new
+	^ GtTextEditorCompletionSimpleListElement new
 		onComplete: [ :selectedItem | self onCompleteWithSelectedItems: selectedItem ]
 ]
 

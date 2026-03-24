@@ -1,5 +1,5 @@
 Class {
-	#name : 'GtCompletionSimpleListElementWithScripterExamples',
+	#name : 'GtTextEditorCompletionSimpleListElementWithScripterExamples',
 	#superclass : 'Object',
 	#category : 'GToolkit-Editor-Examples',
 	#package : 'GToolkit-Editor',
@@ -7,7 +7,7 @@ Class {
 }
 
 { #category : 'examples - element' }
-GtCompletionSimpleListElementWithScripterExamples >> basicAnchorElement [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> basicAnchorElement [
 	<gtExample>
 	| anElement |
 	anElement := BrFrame new
@@ -27,11 +27,11 @@ GtCompletionSimpleListElementWithScripterExamples >> basicAnchorElement [
 ]
 
 { #category : 'examples - element' }
-GtCompletionSimpleListElementWithScripterExamples >> basicCompletionElement [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> basicCompletionElement [
 	<gtExample>
 	| anElement |
-	anElement := GtCompletionSimpleListElement new
-			settings: (GtCompletionDummySettings new
+	anElement := GtTextEditorCompletionSimpleListElement new
+			settings: (GtTextEditorCompletionDummySettings new
 					completionWidth: self defaultCompletionWidth;
 					completionMaxHeight: self defaultCompletionMaxHeight).
 
@@ -48,17 +48,17 @@ GtCompletionSimpleListElementWithScripterExamples >> basicCompletionElement [
 ]
 
 { #category : 'support' }
-GtCompletionSimpleListElementWithScripterExamples >> defaultCompletionMaxHeight [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> defaultCompletionMaxHeight [
 	^ 200
 ]
 
 { #category : 'support' }
-GtCompletionSimpleListElementWithScripterExamples >> defaultCompletionWidth [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> defaultCompletionWidth [
 	^ 400
 ]
 
 { #category : 'examples - element' }
-GtCompletionSimpleListElementWithScripterExamples >> emptyCompletionElement [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> emptyCompletionElement [
 	<gtExample>
 	| anElement aScripter |
 	anElement := self basicCompletionElement.
@@ -71,17 +71,17 @@ GtCompletionSimpleListElementWithScripterExamples >> emptyCompletionElement [
 ]
 
 { #category : 'examples - element' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionAnchor [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionAnchor [
 	<gtExample>
 	| anAnchor aList |
 	anAnchor := self basicAnchorElement.
 	aList := self basicCompletionElement.
 	aList stream: self someClassesStream.
 	anAnchor userData at: #completionList put: aList.
-	GtCompletionSimpleListElement installAptitudeOnAnchor: anAnchor stencil: aList.
+	GtTextEditorCompletionSimpleListElement installAptitudeOnAnchor: anAnchor stencil: aList.
 	anAnchor eventDispatcher forwardShortcuts
 		targetObject: aList;
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		forwardWhen: [ :anElement | anElement isAddedToSceneGraph ].
 	aList onComplete: [ :aSelectedItem | anAnchor phlow spawnObject:  aSelectedItem ].
 
@@ -92,7 +92,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionAnchor
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement [
 	<gtExample>
 	| anElement aScripter anItem |
 	anElement := self basicCompletionElement.
@@ -100,76 +100,76 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElemen
 	aScripter := BlScripter new element: anElement.
 
 	self
-		assert: (aScripter element query // GtCompletionListId / #scrollable / BrLabel) all size
+		assert: (aScripter element query // GtTextEditorCompletionListId / #scrollable / BrLabel) all size
 				> 10.
 	self assert: aScripter element width > 100.
 	self assert: aScripter element height > 100.
 
-	anItem := (anElement query // (GtCompletionListItemId indexed: 1)) anyOne.
+	anItem := (anElement query // (GtTextEditorCompletionListItemId indexed: 1)) anyOne.
 	self assert: anItem states isSelected.
 	
 	^ aScripter
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement_arrowDown [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement_arrowDown [
 	<gtExample>
 	| aScripter anItem |
 	aScripter := self someClassesCompletionElement.
 
 	aScripter do
 		block: [ :aList | aList beFocusable ];
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		play.
 
 	aScripter requestFocus
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		play.
 
 	aScripter shortcut
 		combination: BlKeyCombination arrowDown;
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		play.
 
-	anItem := (aScripter element query // (GtCompletionListItemId indexed: 1))
+	anItem := (aScripter element query // (GtTextEditorCompletionListItemId indexed: 1))
 			anyOne.
 	self assert: anItem states isSelected not.
-	anItem := (aScripter element query // (GtCompletionListItemId indexed: 2))
+	anItem := (aScripter element query // (GtTextEditorCompletionListItemId indexed: 2))
 			anyOne.
 	self assert: anItem states isSelected.
 	self
-		assert: (aScripter element query // GtCompletionListId) anyOne selectedItems anyOne
+		assert: (aScripter element query // GtTextEditorCompletionListId) anyOne selectedItems anyOne
 		equals: anItem viewModel model.
 
 	^ aScripter
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement_arrowDown_arrowUp [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement_arrowDown_arrowUp [
 	<gtExample>
 	| aScripter anItem |
 	aScripter := self someClassesCompletionElement_arrowDown.
 
 	aScripter shortcut
 		combination: BlKeyCombination arrowUp;
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		play.
 
-	anItem := (aScripter element query // (GtCompletionListItemId indexed: 2))
+	anItem := (aScripter element query // (GtTextEditorCompletionListItemId indexed: 2))
 			anyOne.
 	self assert: anItem states isSelected not.
-	anItem := (aScripter element query // (GtCompletionListItemId indexed: 1))
+	anItem := (aScripter element query // (GtTextEditorCompletionListItemId indexed: 1))
 			anyOne.
 	self assert: anItem states isSelected.
 	self
-		assert: (aScripter element query // GtCompletionListId) anyOne selectedItems anyOne
+		assert: (aScripter element query // GtTextEditorCompletionListId) anyOne selectedItems anyOne
 		equals: anItem viewModel model.
 
 	^ aScripter
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement_arrowDown_doubleClick [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement_arrowDown_doubleClick [
 	<gtExample>
 	| aScripter anItem onComplete |
 	aScripter := self someClassesCompletionElement_arrowDown.
@@ -178,15 +178,15 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElemen
 	aScripter element onComplete: [ :selectedItem | onComplete add: selectedItem ].
 
 	aScripter doubleClick
-		// GtCompletionListId;
-		// (GtCompletionListItemId indexed: 3);
+		// GtTextEditorCompletionListId;
+		// (GtTextEditorCompletionListItemId indexed: 3);
 		play.
 
-	anItem := (aScripter element query // (GtCompletionListItemId indexed: 3))
+	anItem := (aScripter element query // (GtTextEditorCompletionListItemId indexed: 3))
 			anyOne.
 	self assert: anItem states isSelected.
 	self
-		assert: (aScripter element query // GtCompletionListId) anyOne selectedItems anyOne
+		assert: (aScripter element query // GtTextEditorCompletionListId) anyOne selectedItems anyOne
 		equals: anItem viewModel model.
 
 	self assert: onComplete size equals: 1.
@@ -196,7 +196,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElemen
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement_arrowDown_tab [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElement_arrowDown_tab [
 	<gtExample>
 	| aScripter anItem onComplete |
 	aScripter := self someClassesCompletionElement_arrowDown.
@@ -207,14 +207,14 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElemen
 
 	aScripter shortcut
 		combination: BlKeyCombination tab;
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		play.
 
-	anItem := (aScripter element query // (GtCompletionListItemId indexed: 2))
+	anItem := (aScripter element query // (GtTextEditorCompletionListItemId indexed: 2))
 			anyOne.
 	self assert: anItem states isSelected.
 	self
-		assert: (aScripter element query // GtCompletionListId) anyOne selectedItems anyOne
+		assert: (aScripter element query // GtTextEditorCompletionListId) anyOne selectedItems anyOne
 		equals: anItem viewModel model.
 
 	self assert: onComplete size equals: 1.
@@ -224,7 +224,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionElemen
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover [
 	<gtExample>
 	| anAnchor aList aScripter aSimpleList |
 	anAnchor := self someClassesCompletionAnchor.
@@ -240,7 +240,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 	self assert: aList height equals: self defaultCompletionMaxHeight.
 	self assert: aList width equals: self defaultCompletionWidth.
 
-	aSimpleList := aList childWithId: GtCompletionListId.
+	aSimpleList := aList childWithId: GtTextEditorCompletionListId.
 	self assert: aSimpleList width equals: aList width.
 	self assert: aSimpleList height equals: aList height.
 
@@ -252,7 +252,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_arrowDown [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_arrowDown [
 	<gtExample>
 	| anAnchor aList aScripter anItem |
 	aScripter := self someClassesCompletionPopover.
@@ -262,24 +262,24 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 	aScripter shortcut
 		combination: BlKeyCombination arrowDown;
 		onPopover;
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		play.
 
-	anItem := (aScripter root query // (GtCompletionListItemId indexed: 1))
+	anItem := (aScripter root query // (GtTextEditorCompletionListItemId indexed: 1))
 			anyOne.
 	self assert: anItem states isSelected not.
-	anItem := (aScripter root query // (GtCompletionListItemId indexed: 2))
+	anItem := (aScripter root query // (GtTextEditorCompletionListItemId indexed: 2))
 			anyOne.
 	self assert: anItem states isSelected.
 	self
-		assert: (aScripter root query // GtCompletionListId) anyOne selectedItems anyOne
+		assert: (aScripter root query // GtTextEditorCompletionListId) anyOne selectedItems anyOne
 		equals: anItem viewModel model.
 
 	^ aScripter
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_arrowDown_arrowUp [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_arrowDown_arrowUp [
 	<gtExample>
 	| anAnchor aList aScripter anItem |
 	aScripter := self someClassesCompletionPopover_arrowDown.
@@ -289,24 +289,24 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 	aScripter shortcut
 		combination: BlKeyCombination arrowUp;
 		onPopover;
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		play.
 
-	anItem := (aScripter root query // (GtCompletionListItemId indexed: 2))
+	anItem := (aScripter root query // (GtTextEditorCompletionListItemId indexed: 2))
 			anyOne.
 	self assert: anItem states isSelected not.
-	anItem := (aScripter root query // (GtCompletionListItemId indexed: 1))
+	anItem := (aScripter root query // (GtTextEditorCompletionListItemId indexed: 1))
 			anyOne.
 	self assert: anItem states isSelected.
 	self
-		assert: (aScripter root query // GtCompletionListId) anyOne selectedItems anyOne
+		assert: (aScripter root query // GtTextEditorCompletionListId) anyOne selectedItems anyOne
 		equals: anItem viewModel model.
 
 	^ aScripter
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_bottomLeftPosition [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_bottomLeftPosition [
 	<gtExample>
 	| anAnchor aList aScripter aSimpleList |
 	anAnchor := self someClassesCompletionAnchor.
@@ -323,7 +323,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 	self assert: aList height equals: self defaultCompletionMaxHeight.
 	self assert: aList width equals: self defaultCompletionWidth.
 
-	aSimpleList := aList childWithId: GtCompletionListId.
+	aSimpleList := aList childWithId: GtTextEditorCompletionListId.
 	self assert: aSimpleList width equals: aList width.
 	self assert: aSimpleList height equals: aList height.
 
@@ -336,7 +336,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_bottomRightPosition [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_bottomRightPosition [
 	<gtExample>
 	| anAnchor aList aScripter aSimpleList |
 	anAnchor := self someClassesCompletionAnchor.
@@ -353,7 +353,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 	self assert: aList height equals: self defaultCompletionMaxHeight.
 	self assert: aList width equals: self defaultCompletionWidth.
 
-	aSimpleList := aList childWithId: GtCompletionListId.
+	aSimpleList := aList childWithId: GtTextEditorCompletionListId.
 	self assert: aSimpleList width equals: aList width.
 	self assert: aSimpleList height equals: aList height.
 
@@ -366,7 +366,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_escape [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_escape [
 	<gtExample>
 	| anAnchor aList aScripter |
 	aScripter := self someClassesCompletionPopover.
@@ -376,20 +376,20 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 	aScripter shortcut
 		combination: BlKeyCombination escape;
 		onPopover;
-		// GtCompletionListId;
+		// GtTextEditorCompletionListId;
 		play.
 
 	aScripter menuStep
 		assertClosedMenuContainer;
 		play.
 
-	self assert: (aScripter root query // GtCompletionListId) isEmpty.
+	self assert: (aScripter root query // GtTextEditorCompletionListId) isEmpty.
 
 	^ aScripter
 ]
 
 { #category : 'examples - scripter' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_topRightPosition [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopover_topRightPosition [
 	<gtExample>
 	| anAnchor aList aScripter aSimpleList |
 	anAnchor := self someClassesCompletionAnchor.
@@ -406,7 +406,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 	self assert: aList height equals: self defaultCompletionMaxHeight.
 	self assert: aList width equals: self defaultCompletionWidth.
 
-	aSimpleList := aList childWithId: GtCompletionListId.
+	aSimpleList := aList childWithId: GtTextEditorCompletionListId.
 	self assert: aSimpleList width equals: aList width.
 	self assert: aSimpleList height equals: aList height.
 
@@ -418,7 +418,7 @@ GtCompletionSimpleListElementWithScripterExamples >> someClassesCompletionPopove
 ]
 
 { #category : 'support' }
-GtCompletionSimpleListElementWithScripterExamples >> someClassesStream [
+GtTextEditorCompletionSimpleListElementWithScripterExamples >> someClassesStream [
 	<gtExample>
 	^ (self class package classes sorted: [ :a :b | a name < b name ])
 		asAsyncStream

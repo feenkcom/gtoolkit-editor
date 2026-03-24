@@ -18,7 +18,8 @@ Class {
 		'completionStrategy',
 		'completionAttributeTag',
 		'completionElement',
-		'completionFuture'
+		'completionFuture',
+		'adornmentsBank'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -39,9 +40,9 @@ GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd [
 			
 			externalAttribute isAdornmentAttribute
 				ifTrue: [
-					adornments
+					adornmentsBank
 						at: attributeTag
-						put: (externalAttribute adornmentAttribute -> nil) ].
+						put: externalAttribute adornmentAttribute ].
 
 			attributeTag ].
 ]
@@ -62,9 +63,9 @@ GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd document
 			
 			externalAttribute isAdornmentAttribute
 				ifTrue: [
-					adornments
+					adornmentsBank
 						at: attributeTag
-						put: (externalAttribute adornmentAttribute -> nil) ].
+						put: externalAttribute adornmentAttribute ].
 
 			attributeTag ].
 ]
@@ -83,9 +84,9 @@ GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentId [
 		
 			externalAttribute isAdornmentAttribute
 				ifTrue: [
-					adornments
+					adornmentsBank
 						at: attributeTag
-						put: (externalAttribute adornmentAttribute -> nil) ].			
+						put: externalAttribute adornmentAttribute ].			
 			attributeTag ].
 ]
 
@@ -212,6 +213,7 @@ GtTextEditorElement >> initialize [
 	semaphoreIndex := Smalltalk registerExternalObject: semaphore.
 
 	adornments := OrderedDictionary new.
+	adornmentsBank := OrderedDictionary new.
 
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
@@ -461,7 +463,8 @@ GtTextEditorElement >> newCompletionFuture [
 						addAttribute: (GtTextEditorCompletionAttachmentAttribute new completionElement: completionElement)
 						from: aCompletionRequest byteOffset
 						to: aCompletionRequest byteOffset
-						documentId: aCompletionRequest documentId ] ];
+						documentId: aCompletionRequest documentId.
+				 ] ];
 		whenError: [ :thisEditor :anError | completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ] ];
 		whenPending: [ :thisEditor | ];
 		yourself
@@ -528,8 +531,6 @@ GtTextEditorElement >> onDragStartEvent: anEvent [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
-	GtJustContextStackSignal emit.
-
 	adornments
 		at: aMessage adornmentTag
 		ifPresent: [ :anAssociation |
@@ -552,7 +553,43 @@ GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
 				anAssociation value: theAdornmentElements
 			].
 		]
-		ifAbsent: [ ]
+		ifAbsent: [
+		
+		]
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorAdornmentsAdded: aMessage [
+	aMessage adornmentTags do: [ :eachTag |
+		adornmentsBank
+			at: eachTag
+			ifPresent: [ :eachValue |
+				adornments
+					at: eachTag
+					ifAbsent: [
+						adornments at: eachTag put: (eachValue -> nil)
+					] ] ].
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
+	| removedTags removedElements |
+	
+	removedTags := aMessage adornmentTags.
+	removedTags do: [ :eachTag |
+		adornments removeKey: eachTag ifAbsent: [ ].
+		adornmentsBank removeKey: eachTag ifAbsent: [ ] ].
+	
+	removedTags := removedTags asSet.
+	
+	removedElements := self children
+			select: [ :eachChild | 
+				eachChild userData
+					at: #editorAdornmentId
+					ifPresent: [ :anAdornmentTag | removedTags includes: anAdornmentTag ]
+					ifAbsent: [ false ] ].
+
+	self removeChildren: removedElements. 
 ]
 
 { #category : 'event handling' }
@@ -828,18 +865,12 @@ GtTextEditorElement >> redo [
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
-	(adornments removeKey: anAttributeTag ifAbsent: [ nil ]) ifNotNil: [ :anAssociation |
-		anAssociation value ifNotNil: [ :anElement | self removeChildren: anElement ] ].
-
 	editorModel
 		removeAttributeTagged: anAttributeTag
 ]
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> removeAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
-	(adornments removeKey: anAttributeTag ifAbsent: [ nil ]) ifNotNil: [ :anAssociation |
-		anAssociation value ifNotNil: [ :anElement | self removeChildren: anElement ] ].
-
 	editorModel
 		removeAttributeTagged: anAttributeTag
 		overAdornment: anAdornmentTag	
@@ -848,19 +879,6 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag overAdornment: anAd
 { #category : 'as yet unclassified' }
 GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
 	
-]
-
-{ #category : 'as yet unclassified' }
-GtTextEditorElement >> removeObsoleteAdornmentElements [
-	| obsoleteElements |
-	obsoleteElements := self children
-			reject: [ :eachChild | 
-				eachChild userData
-					at: #editorAdornmentId
-					ifPresent: [ :anAdornmentTag | adornments includesKey: anAdornmentTag ]
-					ifAbsent: [ true ] ].
-
-	self removeChildren: obsoleteElements
 ]
 
 { #category : 'as yet unclassified' }
@@ -910,8 +928,8 @@ GtTextEditorElement >> styledText: aTextToStyle [
 		during: [ :textEditorText |
 			self flag: #TODO.
 			"questionable! What should we do when the styled text is rejected because of the wrong document id"
-			adornments := textEditorText adornments collect: [ :eachAttribute | eachAttribute -> nil ].
-			self removeObsoleteAdornmentElements.
+			
+			adornmentsBank addAll: textEditorText adornments.
 			
 			self editorModel
 				styledText: textEditorText
@@ -943,8 +961,7 @@ GtTextEditorElement >> text: aBlText [
 	aBlText
 		asGtTextEditorTextForTheme: self theme
 		during: [ :textEditorText |
-			adornments := textEditorText adornments collect: [ :eachAttribute | eachAttribute -> nil ].
-			self removeObsoleteAdornmentElements.
+			adornmentsBank addAll: textEditorText adornments.
 			self editorModel text: textEditorText ]
 ]
 

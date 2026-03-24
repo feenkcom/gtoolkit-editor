@@ -1,10 +1,11 @@
 Class {
-	#name : #BaselineOfGToolkitEditor,
-	#superclass : #BaselineOf,
-	#category : #BaselineOfGToolkitEditor
+	#name : 'BaselineOfGToolkitEditor',
+	#superclass : 'BaselineOf',
+	#category : 'BaselineOfGToolkitEditor',
+	#package : 'BaselineOfGToolkitEditor'
 }
 
-{ #category : #loading }
+{ #category : 'loading' }
 BaselineOfGToolkitEditor class >> loadLepiter [
 	IceRepository registry  
 		detect: [ :aRepository |
@@ -19,14 +20,15 @@ BaselineOfGToolkitEditor class >> loadLepiter [
 			self inform: 'Repository not found.' ]
 ]
 
-{ #category : #baseline }
+{ #category : 'baseline' }
 BaselineOfGToolkitEditor >> baseline: spec [
 	<baseline>
-		spec 
+	spec for: #'common' do: [
+		spec
 			baseline: 'GToolkitPhlowForRust' with: [
-				spec repository: 'github://feenkcom/gt4phlow-rs:main/src' ].
-		^ spec for: #common do: [
-			spec package: 'GToolkit-Editor' with: [
-				spec requires: #('GToolkitPhlowForRust'). ]
-		]
+				spec repository: 'github://feenkcom/gt4phlow-rs:v0.6.20/src' ].
+
+		spec package: 'GToolkit-Editor' with: [
+			spec requires: #(#GToolkitPhlowForRust) ].
+	]
 ]

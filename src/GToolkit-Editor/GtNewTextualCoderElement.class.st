@@ -479,6 +479,8 @@ GtNewTextualCoderElement >> onTextualCoderViewModelChanged [
 	(coderModel isForMethod and: [ coderModel compiledMethod isNotNil ]) ifTrue: 
 		[ false"coderModel compiledMethod isBigMethod" ifTrue:
 			[ editorElement beReadOnlyWithSelection ] ].
+			
+	editorElement model: self textualCoderViewModel.
 	
 	self onCoderViewModelFocused: self textualCoderViewModel focused.
 

@@ -38,6 +38,11 @@ GtTextEditorCompletionTrigger class >> externalType [
 ]
 
 { #category : 'as yet unclassified' }
+GtTextEditorCompletionTrigger class >> initialize [
+	super initialize
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorCompletionTrigger >> isManual [
 	^ self = Manual
 ]

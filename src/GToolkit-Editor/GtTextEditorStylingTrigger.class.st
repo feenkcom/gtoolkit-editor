@@ -36,3 +36,8 @@ GtTextEditorStylingTrigger class >> externalDeclaration [
 GtTextEditorStylingTrigger class >> externalType [
 	^ FFIUInt8 new
 ]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorStylingTrigger class >> initialize [
+	super initialize
+]

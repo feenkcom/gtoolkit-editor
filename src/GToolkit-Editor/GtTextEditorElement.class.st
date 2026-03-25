@@ -19,7 +19,8 @@ Class {
 		'completionAttributeTag',
 		'completionElement',
 		'completionFuture',
-		'adornmentsBank'
+		'adornmentsBank',
+		'userModel'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -391,6 +392,25 @@ GtTextEditorElement >> insertStringAtCursor: aString [
 { #category : 'api - editing' }
 GtTextEditorElement >> insertTabAtCarets [
 	self insertStringAtCursor: String tab
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> model [
+	^ userModel
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> model: anObject [
+	"Users can set what ever object they need.
+	Currently, we call #model in `GtSourceCoderShortcut>>#performOnEditor:element:dueTo:`,
+	which is called from `GtTextualCoder>>#addContextMenuItemFrom:group:withId:to:`.
+	Ideally, we would like to remove this need and pass the editor element to the method,
+	which would be `GtNewTextualCoderElement`.
+	We set it in `GtNewTextualCoderElement>>#onTextualCoderViewModelChanged`."
+	
+	self flag: #TODO.
+
+	userModel := anObject
 ]
 
 { #category : 'api - navigation' }

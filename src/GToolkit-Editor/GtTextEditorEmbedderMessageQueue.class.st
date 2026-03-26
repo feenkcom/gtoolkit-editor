@@ -34,6 +34,7 @@ GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsent
 		GtTextEditorEmbedderAdornmentMeasuredMessage.
 		GtTextEditorEmbedderAdornmentsAddedMessage.
 		GtTextEditorEmbedderAdornmentsRemovedMessage.
+		GtTextEditorEmbedderTextEventMessage.
 		GtTextEditorEmbedderTextChangedMessage.
 		GtTextEditorEmbedderTextCompletionRequestMessage.
 		GtTextEditorEmbedderTextStylingRequestMessage }.

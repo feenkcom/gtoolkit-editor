@@ -12,3 +12,8 @@ Class {
 GtTextEditorLibrary >> macLibraryName [
 	^ FFIMacLibraryFinder findLibrary: 'libEditor.dylib'
 ]
+
+{ #category : 'accessing - platform' }
+GtTextEditorLibrary >> win32LibraryName [
+	^ FFIWindowsLibraryFinder findLibrary: 'Editor.dll'
+]

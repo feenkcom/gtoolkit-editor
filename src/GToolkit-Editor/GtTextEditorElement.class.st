@@ -19,7 +19,9 @@ Class {
 		'completionAttributeTag',
 		'completionElement',
 		'completionFuture',
-		'adornmentsBank'
+		'adornmentsBank',
+		'userModel',
+		'history'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -156,6 +158,11 @@ GtTextEditorElement >> deletePreviousAtCursor [
 	editorModel deletePreviousAtCursor
 ]
 
+{ #category : 'editor - operations' }
+GtTextEditorElement >> deselectAll [
+	self flag: #TODO
+]
+
 { #category : 'accessing' }
 GtTextEditorElement >> editor [
 	^ self
@@ -202,6 +209,22 @@ GtTextEditorElement >> extendSelectionToLineStart [
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionUp [
 	editorModel extendSelectionUp
+]
+
+{ #category : 'todo' }
+GtTextEditorElement >> history [
+	"Do we want to this object here? I see #undo and #redo methods."
+
+	self flag: #TODO.
+	^ history ifNil: [ history := BrTextEditorHistory new ]
+]
+
+{ #category : 'todo' }
+GtTextEditorElement >> history: aBrTextEditorHistory [
+	"Do we want to this object here? I see #undo and #redo methods."
+
+	self flag: #TODO.
+	history := aBrTextEditorHistory
 ]
 
 { #category : 'initialization' }
@@ -391,6 +414,25 @@ GtTextEditorElement >> insertStringAtCursor: aString [
 { #category : 'api - editing' }
 GtTextEditorElement >> insertTabAtCarets [
 	self insertStringAtCursor: String tab
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> model [
+	^ userModel
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> model: anObject [
+	"Users can set what ever object they need.
+	Currently, we call #model in `GtSourceCoderShortcut>>#performOnEditor:element:dueTo:`,
+	which is called from `GtTextualCoder>>#addContextMenuItemFrom:group:withId:to:`.
+	Ideally, we would like to remove this need and pass the editor element to the method,
+	which would be `GtNewTextualCoderElement`.
+	We set it in `GtNewTextualCoderElement>>#onTextualCoderViewModelChanged`."
+	
+	self flag: #TODO.
+
+	userModel := anObject
 ]
 
 { #category : 'api - navigation' }
@@ -896,6 +938,16 @@ GtTextEditorElement >> requestManualStyling [
 	editorModel requestStyling: GtTextEditorStylingTrigger Manual
 ]
 
+{ #category : 'api - save state' }
+GtTextEditorElement >> restoreState: aMemento [
+	aMemento restoreStateOfNewEditor: self
+]
+
+{ #category : 'todo' }
+GtTextEditorElement >> restoreText: aBlRunRopedText [ 
+	self text: aBlRunRopedText
+]
+
 { #category : 'private' }
 GtTextEditorElement >> runEditorProcess [
 	[
@@ -911,7 +963,9 @@ GtTextEditorElement >> selectAll [
 
 { #category : 'styling' }
 GtTextEditorElement >> styleText [
-	GtJustContextStackSignal emit.
+	"For explicit manual styling, there is #requestManualStyling"
+
+	GtJustContextStackSignal emit
 ]
 
 { #category : 'styling' }
@@ -943,7 +997,11 @@ GtTextEditorElement >> styler [
 
 { #category : 'styling' }
 GtTextEditorElement >> styler: aStyler [
-	styler := aStyler
+	styler = aStyler ifTrue: [ ^ self ].
+
+	styler := aStyler.
+
+	self requestManualStyling.
 ]
 
 { #category : 'styling' }

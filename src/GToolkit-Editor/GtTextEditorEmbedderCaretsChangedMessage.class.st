@@ -11,3 +11,7 @@ GtTextEditorEmbedderCaretsChangedMessage class >> primRelease: aHandle [
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void to_embedder_carets_changed_message_release(void* aHandle))
 ]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorEmbedderCaretsChangedMessage >> sendTo: anObject [
+]

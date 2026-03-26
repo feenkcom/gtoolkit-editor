@@ -569,6 +569,11 @@ GtTextEditorElement >> onDragStartEvent: anEvent [
 ]
 
 { #category : 'event handling' }
+GtTextEditorElement >> onEditorActiveCaretMoved: aMessage [
+	self dispatchEvent: (BrTextEditorCursorChangedEvent new cursors: (BrTextEditorCursor at: aMessage newOffset))
+]
+
+{ #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
 	adornments
 		at: aMessage adornmentTag

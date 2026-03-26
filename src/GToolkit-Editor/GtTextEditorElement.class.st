@@ -517,7 +517,7 @@ GtTextEditorElement >> newCompletionFuture [
 { #category : 'initialization' }
 GtTextEditorElement >> newCompletionList [
 	^ GtTextEditorCompletionSimpleListElement new
-		onComplete: [ :selectedItem | self onCompleteWithSelectedItems: selectedItem ]
+		onComplete: [ :selectedItem | self onCompleteWithSelectedItem: selectedItem ]
 ]
 
 { #category : 'hooks - children' }
@@ -544,7 +544,7 @@ GtTextEditorElement >> onClickEvent: anEvent [
 ]
 
 { #category : 'event handling' }
-GtTextEditorElement >> onCompleteWithSelectedItems: selectedItem [
+GtTextEditorElement >> onCompleteWithSelectedItem: selectedItem [
 	
 	(selectedItem isNil or: [ selectedItem isEmpty ])
 		ifFalse: [ "self phlow spawnObject: selectedItem" ].

@@ -295,7 +295,12 @@ GtTextEditorElement >> initializeShortcuts [
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination tab;
-				action: [ self insertTabAtCarets ]).
+				action: [ self insertTabAtCaretsOrIndent ]).
+	
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination shiftTab;
+				action: [ self unindent ]).
 
 	self
 		addShortcut: (BlShortcutWithAction new
@@ -409,8 +414,8 @@ GtTextEditorElement >> insertStringAtCursor: aString [
 ]
 
 { #category : 'api - editing' }
-GtTextEditorElement >> insertTabAtCarets [
-	self insertStringAtCursor: String tab
+GtTextEditorElement >> insertTabAtCaretsOrIndent [
+	editorHandle insertTabOrIndent
 ]
 
 { #category : 'accessing' }
@@ -1039,6 +1044,11 @@ GtTextEditorElement >> text: aBlText [
 { #category : 'api - editing' }
 GtTextEditorElement >> undo [
 	editorHandle undo
+]
+
+{ #category : 'api - editing' }
+GtTextEditorElement >> unindent [
+	editorHandle unindent
 ]
 
 { #category : 'styling' }

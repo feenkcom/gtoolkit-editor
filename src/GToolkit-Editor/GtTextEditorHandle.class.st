@@ -174,6 +174,11 @@ GtTextEditorHandle >> insertStringAtCursor: aString [
 		during: [ :aStringBox | self primInsertString: aStringBox ]
 ]
 
+{ #category : 'api - editing' }
+GtTextEditorHandle >> insertTabOrIndent [
+	self primInsertTabOrIndent
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> measureWidth: aWidth top: aTopOrNil height: aHeightOrNil [
 	self
@@ -364,6 +369,11 @@ GtTextEditorHandle >> primInsertString: aStringBox [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primInsertTabOrIndent [
+	self ffiCall: #(void editor_handle_insert_tab_or_indent(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primMeasureWidth: aWidth hasViewportTop: hasViewportTop viewportTop: viewportTop hasViewportHeight:  hasViewportHeight viewportHeight: viewportHeight [
 	self ffiCall: #(void editor_handle_resize(
 		self,
@@ -540,6 +550,11 @@ GtTextEditorHandle >> primUndo [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primUnindent [
+	self ffiCall: #(void editor_handle_unindent(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primUpdateSelectionAtVisualX: aX y: aY [
 	self ffiCall: #(void editor_handle_update_selection_at_visual_point(
 		self,
@@ -617,6 +632,11 @@ GtTextEditorHandle >> text: aGtTextEditorExternalText [
 { #category : 'api - editing' }
 GtTextEditorHandle >> undo [
 	self primUndo
+]
+
+{ #category : 'api - editing' }
+GtTextEditorHandle >> unindent [
+	self primUnindent
 ]
 
 { #category : 'api - debugging' }

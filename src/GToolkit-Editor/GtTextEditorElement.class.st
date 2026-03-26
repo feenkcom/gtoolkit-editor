@@ -4,7 +4,6 @@ Class {
 	#traits : 'TBrLayoutResizable',
 	#classTraits : 'TBrLayoutResizable classTrait',
 	#instVars : [
-		'editorModel',
 		'viewportTop',
 		'viewportHeight',
 		'semaphore',
@@ -21,7 +20,8 @@ Class {
 		'completionFuture',
 		'adornmentsBank',
 		'userModel',
-		'history'
+		'history',
+		'editorHandle'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -35,7 +35,7 @@ GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd [
 		during: [ :externalAttribute |
 			| attributeTag |
 			
-			attributeTag := editorModel
+			attributeTag := editorHandle
 				addAttribute: externalAttribute
 				from: aStart
 				to: anEnd.
@@ -57,7 +57,7 @@ GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd document
 		during: [ :externalAttribute |
 			| attributeTag |
 			
-			attributeTag := editorModel
+			attributeTag := editorHandle
 				addAttribute: externalAttribute
 				from: aStart
 				to: anEnd
@@ -80,7 +80,7 @@ GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentId [
 		during: [ :externalAttribute |
 			| attributeTag |
 	
-			attributeTag := editorModel
+			attributeTag := editorHandle
 				addAttribute: externalAttribute
 				overAdornment: anAdornmentId.
 		
@@ -95,15 +95,15 @@ GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentId [
 { #category : 'api - navigation' }
 GtTextEditorElement >> addCursorAtVisualPoint: aPoint [
 	
-	editorModel addCursorAtVisualPoint: aPoint
+	editorHandle addCursorAtVisualPoint: aPoint
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'adding' }
 GtTextEditorElement >> addEditorShortcuts: aCollection [ 
 	
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - mode' }
 GtTextEditorElement >> beReadOnlyWithSelection [
 	
 ]
@@ -120,27 +120,27 @@ GtTextEditorElement >> completionStrategy: anObject [
 
 { #category : 'api - editing' }
 GtTextEditorElement >> copySelected [
-	editorModel copySelected
+	editorHandle copySelected
 ]
 
 { #category : 'api - editing' }
 GtTextEditorElement >> cutSelected [
-	editorModel cutSelected
+	editorHandle cutSelected
 ]
 
 { #category : 'accessing' }
 GtTextEditorElement >> defaultFontName: aFontFamilyName [
-	editorModel defaultFontName: aFontFamilyName
+	editorHandle defaultFontName: aFontFamilyName
 ]
 
 { #category : 'accessing' }
 GtTextEditorElement >> defaultFontSize: aFontSize [
-	editorModel defaultFontSize: aFontSize
+	editorHandle defaultFontSize: aFontSize
 ]
 
 { #category : 'accessing' }
 GtTextEditorElement >> defaultForeground: aColor [
-	editorModel defaultForeground: aColor
+	editorHandle defaultForeground: aColor
 ]
 
 { #category : 'styling' }
@@ -150,27 +150,24 @@ GtTextEditorElement >> defaultStylerStrategy [
 
 { #category : 'api - editing' }
 GtTextEditorElement >> deleteNextAtCursor [
-	editorModel deleteNextAtCursor
+	editorHandle deleteNextAtCursor
 ]
 
 { #category : 'api - editing' }
 GtTextEditorElement >> deletePreviousAtCursor [
-	editorModel deletePreviousAtCursor
+	editorHandle deletePreviousAtCursor
 ]
 
-{ #category : 'editor - operations' }
+{ #category : 'api - selection' }
 GtTextEditorElement >> deselectAll [
 	self flag: #TODO
 ]
 
 { #category : 'accessing' }
 GtTextEditorElement >> editor [
-	^ self
-]
+	self flag: #TODO.
 
-{ #category : 'accessing' }
-GtTextEditorElement >> editorModel [
-	^ editorModel
+	^ self
 ]
 
 { #category : 'private' }
@@ -183,32 +180,32 @@ GtTextEditorElement >> ensureEditorProcess [
 
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionDown [
-	editorModel extendSelectionDown
+	editorHandle extendSelectionDown
 ]
 
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionLeft [
-	editorModel extendSelectionLeft
+	editorHandle extendSelectionLeft
 ]
 
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionRight [
-	editorModel extendSelectionRight
+	editorHandle extendSelectionRight
 ]
 
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionToLineEnd [
-	editorModel extendSelectionToLineEnd
+	editorHandle extendSelectionToLineEnd
 ]
 
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionToLineStart [
-	editorModel extendSelectionToLineStart
+	editorHandle extendSelectionToLineStart
 ]
 
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionUp [
-	editorModel extendSelectionUp
+	editorHandle extendSelectionUp
 ]
 
 { #category : 'todo' }
@@ -250,7 +247,7 @@ GtTextEditorElement >> initialize [
 		// GtTextEditorCompletionListId;
 		forwardWhen: [ :aTargetElement | aTargetElement isAddedToSceneGraph ].
 
-	editorModel := GtTextEditorEmbedder
+	editorHandle := GtTextEditorEmbedder
 			forSemaphoreIndex: semaphoreIndex
 			during: [ :pharoEmbedder | 
 				messagesQueue := pharoEmbedder messagesQueue.
@@ -408,7 +405,7 @@ GtTextEditorElement >> insertLineBreakAtCarets [
 
 { #category : 'api - editing' }
 GtTextEditorElement >> insertStringAtCursor: aString [
-	editorModel insertStringAtCursor: aString
+	editorHandle insertStringAtCursor: aString
 ]
 
 { #category : 'api - editing' }
@@ -437,59 +434,59 @@ GtTextEditorElement >> model: anObject [
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCaretsDown [
-	editorModel moveCaretsDown
+	editorHandle moveCaretsDown
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCaretsUp [
-	editorModel moveCaretsUp
+	editorHandle moveCaretsUp
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCursorLeft [
 	"Moves the cursor one letter at a time to the left from the current position and deselects any selected text."
 	
-	editorModel moveCursorLeft
+	editorHandle moveCursorLeft
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCursorRight [
 	"Moves the cursor one letter at a time to the right from the current position and deselects any selected text"
 	
-	editorModel moveCursorRight
+	editorHandle moveCursorRight
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCursorToBeginning [
 	"Moves the cursor to the beginning of the current editor and deselects any selected text."
 	
-	editorModel moveCursorToBeginning
+	editorHandle moveCursorToBeginning
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCursorToEnd [
 	"Moves the cursor to the end of the current editor and deselects any selected text."
 	
-	editorModel moveCursorToEnd
+	editorHandle moveCursorToEnd
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCursorToLineEnd [
 	"Moves the cursor to the end of the current line and deselects any selected text."
 	
-	editorModel moveCursorToLineEnd
+	editorHandle moveCursorToLineEnd
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCursorToLineStart [
 	"Moves the cursor to the start of the current line and deselects any selected text."
 	
-	editorModel moveCursorToLineStart
+	editorHandle moveCursorToLineStart
 ]
 
 { #category : 'api - navigation' }
 GtTextEditorElement >> moveCursorToVisualPoint: aPoint [	
-	editorModel moveCursorToVisualPoint: aPoint
+	editorHandle moveCursorToVisualPoint: aPoint
 ]
 
 { #category : 'initialization' }
@@ -531,7 +528,7 @@ GtTextEditorElement >> onAddedToSceneGraph [
 				hostSpaceDo: [ :aHostSpace | 
 					window := aHostSpace window ] ].
 
-	editorModel setRenderThreadWakerThunk: window.
+	editorHandle setRenderThreadWakerThunk: window.
 
 	self ensureEditorProcess
 ]
@@ -554,21 +551,21 @@ GtTextEditorElement >> onCompleteWithSelectedItems: selectedItem [
 GtTextEditorElement >> onDragEndEvent: anEvent [
 	anEvent consumed: true.
 	
-	editorModel endSelectionAtVisualPoint
+	editorHandle endSelectionAtVisualPoint
 ]
 
 { #category : 'event handling' }
 GtTextEditorElement >> onDragEvent: anEvent [
 	anEvent consumed: true.
 	
-	editorModel updateSelectionAtVisualPoint: anEvent localPosition
+	editorHandle updateSelectionAtVisualPoint: anEvent localPosition
 ]
 
 { #category : 'event handling' }
 GtTextEditorElement >> onDragStartEvent: anEvent [
 	anEvent consumed: true.
 	
-	editorModel startSelectionAtVisualPoint: anEvent localPosition
+	editorHandle startSelectionAtVisualPoint: anEvent localPosition
 ]
 
 { #category : 'event handling' }
@@ -739,7 +736,7 @@ GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 		eachChild userData
 			at: #editorAdornmentId
 			ifPresent: [ :anAdornmentTag |
-				editorModel
+				editorHandle
 					resizeAdornment: anAdornmentTag
 					extent: eachChild measuredExtent
 			]
@@ -760,12 +757,12 @@ GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 				ifNil: [ heightSpec size ]
 				ifNotNil: [ viewportHeight min: heightSpec size ] ].
 
-	editorModel
+	editorHandle
 		measureWidth: self measuredWidth
 		top: viewportTop
 		height: viewportHeight.
 		
-	self measuredExtent: (anExtentMeasurementSpec sizeFor: (self measuredWidth @ editorModel height))
+	self measuredExtent: (anExtentMeasurementSpec sizeFor: (self measuredWidth @ editorHandle height))
 ]
 
 { #category : 'event handling' }
@@ -791,14 +788,14 @@ GtTextEditorElement >> onMouseWheelEvent: anEvent [
 
 	anEvent consumed: true.
 	
-	editorModel scrollBy: anEvent vector y
+	editorHandle scrollBy: anEvent vector y
 ]
 
 { #category : 'hooks - children' }
 GtTextEditorElement >> onRemovedFromSceneGraph [
 	super onRemovedFromSceneGraph.
 	
-	editorModel setRenderThreadWakerThunk: ExternalAddress null.
+	editorHandle setRenderThreadWakerThunk: ExternalAddress null.
 	
 	editorProcess ifNotNil: [ :aProcess | aProcess terminate ].
 	editorProcess := nil
@@ -813,7 +810,7 @@ GtTextEditorElement >> onTextInputEvent: anEvent [
 		ifTrue: [ ^ self ].
 	
 	anEvent consumed: true.
-  editorModel insertStringAtCursor: anEvent text
+  editorHandle insertStringAtCursor: anEvent text
 ]
 
 { #category : 'event handling' }
@@ -822,7 +819,7 @@ GtTextEditorElement >> onTextStyledEvent: anEvent [
 	self styledText: anEvent text
 ]
 
-{ #category : 'event handling' }
+{ #category : 'painting' }
 GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset [
 	| viewportOffset textureExtent externalMethods  |
 	self errorHandler
@@ -846,7 +843,7 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 				addLayer: (BlCompositionBorrowedTextureLayer new
 						extent: textureExtent;
 						callback: externalMethods drawFn;
-						payload: editorModel))
+						payload: editorHandle))
 		offset: anOffset
 		bounds: self invalidationBounds
 		compositing: BlCompositingSeparateLayerMode uniqueInstance
@@ -865,7 +862,7 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 					aChildPainter
 						pushLayer: (BlCompositionDynamicOffsetLayer new
 										setOffsetFn: externalMethods offsetFn
-										payload: (editorModel primCreateAdornmentDynamicOffset: anAdornmentTag)
+										payload: (editorHandle primCreateAdornmentDynamicOffset: anAdornmentTag)
 										cloneFn: externalMethods payloadCloneFn
 										freeFn: externalMethods payloadFreeFn)
 						offset: aChildOffset - aChildElement position
@@ -877,7 +874,7 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 
 { #category : 'api - editing' }
 GtTextEditorElement >> pasteAtCarets [
-	editorModel pasteAtCarets
+	editorHandle pasteAtCarets
 ]
 
 { #category : 'private' }
@@ -900,42 +897,47 @@ GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
 		thenDo: aBlock
 ]
 
+{ #category : 'private' }
+GtTextEditorElement >> privateEditorHandle [
+	^ editorHandle
+]
+
 { #category : 'api - editing' }
 GtTextEditorElement >> redo [
-	editorModel redo
+	editorHandle redo
 ]
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
-	editorModel
+	editorHandle
 		removeAttributeTagged: anAttributeTag
 ]
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> removeAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
-	editorModel
+	editorHandle
 		removeAttributeTagged: anAttributeTag
 		overAdornment: anAdornmentTag	
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'removing' }
 GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
 	
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'removing' }
 GtTextEditorElement >> removeTextAttribute: aGtCompletionAttachmentAttribute [
 	
 ]
 
 { #category : 'styling' }
 GtTextEditorElement >> requestAutoStyling [
-	editorModel requestStyling: GtTextEditorStylingTrigger Auto
+	editorHandle requestStyling: GtTextEditorStylingTrigger Auto
 ]
 
 { #category : 'styling' }
 GtTextEditorElement >> requestManualStyling [
-	editorModel requestStyling: GtTextEditorStylingTrigger Manual
+	editorHandle requestStyling: GtTextEditorStylingTrigger Manual
 ]
 
 { #category : 'api - save state' }
@@ -958,7 +960,7 @@ GtTextEditorElement >> runEditorProcess [
 
 { #category : 'api - selection' }
 GtTextEditorElement >> selectAll [
-	editorModel selectAll
+	editorHandle selectAll
 ]
 
 { #category : 'styling' }
@@ -985,7 +987,7 @@ GtTextEditorElement >> styledText: aTextToStyle [
 			
 			adornmentsBank addAll: textEditorText adornments.
 			
-			self editorModel
+			editorHandle
 				styledText: textEditorText
 				documentId: aTextToStyle documentId ]
 ]
@@ -1009,8 +1011,14 @@ GtTextEditorElement >> stylerStrategy [
 	^ stylerStrategy
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorElement >> text [
+	"Funny enough, users should not be able to get a text from an editor.
+	Instead, they should listen to text changes events.
+	The reason why we can't offer a text accessor is because the editor
+	lives outside of the Pharo memory and bringing a text into pharo is expensive."
+	self flag: #TODO.
+	
 	^ self unstyledText asRopedText
 ]
 
@@ -1020,15 +1028,17 @@ GtTextEditorElement >> text: aBlText [
 		asGtTextEditorTextForTheme: self theme
 		during: [ :textEditorText |
 			adornmentsBank addAll: textEditorText adornments.
-			self editorModel text: textEditorText ]
+			editorHandle text: textEditorText ]
 ]
 
 { #category : 'api - editing' }
 GtTextEditorElement >> undo [
-	editorModel undo
+	editorHandle undo
 ]
 
 { #category : 'styling' }
 GtTextEditorElement >> unstyledText [
-	^ editorModel unstyledText
+	self flag: #TODO.
+	
+	^ editorHandle unstyledText
 ]

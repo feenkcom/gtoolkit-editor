@@ -17,12 +17,13 @@ GtTextualCoderElement >> initializeEditorElement: aNewEditorElement [
 		addAptitude: (BrGlamorousWithExplicitContextMenuAptitude menu: [ self createContextMenu ]);
 		padding: BlInsets empty.
 
-	completion uninstall.
-	completion := GtCompletionForwardingController new editorElement: aNewEditorElement.
+	completion ifNotNil: [ :aCompletion | 
+		aCompletion uninstall.
+		completion := nil ].
 
 	self initializeEditorListeners.
 	
-	"I think this can be removed one  `BrTextEditorModificationEvent` works."
+	"I think this can be removed once  `BrTextEditorModificationEvent` works."
 	self editor
 		when: BrTextEditorModifiedEvent
 		do: [ :anEvent | self onTextModifiedDueToEvent: anEvent ].

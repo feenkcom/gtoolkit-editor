@@ -21,7 +21,9 @@ Class {
 		'adornmentsBank',
 		'userModel',
 		'history',
-		'editorHandle'
+		'editorHandle',
+		'heightSpec',
+		'editorHeight'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
@@ -206,6 +208,17 @@ GtTextEditorElement >> extendSelectionToLineStart [
 { #category : 'api - selection' }
 GtTextEditorElement >> extendSelectionUp [
 	editorHandle extendSelectionUp
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> gtAsPhlowObjectActionFor: anAction [
+	<gtAction>
+	^ anAction button
+		id: #'phlow--inspect-editor-handle';
+		priority: 1;
+		tooltip: 'Inspect editor handle';
+		icon: (self class environment at: #BrGlamorousVectorIcons) rustLogo;
+		action: [ :aButton | aButton phlow spawnObject: editorHandle ]
 ]
 
 { #category : 'todo' }
@@ -739,7 +752,6 @@ GtTextEditorElement >> onEditorTextStylingRequest: aMessage [
 
 { #category : 'layout' }
 GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
-	| heightSpec |
 	super onMeasure: anExtentMeasurementSpec.
 	
 	self children accountedByLayout do: [ :eachChild |
@@ -772,7 +784,9 @@ GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 		top: viewportTop
 		height: viewportHeight.
 		
-	self measuredExtent: (anExtentMeasurementSpec sizeFor: (self measuredWidth @ editorHandle height))
+	editorHeight := editorHandle height.
+		
+	self measuredExtent: (anExtentMeasurementSpec sizeFor: (self measuredWidth @ editorHeight))
 ]
 
 { #category : 'event handling' }
@@ -793,8 +807,9 @@ GtTextEditorElement >> onMouseUpEvent: anEvent [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onMouseWheelEvent: anEvent [
-	self constraints vertical resizer isFitContent
-		ifTrue: [ ^ self ].
+	(self constraints vertical resizer isFitContent
+		and: [ self constraints vertical resizer isFitContentLimited not ])
+			ifTrue: [ ^ self ].
 
 	anEvent consumed: true.
 	

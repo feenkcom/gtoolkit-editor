@@ -271,6 +271,8 @@ GtTextEditorElement >> initialize [
 			during: [ :pharoEmbedder | 
 				messagesQueue := pharoEmbedder messagesQueue.
 				GtTextEditorHandle forEmbedder: pharoEmbedder ].
+				
+	editorHandle tabWidth: 2.
 
 	messagesQueueUpdater := BrElementUpdater new
 			element: self;

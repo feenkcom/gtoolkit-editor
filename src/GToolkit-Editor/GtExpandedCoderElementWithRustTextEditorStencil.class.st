@@ -10,5 +10,9 @@ Class {
 GtExpandedCoderElementWithRustTextEditorStencil >> defaultElement [
 	<return: #BlElement>
 	^ GtSourceCoderExpandedContentElement new
-		initializeEditorElement: GtTextEditorElement new
+		initializeEditorElement: (GtTextEditorElement new
+			defaultFontName: 'Source Code Pro';
+			defaultFontSize: 14;
+			defaultForeground: Color black;
+			yourself)
 ]

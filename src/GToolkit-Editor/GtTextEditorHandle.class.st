@@ -532,6 +532,11 @@ GtTextEditorHandle >> primSetStyledText: aGtTextEditorExternalText documentId: a
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primSetTabWidth: aTabWidth [
+	self ffiBareCall: #(void editor_handle_set_tab_width(self, size_t aTabWidth))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSetText: aGtTextEditorExternalText [
 	self ffiCall: #(void editor_handle_set_text(self, void* aGtTextEditorExternalText))
 ]
@@ -622,6 +627,11 @@ GtTextEditorHandle >> startSelectionAtVisualPoint: aPoint [
 { #category : 'accessing' }
 GtTextEditorHandle >> styledText: aGtTextEditorExternalText documentId: aDocumentId [
 	self primSetStyledText: aGtTextEditorExternalText documentId: aDocumentId
+]
+
+{ #category : 'accessing' }
+GtTextEditorHandle >> tabWidth: aNumber [
+	self primSetTabWidth: aNumber
 ]
 
 { #category : 'accessing' }

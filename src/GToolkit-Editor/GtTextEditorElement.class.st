@@ -116,8 +116,9 @@ GtTextEditorElement >> completionStrategy [
 ]
 
 { #category : 'accessing' }
-GtTextEditorElement >> completionStrategy: anObject [
-	completionStrategy := anObject
+GtTextEditorElement >> completionStrategy: aStrategy [
+	self assert: [ aStrategy isNotNil ].
+	completionStrategy := aStrategy
 ]
 
 { #category : 'api - editing' }
@@ -128,6 +129,11 @@ GtTextEditorElement >> copySelected [
 { #category : 'api - editing' }
 GtTextEditorElement >> cutSelected [
 	editorHandle cutSelected
+]
+
+{ #category : 'initialization' }
+GtTextEditorElement >> defaultCompletionStrategy [
+	^ BrTextEditorCompletionStrategy empty
 ]
 
 { #category : 'accessing' }
@@ -251,7 +257,7 @@ GtTextEditorElement >> initialize [
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
 
-	completionStrategy := GtCompletionStrategy new.
+	completionStrategy := self defaultCompletionStrategy.
 	completionElement := self newCompletionList.
 	completionFuture := self newCompletionFuture.
 
@@ -963,6 +969,11 @@ GtTextEditorElement >> requestAutoStyling [
 { #category : 'styling' }
 GtTextEditorElement >> requestManualStyling [
 	editorHandle requestStyling: GtTextEditorStylingTrigger Manual
+]
+
+{ #category : 'accessing' }
+GtTextEditorElement >> resetCompletionStrategy [
+	completionStrategy := self defaultCompletionStrategy
 ]
 
 { #category : 'api - save state' }

@@ -1014,7 +1014,10 @@ GtTextEditorElement >> styleText [
 { #category : 'styling' }
 GtTextEditorElement >> styleTextAndAfterDo: aBlock [
 	"For explicit manual styling, there is #requestManualStyling.
-	I am not sure we can support the block argument."
+	We will not support the after block argument.
+	I see two cases that use the after block:
+	- `BrEditor>>#installValidatorsFor:`
+	- `BrTextStylerExamples>>#editorWithAsyncStylerStrategy`."
 
 	self requestManualStyling.
 

@@ -588,19 +588,23 @@ GtNewTextualCoderElement >> onViewModelStylersChanged [
 
 { #category : 'private - event handling' }
 GtNewTextualCoderElement >> onViewModelTextAttributesAdded: anAnnouncement [
-	self enqueueTask: (BlTaskAction new action: [
-		anAnnouncement text characters = self text characters
-			ifTrue: [
-				anAnnouncement coderTextAttributes
-					applyOnEditorText: self text
-					from: anAnnouncement startPosition
-					to: anAnnouncement stopPosition ] ])
+	self textualCoderViewModel = anAnnouncement textualCoderViewModel ifFalse: [ ^ self ].
+	
+	self enqueueTask: (BlTaskAction new action: [ 
+		anAnnouncement coderTextAttributes
+				applyOnEditorElement: editorElement
+				receivedText: anAnnouncement text
+				from: anAnnouncement startPosition
+				to: anAnnouncement stopPosition ])
 ]
 
 { #category : 'private - event handling' }
 GtNewTextualCoderElement >> onViewModelTextAttributesRemoved: anAnnouncement [
-	self enqueueTask: (BlTaskAction new action: [
-		anAnnouncement coderTextAttributes removeFromEditorText: self text ])
+	self textualCoderViewModel = anAnnouncement textualCoderViewModel ifFalse: [ ^ self ].
+	
+	self
+		enqueueTask: (BlTaskAction new
+				action: [ anAnnouncement coderTextAttributes removeFromEditorElement: editorElement ])
 ]
 
 { #category : 'private - event handling' }

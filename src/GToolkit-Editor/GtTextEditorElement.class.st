@@ -1005,12 +1005,24 @@ GtTextEditorElement >> selectAll [
 GtTextEditorElement >> styleText [
 	"For explicit manual styling, there is #requestManualStyling"
 
+	self requestManualStyling.
+
+	self flag: #TODO.
 	GtJustContextStackSignal emit
 ]
 
 { #category : 'styling' }
-GtTextEditorElement >> styleTextAndAfterDo: aConstantBlockClosure1Arg [ 
+GtTextEditorElement >> styleTextAndAfterDo: aBlock [
+	"For explicit manual styling, there is #requestManualStyling.
+	We will not support the after block argument.
+	I see two cases that use the after block:
+	- `BrEditor>>#installValidatorsFor:`
+	- `BrTextStylerExamples>>#editorWithAsyncStylerStrategy`."
+
+	self requestManualStyling.
+
 	self flag: #TODO.
+	GtJustContextStackSignal emit
 ]
 
 { #category : 'styling' }

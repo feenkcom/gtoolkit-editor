@@ -1005,12 +1005,21 @@ GtTextEditorElement >> selectAll [
 GtTextEditorElement >> styleText [
 	"For explicit manual styling, there is #requestManualStyling"
 
+	self requestManualStyling.
+
+	self flag: #TODO.
 	GtJustContextStackSignal emit
 ]
 
 { #category : 'styling' }
-GtTextEditorElement >> styleTextAndAfterDo: aConstantBlockClosure1Arg [ 
+GtTextEditorElement >> styleTextAndAfterDo: aBlock [
+	"For explicit manual styling, there is #requestManualStyling.
+	I am not sure we can support the block argument."
+
+	self requestManualStyling.
+
 	self flag: #TODO.
+	GtJustContextStackSignal emit
 ]
 
 { #category : 'styling' }

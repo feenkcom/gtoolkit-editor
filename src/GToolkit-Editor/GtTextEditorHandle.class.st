@@ -32,17 +32,6 @@ GtTextEditorHandle class >> primRelease: aHandle [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd [
-	<return: #Number>
-
-	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
-		self
-			primAddAttribute: aTextAttribute
-			start: aStart - 1
-			end: anEnd - 1 ].
-]
-
-{ #category : 'api - attributes' }
 GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
 	<return: #Number>
 

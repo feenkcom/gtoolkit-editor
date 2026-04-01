@@ -48,7 +48,7 @@ GtTextEditorAttribute class >> foreground: aColor during: aBlock [
 
 { #category : 'as yet unclassified' }
 GtTextEditorAttribute class >> markerDuring: aBlock [
-	^ GtTextEditorAttribute
+	^ GtTextEditorInvisibleMarkerAttribute
 		fromNativeHandle: self primMarker
 		during: aBlock
 ]
@@ -89,7 +89,7 @@ GtTextEditorAttribute class >> primRelease: aHandle [
 	self ffiCall: #(void attribute_release(void* aHandle))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'converting' }
 GtTextEditorAttribute >> asAttribute [
 	self class = GtTextEditorAttribute
 		ifTrue: [ ^ self ].
@@ -97,7 +97,7 @@ GtTextEditorAttribute >> asAttribute [
 	^ GtTextEditorAttribute fromNativeHandle: self primAsAttribute
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'converting' }
 GtTextEditorAttribute >> asGtExternalTextAttributeDuring: aBlock [
 	self class = GtTextEditorAttribute
 		ifTrue: [ ^ aBlock value: self ].
@@ -112,8 +112,13 @@ GtTextEditorAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBloc
 	self asGtExternalTextAttributeDuring: aBlock
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'testing' }
 GtTextEditorAttribute >> isAdornmentAttribute [
+	^ false
+]
+
+{ #category : 'testing' }
+GtTextEditorAttribute >> isMarkerAttribute [
 	^ false
 ]
 

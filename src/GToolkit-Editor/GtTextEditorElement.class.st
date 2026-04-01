@@ -976,11 +976,6 @@ GtTextEditorElement >> removeEditorShortcuts: aCollection [
 ]
 
 { #category : 'styling' }
-GtTextEditorElement >> requestAutoStyling [
-	editorHandle requestStyling: GtTextEditorStylingTrigger Auto
-]
-
-{ #category : 'styling' }
 GtTextEditorElement >> requestManualStyling [
 	editorHandle requestStyling: GtTextEditorStylingTrigger Manual
 ]
@@ -1015,12 +1010,11 @@ GtTextEditorElement >> selectAll [
 
 { #category : 'styling' }
 GtTextEditorElement >> styleText [
-	"For explicit manual styling, there is #requestManualStyling"
+	self
+		deprecated: 'Use #requestManualStyling instead.'
+		transformWith: '`@receiver styleText' -> '`@receiver requestManualStyling'.
 
-	self requestManualStyling.
-
-	self flag: #TODO.
-	GtJustContextStackSignal emit
+	self editor styleText
 ]
 
 { #category : 'styling' }
@@ -1028,11 +1022,9 @@ GtTextEditorElement >> styleTextAndAfterDo: aBlock [
 	"For explicit manual styling, there is #requestManualStyling.
 	We will not support the after block argument.
 	I see two cases that use the after block:
-	- `BrEditor>>#installValidatorsFor:`
-	- `BrTextStylerExamples>>#editorWithAsyncStylerStrategy`."
+	- `BrEditor>>#installValidatorsFor:`."
 
 	self requestManualStyling.
-
 	self flag: #TODO.
 	GtJustContextStackSignal emit
 ]

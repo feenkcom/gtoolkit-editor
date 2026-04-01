@@ -216,7 +216,35 @@ GtTextEditorElement >> extendSelectionUp [
 	editorHandle extendSelectionUp
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'gt - extensions' }
+GtTextEditorElement >> gtAdornmentsViewFor: aView [
+	<gtView>
+	adornmentsBank ifNil: [ ^ aView empty ].
+
+	^ aView tree
+		title: 'Adornments';
+		items: [ adornmentsBank associations ];
+		expandUpTo: 1;
+		children: [ :anObject | 
+			(anObject isKindOf: Association)
+				ifTrue: [ adornments
+						at: anObject key
+						ifPresent: [ :aValue | aValue value asCollection ]
+						ifAbsent: [ #() ] ]
+				ifFalse: [ #() ] ];
+		itemText: [ :anObject | 
+			(anObject isKindOf: Association)
+				ifTrue: [ 'Tag {1}: {2}'
+						format: {anObject key.
+								anObject value} ]
+				ifFalse: [ 'Element: {1}' format: {anObject} ] ];
+		send: [ :anObject | 
+			(anObject isKindOf: Association)
+				ifTrue: [ anObject value ]
+				ifFalse: [ anObject ] ]
+]
+
+{ #category : 'gt - extensions' }
 GtTextEditorElement >> gtAsPhlowObjectActionFor: anAction [
 	<gtAction>
 	^ anAction button
@@ -959,8 +987,11 @@ GtTextEditorElement >> removeEditorShortcuts: aCollection [
 ]
 
 { #category : 'removing' }
-GtTextEditorElement >> removeTextAttribute: aGtCompletionAttachmentAttribute [
-	
+GtTextEditorElement >> removeTextAttribute: aTextAttribute [
+	| attributeTag |
+	attributeTag := adornmentsBank keyAtValue: aTextAttribute ifAbsent: [ ^ self ].
+
+	self removeAttributeTagged: attributeTag
 ]
 
 { #category : 'styling' }

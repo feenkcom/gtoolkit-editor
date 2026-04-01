@@ -33,37 +33,42 @@ Class {
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
 	<return: #Number>
-	^ anAttribute
+	| attributeTag |
+	
+	attributeTag := 0.
+	
+	anAttribute
 		asGtExternalTextAttributeForTheme: self theme
-		during: [ :externalAttribute |
-			| attributeTag |
-			
+		during: [ :externalAttribute |			
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
 				from: aStart
 				to: anEnd
 				documentId: documentId.
 			
-			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute.
-
-			attributeTag ].
+			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
+			
+	^ attributeTag
 ]
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentTag [
 	<return: #Number>
-	^ anAttribute
+	| attributeTag |
+	
+	attributeTag := 0.
+	
+	anAttribute
 		asGtExternalTextAttributeForTheme: self theme
 		during: [ :externalAttribute |
-			| attributeTag |
-	
+		
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
 				overAdornment: anAdornmentTag.
 		
-			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute.
-			
-			attributeTag ].
+			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
+	
+	^ attributeTag
 ]
 
 { #category : 'api - navigation' }

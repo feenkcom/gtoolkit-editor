@@ -31,27 +31,6 @@ Class {
 }
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd [
-	^ anAttribute
-		asGtExternalTextAttributeForTheme: self theme
-		during: [ :externalAttribute |
-			| attributeTag |
-			
-			attributeTag := editorHandle
-				addAttribute: externalAttribute
-				from: aStart
-				to: anEnd.
-			
-			externalAttribute isAdornmentAttribute
-				ifTrue: [
-					adornmentsBank
-						at: attributeTag
-						put: externalAttribute adornmentAttribute ].
-
-			attributeTag ].
-]
-
-{ #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
 	<return: #Number>
 	^ anAttribute
@@ -65,17 +44,13 @@ GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd document
 				to: anEnd
 				documentId: documentId.
 			
-			externalAttribute isAdornmentAttribute
-				ifTrue: [
-					adornmentsBank
-						at: attributeTag
-						put: externalAttribute adornmentAttribute ].
+			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute.
 
 			attributeTag ].
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentId [
+GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentTag [
 	<return: #Number>
 	^ anAttribute
 		asGtExternalTextAttributeForTheme: self theme
@@ -84,13 +59,10 @@ GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentId [
 	
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
-				overAdornment: anAdornmentId.
+				overAdornment: anAdornmentTag.
 		
-			externalAttribute isAdornmentAttribute
-				ifTrue: [
-					adornmentsBank
-						at: attributeTag
-						put: externalAttribute adornmentAttribute ].			
+			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute.
+			
 			attributeTag ].
 ]
 
@@ -661,11 +633,11 @@ GtTextEditorElement >> onEditorAdornmentsAdded: aMessage [
 	aMessage adornmentTags do: [ :eachTag |
 		adornmentsBank
 			at: eachTag
-			ifPresent: [ :eachValue |
+			ifPresent: [ :pharoAttribute |
 				adornments
 					at: eachTag
 					ifAbsent: [
-						adornments at: eachTag put: (eachValue -> nil)
+						adornments at: eachTag put: (pharoAttribute -> nil)
 					] ] ].
 ]
 
@@ -676,6 +648,9 @@ GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
 	removedTags := aMessage adornmentTags.
 	removedTags do: [ :eachTag |
 		adornments removeKey: eachTag ifAbsent: [ ].
+		
+		"what happens when we  redo/undo? maybe we shouldn't remove it from the bank yet."
+		self flag: #TODO.
 		adornmentsBank removeKey: eachTag ifAbsent: [ ] ].
 	
 	removedTags := removedTags asSet.
@@ -738,7 +713,7 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextChanged: aMessage [
-	self dispatchEvent: BrTextEditorModifiedEvent new.
+	self dispatchEvent: (BrTextEditorModifiedEvent new documentId: aMessage documentId)
 ]
 
 { #category : 'event handling' }
@@ -947,6 +922,15 @@ GtTextEditorElement >> pollEditorMessages [
 	] repeat
 ]
 
+{ #category : 'private' }
+GtTextEditorElement >> privateAddAttributeTagToBank: attributeTag attribute: externalAttribute [
+	externalAttribute isAdornmentAttribute
+		ifTrue: [ adornmentsBank at: attributeTag put: externalAttribute adornmentAttribute ].
+
+	externalAttribute isMarkerAttribute
+		ifTrue: [ adornmentsBank at: attributeTag put: externalAttribute markerAttribute ]
+]
+
 { #category : 'styling' }
 GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
 	"Actually trigger a text styler"
@@ -978,20 +962,12 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
 GtTextEditorElement >> removeAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
 	editorHandle
 		removeAttributeTagged: anAttributeTag
-		overAdornment: anAdornmentTag	
+		overAdornment: anAdornmentTag
 ]
 
 { #category : 'removing' }
 GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
 	
-]
-
-{ #category : 'removing' }
-GtTextEditorElement >> removeTextAttribute: aTextAttribute [
-	| attributeTag |
-	attributeTag := adornmentsBank keyAtValue: aTextAttribute ifAbsent: [ ^ self ].
-
-	self removeAttributeTagged: attributeTag
 ]
 
 { #category : 'styling' }

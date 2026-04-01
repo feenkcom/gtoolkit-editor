@@ -31,22 +31,22 @@ GtTextEditorReplacingAttribute >> adornmentAttribute: anObject [
 	adornmentAttribute := anObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorReplacingAttribute >> attributeTag [
 	^ self primGetId
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'testing' }
 GtTextEditorReplacingAttribute >> isAdornmentAttribute [
 	^ true
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorReplacingAttribute >> primAsAttribute [
 	^ self ffiCall: #(void* replacing_attribute_into_attribute(self))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorReplacingAttribute >> primGetTag [
 	^ self ffiCall: #(uint64 replacing_attribute_get_tag(self))
 ]

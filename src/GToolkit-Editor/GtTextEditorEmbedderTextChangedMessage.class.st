@@ -14,6 +14,20 @@ GtTextEditorEmbedderTextChangedMessage class >> primRelease: aHandle [
 ]
 
 { #category : 'as yet unclassified' }
+GtTextEditorEmbedderTextChangedMessage >> documentId [
+	| documentId |
+	
+	documentId := GtTextEditorDocumentId new.
+	self primGetDocumentId: documentId.
+	^ documentId
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorEmbedderTextChangedMessage >> primGetDocumentId: documentId [
+	^ self ffiBareCall: #(bool to_embedder_text_changed_get_document_id(self, void* documentId))
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorEmbedderTextChangedMessage >> primGetModificationReason: aModificationInfo at: anIndex [
 	^ self ffiBareCall: #(bool to_embedder_text_changed_message_get_modification_reason_at(
 		self,

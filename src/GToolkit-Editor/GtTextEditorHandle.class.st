@@ -53,7 +53,7 @@ GtTextEditorHandle >> addAttribute: anAttribute overMarker: aMarkerTag [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorHandle >> addAttribute: anAttribute range: aGtTExtEditorRange [
+GtTextEditorHandle >> addAttribute: anAttribute overRange: aGtTExtEditorRange [
 	<return: #Number>
 
 	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |

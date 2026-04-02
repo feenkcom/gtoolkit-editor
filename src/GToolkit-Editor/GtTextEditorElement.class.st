@@ -31,7 +31,7 @@ Class {
 }
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute overMarker: anAdornmentTag [
+GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerTag [
 	<return: #Number>
 	| attributeTag |
 	
@@ -43,7 +43,7 @@ GtTextEditorElement >> addAttribute: anAttribute overMarker: anAdornmentTag [
 		
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
-				overMarker: anAdornmentTag.
+				overMarker: aMarkerTag.
 		
 			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
 	
@@ -51,7 +51,7 @@ GtTextEditorElement >> addAttribute: anAttribute overMarker: anAdornmentTag [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute range: aGtTextEditorRange [
+GtTextEditorElement >> addAttribute: anAttribute overRange: aGtTextEditorRange [
 	<return: #Number>
 	| attributeTag |
 	
@@ -62,7 +62,7 @@ GtTextEditorElement >> addAttribute: anAttribute range: aGtTextEditorRange [
 		during: [ :externalAttribute |			
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
-				range: aGtTextEditorRange.
+				overRange: aGtTextEditorRange.
 			
 			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
 			
@@ -529,7 +529,7 @@ GtTextEditorElement >> newCompletionFuture [
 				completionElement stream: aCompletionRequest completionStream.
 				completionAttributeTag := self
 						addAttribute: (GtTextEditorCompletionAttachmentAttribute new completionElement: completionElement)
-						range: (GtTextEditorByteRange
+						overRange: (GtTextEditorByteRange
 							start: aCompletionRequest byteOffset
 							end: aCompletionRequest byteOffset
 							documentId: aCompletionRequest documentId) ] ];

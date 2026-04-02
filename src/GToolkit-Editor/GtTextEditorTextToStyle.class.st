@@ -17,6 +17,11 @@ GtTextEditorTextToStyle >> asGtTextEditorTextForTheme: aTheme during: aBlock [
 	^ aBlock value: externalText
 ]
 
+{ #category : 'converting' }
+GtTextEditorTextToStyle >> asString [
+	^ externalText asString
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorTextToStyle >> attributes: anAttributesCollection from: aFromIndex to: aToIndex [
 	anAttributesCollection
@@ -44,6 +49,16 @@ GtTextEditorTextToStyle >> generation [
 	^ self documentId
 ]
 
+{ #category : 'gt - extensions' }
+GtTextEditorTextToStyle >> gtTextFor: aView [
+	<gtView>
+	^ aView forward
+		title: 'Text';
+		priority: 10;
+		object: [ externalText ];
+		view: #gtTextFor:
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorTextToStyle >> initialize [
 	super initialize.
@@ -59,6 +74,11 @@ GtTextEditorTextToStyle >> isEmpty [
 { #category : 'as yet unclassified' }
 GtTextEditorTextToStyle >> nextGeneration [
 	^ self
+]
+
+{ #category : 'printing' }
+GtTextEditorTextToStyle >> printOn: aStream [
+	aStream nextPutAll: externalText asString
 ]
 
 { #category : 'as yet unclassified' }

@@ -47,6 +47,12 @@ GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
 
 					self privateAddAttributeTagToBank: attributeTag attribute: rustAttribute ] ].
 
+	GtTextEditorAddAttributeOverMarkerSignal new
+		attribute: anAttribute;
+		markerAttribute: aMarkerAttribute;
+		attributeTag: attributeTag;
+		emit.
+					
 	^ attributeTag
 ]
 
@@ -65,6 +71,12 @@ GtTextEditorElement >> addAttribute: anAttribute overRange: aGtTextEditorRange [
 				overRange: aGtTextEditorRange.
 			
 			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
+			
+	GtTextEditorAddAttributeOverRangeSignal new
+		attribute: anAttribute;
+		attributeTag: attributeTag;
+		range: aGtTextEditorRange;
+		emit.
 			
 	^ attributeTag
 ]
@@ -104,6 +116,13 @@ GtTextEditorElement >> copySelected [
 { #category : 'api - editing' }
 GtTextEditorElement >> cutSelected [
 	editorHandle cutSelected
+]
+
+{ #category : 'debug' }
+GtTextEditorElement >> debugDocumentId [
+	"Do not use in production. Just for testing while developing the text editor"
+	
+	^ currentStyledText documentId
 ]
 
 { #category : 'initialization' }
@@ -957,14 +976,24 @@ GtTextEditorElement >> redo [
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
-	editorHandle
-		removeAttributeTagged: anAttributeTag
+	editorHandle removeAttributeTagged: anAttributeTag.
+
+	GtTextEditorRemoveAttributeTaggedSignal new
+		attributeTag: anAttributeTag;
+		emit
 ]
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: aMarkerAttribute [
-	(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
-		ifNotNil: [ :rustMarkerTag | editorHandle removeAttributeTagged: anAttributeTag overMarkerTag: rustMarkerTag ]
+	| aRustMarkerTag |
+	aRustMarkerTag := (adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ]).
+	aRustMarkerTag	ifNotNil: [ :rustMarkerTag | editorHandle removeAttributeTagged: anAttributeTag overMarkerTag: rustMarkerTag ].
+	
+	GtTextEditorRemoveAttributeTaggedOverMarkerSignal new 
+		attributeTag: anAttributeTag;
+		markerAttribute: aMarkerAttribute;
+		markerTag: aRustMarkerTag;
+		emit
 ]
 
 { #category : 'removing' }

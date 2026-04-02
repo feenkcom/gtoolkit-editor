@@ -150,6 +150,7 @@ GtTextEditorExternalText >> gtTextFor: aView [
 		priority: 3;
 		stencil: [
 			GtTextEditorElement new
+				margin: (BlInsets all: 10);
 				matchParent;
 				text: self ];
 		actionUpdateButton

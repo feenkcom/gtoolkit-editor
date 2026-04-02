@@ -1014,7 +1014,7 @@ GtTextEditorElement >> styleText [
 		deprecated: 'Use #requestManualStyling instead.'
 		transformWith: '`@receiver styleText' -> '`@receiver requestManualStyling'.
 
-	self editor styleText
+	self requestManualStyling
 ]
 
 { #category : 'styling' }

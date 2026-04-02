@@ -32,27 +32,11 @@ Class {
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
-	<return: #Number>
-	| attributeTag |
-	
-	attributeTag := 0.
-	
-	anAttribute
-		asGtExternalTextAttributeForTheme: self theme
-		during: [ :externalAttribute |			
-			attributeTag := editorHandle
-				addAttribute: externalAttribute
-				from: aStart
-				to: anEnd
-				documentId: documentId.
-			
-			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
-			
-	^ attributeTag
+	self halt
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentTag [
+GtTextEditorElement >> addAttribute: anAttribute overMarker: anAdornmentTag [
 	<return: #Number>
 	| attributeTag |
 	
@@ -64,10 +48,29 @@ GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentTag [
 		
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
-				overAdornment: anAdornmentTag.
+				overMarker: anAdornmentTag.
 		
 			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
 	
+	^ attributeTag
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorElement >> addAttribute: anAttribute range: aGtTextEditorRange [
+	<return: #Number>
+	| attributeTag |
+	
+	attributeTag := 0.
+	
+	anAttribute
+		asGtExternalTextAttributeForTheme: self theme
+		during: [ :externalAttribute |			
+			attributeTag := editorHandle
+				addAttribute: externalAttribute
+				range: aGtTextEditorRange.
+			
+			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
+			
 	^ attributeTag
 ]
 
@@ -531,10 +534,10 @@ GtTextEditorElement >> newCompletionFuture [
 				completionElement stream: aCompletionRequest completionStream.
 				completionAttributeTag := self
 						addAttribute: (GtTextEditorCompletionAttachmentAttribute new completionElement: completionElement)
-						from: aCompletionRequest byteOffset
-						to: aCompletionRequest byteOffset
-						documentId: aCompletionRequest documentId.
-				 ] ];
+						range: (GtTextEditorByteRange
+							start: aCompletionRequest byteOffset
+							end: aCompletionRequest byteOffset
+							documentId: aCompletionRequest documentId) ] ];
 		whenError: [ :thisEditor :anError | completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ] ];
 		whenPending: [ :thisEditor | ];
 		yourself
@@ -964,10 +967,10 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> removeAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
+GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: anAdornmentTag [
 	editorHandle
 		removeAttributeTagged: anAttributeTag
-		overAdornment: anAdornmentTag
+		overMarker: anAdornmentTag
 ]
 
 { #category : 'removing' }

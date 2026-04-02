@@ -38,17 +38,31 @@ GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd documentI
 	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
 		self
 			primAddAttribute: aTextAttribute
+			isByteRange: true
 			start: aStart - 1
 			end: anEnd - 1
-			documentId: documentId ].
+			documentId: documentId ]
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorHandle >> addAttribute: anAttribute overAdornment: anAdornmentTag [
+GtTextEditorHandle >> addAttribute: anAttribute overMarker: aMarkerTag [
 	<return: #Number>
 	^ anAttribute
 		asGtExternalTextAttributeDuring: [ :aTextAttribute |
-			self primAddAttribute: aTextAttribute overAdornment: anAdornmentTag ]
+			self primAddAttribute: aTextAttribute overMarker: aMarkerTag ]
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorHandle >> addAttribute: anAttribute range: aGtTExtEditorRange [
+	<return: #Number>
+
+	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
+		self
+			primAddAttribute: aTextAttribute
+			isByteRange: aGtTExtEditorRange isByteRange
+			start: aGtTExtEditorRange start - 1
+			end: aGtTExtEditorRange end - 1
+			documentId: aGtTExtEditorRange documentId ]
 ]
 
 { #category : 'api - navigation' }
@@ -231,11 +245,22 @@ GtTextEditorHandle >> pasteAtCarets [
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorHandle >> primAddAttribute: anAttribute overAdornment: anAdornmentTag [
-	self ffiBareCall: #(uint64 editor_handle_add_text_attribute_over_adornment(
+GtTextEditorHandle >> primAddAttribute: anAttribute isByteRange: isByteRange start: aStart end: anEnd documentId: documentId [
+	self ffiBareCall: #(uint64 editor_handle_add_text_attribute_with_document_validation(
 		self,
 		void* anAttribute,
-		uint64 anAdornmentTag))
+		bool isByteRange,
+		size_t aStart,
+		size_t anEnd,
+		void* documentId))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primAddAttribute: anAttribute overMarker: aMarkerTag [
+	self ffiBareCall: #(uint64 editor_handle_add_text_attribute_over_marker(
+		self,
+		void* anAttribute,
+		uint64 aMarkerTag))
 ]
 
 { #category : 'private - ffi' }
@@ -245,16 +270,6 @@ GtTextEditorHandle >> primAddAttribute: anAttribute start: aStart end: anEnd [
 		void* anAttribute,
 		size_t aStart,
 		size_t anEnd))
-]
-
-{ #category : 'private - ffi' }
-GtTextEditorHandle >> primAddAttribute: anAttribute start: aStart end: anEnd documentId: documentId [
-	self ffiBareCall: #(uint64 editor_handle_add_text_attribute_with_document_validation(
-		self,
-		void* anAttribute,
-		size_t aStart,
-		size_t anEnd,
-		void* documentId))
 ]
 
 { #category : 'private - ffi' }
@@ -449,11 +464,11 @@ GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag [
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
-	self ffiBareCall: #(void editor_handle_remove_text_attribute_over_adornment(
+GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag overMarker: aMarkerTag [
+	self ffiBareCall: #(void editor_handle_remove_text_attribute_over_marker(
 		self,
 		uint64 anAttributeTag,
-		uint64 anAdornmentTag))
+		uint64 aMarkerTag))
 ]
 
 { #category : 'private - ffi' }
@@ -568,10 +583,10 @@ GtTextEditorHandle >> removeAttributeTagged: anAttributeTag [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorHandle >> removeAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
+GtTextEditorHandle >> removeAttributeTagged: anAttributeTag overMarker: aMarkerTag [
 	self
 			primRemoveAttributeTagged: anAttributeTag
-			overAdornment: anAdornmentTag
+			overMarker: aMarkerTag
 ]
 
 { #category : 'api - styling' }

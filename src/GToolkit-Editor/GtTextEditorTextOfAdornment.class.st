@@ -18,7 +18,7 @@ GtTextEditorTextOfAdornment >> attributes: aCollection [
 		
 		attributeTag := (editorElement
 			addAttribute: eachAttribute
-			overAdornment: adornmentTag).
+			overMarker: adornmentTag).
 			
 		addedAttributes add: (attributeTag -> eachAttribute) ].
 ]
@@ -40,7 +40,7 @@ GtTextEditorTextOfAdornment >> clearAttributes: aFullBlockClosure [
 	attributesToRemove do: [ :eachAssociation |
 		editorElement
 			removeAttributeTagged: eachAssociation key
-			overAdornment: adornmentTag ]
+			overMarker: adornmentTag ]
 ]
 
 { #category : 'as yet unclassified' }

@@ -33,37 +33,42 @@ Class {
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
 	<return: #Number>
-	^ anAttribute
+	| attributeTag |
+	
+	attributeTag := 0.
+	
+	anAttribute
 		asGtExternalTextAttributeForTheme: self theme
-		during: [ :externalAttribute |
-			| attributeTag |
-			
+		during: [ :externalAttribute |			
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
 				from: aStart
 				to: anEnd
 				documentId: documentId.
 			
-			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute.
-
-			attributeTag ].
+			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
+			
+	^ attributeTag
 ]
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentTag [
 	<return: #Number>
-	^ anAttribute
+	| attributeTag |
+	
+	attributeTag := 0.
+	
+	anAttribute
 		asGtExternalTextAttributeForTheme: self theme
 		during: [ :externalAttribute |
-			| attributeTag |
-	
+		
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
 				overAdornment: anAdornmentTag.
 		
-			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute.
-			
-			attributeTag ].
+			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
+	
+	^ attributeTag
 ]
 
 { #category : 'api - navigation' }
@@ -971,11 +976,6 @@ GtTextEditorElement >> removeEditorShortcuts: aCollection [
 ]
 
 { #category : 'styling' }
-GtTextEditorElement >> requestAutoStyling [
-	editorHandle requestStyling: GtTextEditorStylingTrigger Auto
-]
-
-{ #category : 'styling' }
 GtTextEditorElement >> requestManualStyling [
 	editorHandle requestStyling: GtTextEditorStylingTrigger Manual
 ]
@@ -1010,12 +1010,11 @@ GtTextEditorElement >> selectAll [
 
 { #category : 'styling' }
 GtTextEditorElement >> styleText [
-	"For explicit manual styling, there is #requestManualStyling"
+	self
+		deprecated: 'Use #requestManualStyling instead.'
+		transformWith: '`@receiver styleText' -> '`@receiver requestManualStyling'.
 
-	self requestManualStyling.
-
-	self flag: #TODO.
-	GtJustContextStackSignal emit
+	self editor styleText
 ]
 
 { #category : 'styling' }
@@ -1023,11 +1022,9 @@ GtTextEditorElement >> styleTextAndAfterDo: aBlock [
 	"For explicit manual styling, there is #requestManualStyling.
 	We will not support the after block argument.
 	I see two cases that use the after block:
-	- `BrEditor>>#installValidatorsFor:`
-	- `BrTextStylerExamples>>#editorWithAsyncStylerStrategy`."
+	- `BrEditor>>#installValidatorsFor:`."
 
 	self requestManualStyling.
-
 	self flag: #TODO.
 	GtJustContextStackSignal emit
 ]

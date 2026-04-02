@@ -109,7 +109,7 @@ GtTextEditorAttribute >> asGtExternalTextAttributeDuring: aBlock [
 
 { #category : 'accessing' }
 GtTextEditorAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBlock [
-	self asGtExternalTextAttributeDuring: aBlock
+	^ self asGtExternalTextAttributeDuring: aBlock
 ]
 
 { #category : 'testing' }

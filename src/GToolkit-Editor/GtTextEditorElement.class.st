@@ -31,7 +31,27 @@ Class {
 }
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
+GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
+	<return: #Number>
+	| attributeTag |
+	attributeTag := 0.
+
+	anAttribute
+		asGtExternalTextAttributeForTheme: self theme
+		during: [ :rustAttribute | 
+			(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
+				ifNotNil: [ :rustMarkerTag | 
+					attributeTag := editorHandle
+							addAttribute: rustAttribute
+							overMarkerTag: rustMarkerTag.
+
+					self privateAddAttributeTagToBank: attributeTag attribute: rustAttribute ] ].
+
+	^ attributeTag
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorElement >> addAttribute: anAttribute overRange: aGtTextEditorRange [
 	<return: #Number>
 	| attributeTag |
 	
@@ -42,32 +62,10 @@ GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd document
 		during: [ :externalAttribute |			
 			attributeTag := editorHandle
 				addAttribute: externalAttribute
-				from: aStart
-				to: anEnd
-				documentId: documentId.
+				overRange: aGtTextEditorRange.
 			
 			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
 			
-	^ attributeTag
-]
-
-{ #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute overAdornment: anAdornmentTag [
-	<return: #Number>
-	| attributeTag |
-	
-	attributeTag := 0.
-	
-	anAttribute
-		asGtExternalTextAttributeForTheme: self theme
-		during: [ :externalAttribute |
-		
-			attributeTag := editorHandle
-				addAttribute: externalAttribute
-				overAdornment: anAdornmentTag.
-		
-			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
-	
 	^ attributeTag
 ]
 
@@ -531,10 +529,10 @@ GtTextEditorElement >> newCompletionFuture [
 				completionElement stream: aCompletionRequest completionStream.
 				completionAttributeTag := self
 						addAttribute: (GtTextEditorCompletionAttachmentAttribute new completionElement: completionElement)
-						from: aCompletionRequest byteOffset
-						to: aCompletionRequest byteOffset
-						documentId: aCompletionRequest documentId.
-				 ] ];
+						overRange: (GtTextEditorByteRange
+							start: aCompletionRequest byteOffset
+							end: aCompletionRequest byteOffset
+							documentId: aCompletionRequest documentId) ] ];
 		whenError: [ :thisEditor :anError | completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ] ];
 		whenPending: [ :thisEditor | ];
 		yourself
@@ -964,10 +962,9 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> removeAttributeTagged: anAttributeTag overAdornment: anAdornmentTag [
-	editorHandle
-		removeAttributeTagged: anAttributeTag
-		overAdornment: anAdornmentTag
+GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: aMarkerAttribute [
+	(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
+		ifNotNil: [ :rustMarkerTag | editorHandle removeAttributeTagged: anAttributeTag overMarkerTag: rustMarkerTag ]
 ]
 
 { #category : 'removing' }

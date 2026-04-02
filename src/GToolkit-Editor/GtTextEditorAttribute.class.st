@@ -6,12 +6,12 @@ Class {
 	#tag : 'Text'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'library path' }
 GtTextEditorAttribute class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 GtTextEditorAttribute class >> fontFamily: aFontFamilyName during: aBlock [
 	^ self ffiLibrary
 		newString: aFontFamilyName
@@ -21,21 +21,21 @@ GtTextEditorAttribute class >> fontFamily: aFontFamilyName during: aBlock [
 				during: aBlock ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 GtTextEditorAttribute class >> fontSize: aFontSize during: aBlock [
 	^ GtTextEditorAttribute
 		fromNativeHandle: (self primFontSize: aFontSize)
 		during: aBlock
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 GtTextEditorAttribute class >> fontWeight: aFontWeight during: aBlock [
 	^ GtTextEditorAttribute
 		fromNativeHandle: (self primFontWeight: aFontWeight)
 		during: aBlock
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 GtTextEditorAttribute class >> foreground: aColor during: aBlock [
 	^ GtTextEditorAttribute
 		fromNativeHandle: (self
@@ -46,29 +46,22 @@ GtTextEditorAttribute class >> foreground: aColor during: aBlock [
 		during: aBlock
 ]
 
-{ #category : 'as yet unclassified' }
-GtTextEditorAttribute class >> markerDuring: aBlock [
-	^ GtTextEditorInvisibleMarkerAttribute
-		fromNativeHandle: self primMarker
-		during: aBlock
-]
-
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorAttribute class >> primFontFamily: aStringBox [
 	^ self ffiCall: #(void* font_family_attribute_new(void* aStringBox))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorAttribute class >> primFontSize: aFontSize [
 	^ self ffiCall: #(void* font_size_attribute_new(float32 aFontSize))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorAttribute class >> primFontWeight: aFontWeight [
 	^ self ffiCall: #(void* font_weight_attribute_new(size_t aFontWeight))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorAttribute class >> primForegroundRed: red green: green blue: blue alpha: alpha [
 	^ self ffiCall: #(void* text_foreground_attribute_new(
 		float32 red,
@@ -77,12 +70,7 @@ GtTextEditorAttribute class >> primForegroundRed: red green: green blue: blue al
 		float32 alpha))
 ]
 
-{ #category : 'as yet unclassified' }
-GtTextEditorAttribute class >> primMarker [
-	^ self ffiCall: #(void* marker_attribute_new())
-]
-
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorAttribute class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
@@ -122,7 +110,7 @@ GtTextEditorAttribute >> isMarkerAttribute [
 	^ false
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorAttribute >> primAsAttribute [
 	self subclassResponsibility.
 

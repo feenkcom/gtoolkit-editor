@@ -16,7 +16,7 @@ GtTextEditorAppendingAttribute class >> appendingText: anExternalText during: aB
 			during: aBlock
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorAppendingAttribute class >> primAppendingText: aText [
 	^ self ffiCall: #(void* appending_attribute_new_text(void* aText))
 ]
@@ -26,7 +26,7 @@ GtTextEditorAppendingAttribute class >> primCreate [
 	^ self ffiCall: #(void* appending_attribute_new())
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorAppendingAttribute class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"

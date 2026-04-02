@@ -9,12 +9,12 @@ Class {
 	#tag : 'Text'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorReplacingAttribute class >> primCreate [
 	^ self ffiCall: #(void* replacing_attribute_new())
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorReplacingAttribute class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
@@ -33,7 +33,7 @@ GtTextEditorReplacingAttribute >> adornmentAttribute: anObject [
 
 { #category : 'accessing' }
 GtTextEditorReplacingAttribute >> attributeTag [
-	^ self primGetId
+	^ self primGetTag
 ]
 
 { #category : 'testing' }

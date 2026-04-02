@@ -31,11 +31,6 @@ Class {
 }
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
-	self halt
-]
-
-{ #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute overMarker: anAdornmentTag [
 	<return: #Number>
 	| attributeTag |

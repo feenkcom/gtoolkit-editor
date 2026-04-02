@@ -86,12 +86,12 @@ GtTextEditorExternalText >> asGtTextEditorTextForTheme: aTheme during: aBlock [
 	^ aBlock value: self
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'converting' }
 GtTextEditorExternalText >> asRopedText [
 	^ self asString asRopedText
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'converting' }
 GtTextEditorExternalText >> asString [
 	^ self ffiLibrary getStringFrom: [ :aStringBox | self primToString: aStringBox ]
 ]
@@ -103,6 +103,12 @@ GtTextEditorExternalText >> attribute: aTextAttribute from: aStart to: anEnd [
 			adornments
 				at: aTextAttribute attributeTag
 				put: aTextAttribute adornmentAttribute ].
+				
+	aTextAttribute isMarkerAttribute
+		ifTrue: [
+			adornments
+				at: aTextAttribute attributeTag
+				put: aTextAttribute markerAttribute ].
 
 	aTextAttribute asGtExternalTextAttributeDuring: [ :attr |
 		self

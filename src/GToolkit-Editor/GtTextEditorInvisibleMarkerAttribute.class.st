@@ -9,14 +9,21 @@ Class {
 	#tag : 'Text'
 }
 
-{ #category : 'as yet unclassified' }
-GtTextEditorInvisibleMarkerAttribute >> asAttribute [
-	^ self
+{ #category : 'private - ffi' }
+GtTextEditorInvisibleMarkerAttribute class >> primCreate [
+	^ self ffiCall: #(void* marker_attribute_new())
 ]
 
-{ #category : 'as yet unclassified' }
-GtTextEditorInvisibleMarkerAttribute >> asGtExternalTextAttributeDuring: aBlock [
-	^ aBlock value: self
+{ #category : 'private - ffi' }
+GtTextEditorInvisibleMarkerAttribute class >> primRelease: aHandle [
+	
+	"Plain pointers must be deleted using delete(), all users must implement a specific method"
+	self ffiCall: #(void marker_attribute_release(void* aHandle))
+]
+
+{ #category : 'accessing' }
+GtTextEditorInvisibleMarkerAttribute >> attributeTag [
+	^ self primGetTag
 ]
 
 { #category : 'testing' }
@@ -32,4 +39,14 @@ GtTextEditorInvisibleMarkerAttribute >> markerAttribute [
 { #category : 'accessing' }
 GtTextEditorInvisibleMarkerAttribute >> markerAttribute: anObject [
 	markerAttribute := anObject
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorInvisibleMarkerAttribute >> primAsAttribute [
+	^ self ffiCall: #(void* marker_attribute_into_attribute(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorInvisibleMarkerAttribute >> primGetTag [
+	^ self ffiCall: #(uint64 marker_attribute_get_tag(self))
 ]

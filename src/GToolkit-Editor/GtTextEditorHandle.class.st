@@ -45,7 +45,7 @@ GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd documentI
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorHandle >> addAttribute: anAttribute overMarker: aMarkerTag [
+GtTextEditorHandle >> addAttribute: anAttribute overMarkerTag: aMarkerTag [
 	<return: #Number>
 	^ anAttribute
 		asGtExternalTextAttributeDuring: [ :aTextAttribute |
@@ -583,7 +583,7 @@ GtTextEditorHandle >> removeAttributeTagged: anAttributeTag [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorHandle >> removeAttributeTagged: anAttributeTag overMarker: aMarkerTag [
+GtTextEditorHandle >> removeAttributeTagged: anAttributeTag overMarkerTag: aMarkerTag [
 	self
 			primRemoveAttributeTagged: anAttributeTag
 			overMarker: aMarkerTag

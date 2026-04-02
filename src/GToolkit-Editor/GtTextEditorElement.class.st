@@ -31,22 +31,22 @@ Class {
 }
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerTag [
+GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
 	<return: #Number>
 	| attributeTag |
-	
 	attributeTag := 0.
-	
+
 	anAttribute
 		asGtExternalTextAttributeForTheme: self theme
-		during: [ :externalAttribute |
-		
-			attributeTag := editorHandle
-				addAttribute: externalAttribute
-				overMarker: aMarkerTag.
-		
-			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
-	
+		during: [ :rustAttribute | 
+			(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
+				ifNotNil: [ :rustMarkerTag | 
+					attributeTag := editorHandle
+							addAttribute: rustAttribute
+							overMarkerTag: rustMarkerTag.
+
+					self privateAddAttributeTagToBank: attributeTag attribute: rustAttribute ] ].
+
 	^ attributeTag
 ]
 
@@ -962,10 +962,9 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: anAdornmentTag [
-	editorHandle
-		removeAttributeTagged: anAttributeTag
-		overMarker: anAdornmentTag
+GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: aMarkerAttribute [
+	(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
+		ifNotNil: [ :rustMarkerTag | editorHandle removeAttributeTagged: anAttributeTag overMarkerTag: rustMarkerTag ]
 ]
 
 { #category : 'removing' }

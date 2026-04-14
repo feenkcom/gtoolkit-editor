@@ -48,7 +48,7 @@ GtTextEditorHandle >> addAttribute: anAttribute overRange: aGtTextEditorRange [
 			primAddAttribute: aTextAttribute
 			isByteRange: aGtTextEditorRange isByteRange
 			start: aGtTextEditorRange start - 1
-			end: aGtTextEditorRange end - 1
+			end: aGtTextEditorRange end
 			documentId: aGtTextEditorRange documentId ]
 ]
 
@@ -65,7 +65,7 @@ GtTextEditorHandle >> addHighlight: aGtTextEditorHighlight overRange: aGtTextEdi
 			primAddHighlight: aGtTextEditorHighlight
 			isByteRange: aGtTextEditorRange isByteRange
 			start: aGtTextEditorRange start - 1
-			end: aGtTextEditorRange end - 1
+			end: aGtTextEditorRange end
 			documentId: aGtTextEditorRange documentId
 ]
 

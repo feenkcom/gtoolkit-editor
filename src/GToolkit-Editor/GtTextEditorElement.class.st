@@ -556,7 +556,7 @@ GtTextEditorElement >> newCompletionFuture [
 				completionElement stream: aCompletionRequest completionStream.
 				completionAttributeTag := self
 						addAttribute: (GtTextEditorCompletionAttachmentAttribute new completionElement: completionElement)
-						overRange: (GtTextEditorByteRange
+						overRange: (BrTextByteRange
 							start: aCompletionRequest byteOffset
 							end: aCompletionRequest byteOffset
 							documentId: aCompletionRequest documentId) ] ];

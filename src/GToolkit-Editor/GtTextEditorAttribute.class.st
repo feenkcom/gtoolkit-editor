@@ -6,6 +6,17 @@ Class {
 	#tag : 'Text'
 }
 
+{ #category : 'instance creation' }
+GtTextEditorAttribute class >> background: aColor during: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: (self
+				primBackgroundRed: aColor red
+				green: aColor green
+				blue: aColor blue
+				alpha: aColor alpha)
+		during: aBlock
+]
+
 { #category : 'library path' }
 GtTextEditorAttribute class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
@@ -44,6 +55,15 @@ GtTextEditorAttribute class >> foreground: aColor during: aBlock [
 				blue: aColor blue
 				alpha: aColor alpha)
 		during: aBlock
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorAttribute class >> primBackgroundRed: red green: green blue: blue alpha: alpha [
+	^ self ffiCall: #(void* text_background_attribute_new(
+		float32 red,
+		float32 green,
+		float32 blue,
+		float32 alpha))
 ]
 
 { #category : 'private - ffi' }

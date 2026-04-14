@@ -92,6 +92,14 @@ GtTextEditorElement >> addEditorShortcuts: aCollection [
 	
 ]
 
+{ #category : 'api - highlighting' }
+GtTextEditorElement >> addHighlight: aBrTextHighlight overRange: aGtTextEditorRange [
+	aBrTextHighlight
+		asGtExternalTextHighlightForTheme: self theme
+		during: [ :externalHighlight |
+			editorHandle addHighlight: externalHighlight overRange: aGtTextEditorRange ]
+]
+
 { #category : 'api - mode' }
 GtTextEditorElement >> beReadOnlyWithSelection [
 	
@@ -999,6 +1007,11 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: aMarker
 { #category : 'removing' }
 GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
 	
+]
+
+{ #category : 'api - highlighting' }
+GtTextEditorElement >> removeHighlightsWithId: aStringId [
+	editorHandle removeHighlightsWithId: aStringId
 ]
 
 { #category : 'styling' }

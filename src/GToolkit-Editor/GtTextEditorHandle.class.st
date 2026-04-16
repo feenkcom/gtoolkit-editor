@@ -487,6 +487,11 @@ GtTextEditorHandle >> primRemoveHighlightId: aHighlightId [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primRequestEditorAction: anActionId [
+	^ self ffiCall: #(void editor_handle_request_embedder_action(self, uint64 anActionId))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primRequestStyling: aStylingTrigger [
 	self ffiCall: #(void editor_handle_request_styling(self, GtTextEditorStylingTrigger aStylingTrigger))
 ]
@@ -609,6 +614,11 @@ GtTextEditorHandle >> removeHighlightsWithId: aStringId [
 	self ffiLibrary
 		newString: aStringId asString
 		during: [ :aStringBox | self primRemoveHighlightId: aStringBox ]
+]
+
+{ #category : 'api - actions' }
+GtTextEditorHandle >> requestEditorAction: anActionId [
+	self primRequestEditorAction: anActionId
 ]
 
 { #category : 'api - styling' }

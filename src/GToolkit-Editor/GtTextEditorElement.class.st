@@ -23,12 +23,21 @@ Class {
 		'history',
 		'editorHandle',
 		'heightSpec',
-		'editorHeight'
+		'editorHeight',
+		'pendingActions'
+	],
+	#classVars : [
+		'UniqueActionIdGenerator'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
 	#tag : 'UI'
 }
+
+{ #category : 'class initialization' }
+GtTextEditorElement class >> initialize [
+	UniqueActionIdGenerator := BlUniqueIdGenerator new.
+]
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
@@ -283,6 +292,8 @@ GtTextEditorElement >> initialize [
 
 	adornments := OrderedDictionary new.
 	adornmentsBank := OrderedDictionary new.
+	
+	pendingActions := AsyncSharedDictionary new.
 
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
@@ -742,6 +753,16 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 ]
 
 { #category : 'event handling' }
+GtTextEditorElement >> onEditorPerformAction: aMessage [
+	| anAction |
+	anAction := pendingActions
+		removeKey: aMessage actionId
+		ifAbsent: [ ^ self ].
+
+	anAction value: aMessage
+]
+
+{ #category : 'event handling' }
 GtTextEditorElement >> onEditorTextChanged: aMessage [
 	self dispatchEvent: (BrTextEditorModifiedEvent new documentId: aMessage documentId)
 ]
@@ -975,6 +996,15 @@ GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
 { #category : 'private' }
 GtTextEditorElement >> privateEditorHandle [
 	^ editorHandle
+]
+
+{ #category : 'private' }
+GtTextEditorElement >> privateRequestEditorAction: aBlock [
+	| nextId |
+	
+	nextId := UniqueActionIdGenerator generateUniqueId.
+	pendingActions at: nextId put: aBlock.
+	editorHandle requestEditorAction: nextId
 ]
 
 { #category : 'api - editing' }

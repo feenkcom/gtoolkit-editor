@@ -23,12 +23,21 @@ Class {
 		'history',
 		'editorHandle',
 		'heightSpec',
-		'editorHeight'
+		'editorHeight',
+		'pendingActions'
+	],
+	#classVars : [
+		'UniqueActionIdGenerator'
 	],
 	#category : 'GToolkit-Editor-UI',
 	#package : 'GToolkit-Editor',
 	#tag : 'UI'
 }
+
+{ #category : 'class initialization' }
+GtTextEditorElement class >> initialize [
+	UniqueActionIdGenerator := BlUniqueIdGenerator new.
+]
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
@@ -90,6 +99,14 @@ GtTextEditorElement >> addCursorAtVisualPoint: aPoint [
 { #category : 'adding' }
 GtTextEditorElement >> addEditorShortcuts: aCollection [ 
 	
+]
+
+{ #category : 'api - highlighting' }
+GtTextEditorElement >> addHighlight: aBrTextHighlight overRange: aGtTextEditorRange [
+	aBrTextHighlight
+		asGtExternalTextHighlightForTheme: self theme
+		during: [ :externalHighlight |
+			editorHandle addHighlight: externalHighlight overRange: aGtTextEditorRange ]
 ]
 
 { #category : 'api - mode' }
@@ -275,6 +292,8 @@ GtTextEditorElement >> initialize [
 
 	adornments := OrderedDictionary new.
 	adornmentsBank := OrderedDictionary new.
+	
+	pendingActions := AsyncSharedDictionary new.
 
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
@@ -548,7 +567,7 @@ GtTextEditorElement >> newCompletionFuture [
 				completionElement stream: aCompletionRequest completionStream.
 				completionAttributeTag := self
 						addAttribute: (GtTextEditorCompletionAttachmentAttribute new completionElement: completionElement)
-						overRange: (GtTextEditorByteRange
+						overRange: (BrTextByteRange
 							start: aCompletionRequest byteOffset
 							end: aCompletionRequest byteOffset
 							documentId: aCompletionRequest documentId) ] ];
@@ -731,6 +750,16 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 			].
 		]
 		ifAbsent: [ ]
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorPerformAction: aMessage [
+	| anAction |
+	anAction := pendingActions
+		removeKey: aMessage actionId
+		ifAbsent: [ ^ self ].
+
+	anAction value: aMessage
 ]
 
 { #category : 'event handling' }
@@ -969,6 +998,15 @@ GtTextEditorElement >> privateEditorHandle [
 	^ editorHandle
 ]
 
+{ #category : 'private' }
+GtTextEditorElement >> privateRequestEditorAction: aBlock [
+	| nextId |
+	
+	nextId := UniqueActionIdGenerator generateUniqueId.
+	pendingActions at: nextId put: aBlock.
+	editorHandle requestEditorAction: nextId
+]
+
 { #category : 'api - editing' }
 GtTextEditorElement >> redo [
 	editorHandle redo
@@ -999,6 +1037,11 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: aMarker
 { #category : 'removing' }
 GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
 	
+]
+
+{ #category : 'api - highlighting' }
+GtTextEditorElement >> removeHighlightsWithId: aStringId [
+	editorHandle removeHighlightsWithId: aStringId
 ]
 
 { #category : 'styling' }

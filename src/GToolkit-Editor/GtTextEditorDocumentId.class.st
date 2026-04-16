@@ -19,7 +19,7 @@ GtTextEditorDocumentId class >> fieldsDesc [
 	)
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'comparing' }
 GtTextEditorDocumentId >> = anObject [
 	self == anObject ifTrue: [ ^ true ].
 
@@ -28,13 +28,22 @@ GtTextEditorDocumentId >> = anObject [
 	^ self textId = anObject textId and: [ self revisionId = anObject revisionId ]
 ]
 
+{ #category : 'printing' }
+GtTextEditorDocumentId >> gtDisplayOn: aStream [
+	aStream
+		nextPutAll: 'Document ';
+		print: self textId;
+		nextPutAll: '.';
+		print: self revisionId
+]
+
 { #category : 'comparing' }
 GtTextEditorDocumentId >> hash [
 	^ (self class hash hashMultiply bitXor: self textId hash hashMultiply)
 		bitXor: self revisionId hash hashMultiply
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'printing' }
 GtTextEditorDocumentId >> printOn: aStream [
 	aStream
 		nextPutAll: 'DocumentId(id: ';

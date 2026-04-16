@@ -13,12 +13,12 @@ GtTextEditorEmbedderAdornmentMeasuredMessage class >> primRelease: aHandle [
 	self ffiCall: #(void to_embedder_adornment_measured_message_release(void* aHandle))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorEmbedderAdornmentMeasuredMessage >> adornmentTag [
 	^ self primGetAdornmentId
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 GtTextEditorEmbedderAdornmentMeasuredMessage >> extent [
 	^ self ffiLibrary newPointF32During: [ :aBoxedPoint |
 		self primGetAdornmentSize: aBoxedPoint.
@@ -35,7 +35,7 @@ GtTextEditorEmbedderAdornmentMeasuredMessage >> primGetAdornmentSize: aBoxerSize
 	^ self ffiCall: #(void to_embedder_adornment_measured_message_get_size(self, void* aBoxerSizeF32))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'message - dispatch' }
 GtTextEditorEmbedderAdornmentMeasuredMessage >> sendTo: anObject [
 	anObject onEditorAdornmentMeasured: self
 ]

@@ -11,7 +11,7 @@ GtTextEditorEmbedderMessage class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'message - dispatch' }
 GtTextEditorEmbedderMessage >> sendTo: anObject [
 	self subclassResponsibility
 ]

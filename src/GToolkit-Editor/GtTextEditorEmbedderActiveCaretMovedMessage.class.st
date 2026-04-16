@@ -12,17 +12,17 @@ GtTextEditorEmbedderActiveCaretMovedMessage class >> primRelease: aHandle [
 	self ffiCall: #(void to_embedder_active_caret_moved_message_release(void* aHandle))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 GtTextEditorEmbedderActiveCaretMovedMessage >> newOffset [
 	^ self primGetToRawOffset
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - ffi' }
 GtTextEditorEmbedderActiveCaretMovedMessage >> primGetToRawOffset [
 	^ self ffiCall: #(size_t to_embedder_active_caret_moved_message_to_raw_offset(self))
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'message - dispatch' }
 GtTextEditorEmbedderActiveCaretMovedMessage >> sendTo: anObject [
 	anObject onEditorActiveCaretMoved: self
 ]

@@ -32,19 +32,6 @@ GtTextEditorHandle class >> primRelease: aHandle [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorHandle >> addAttribute: anAttribute from: aStart to: anEnd documentId: documentId [
-	<return: #Number>
-
-	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
-		self
-			primAddAttribute: aTextAttribute
-			isByteRange: true
-			start: aStart - 1
-			end: anEnd - 1
-			documentId: documentId ]
-]
-
-{ #category : 'api - attributes' }
 GtTextEditorHandle >> addAttribute: anAttribute overMarkerTag: aMarkerTag [
 	<return: #Number>
 	^ anAttribute
@@ -53,16 +40,16 @@ GtTextEditorHandle >> addAttribute: anAttribute overMarkerTag: aMarkerTag [
 ]
 
 { #category : 'api - attributes' }
-GtTextEditorHandle >> addAttribute: anAttribute overRange: aGtTExtEditorRange [
+GtTextEditorHandle >> addAttribute: anAttribute overRange: aGtTextEditorRange [
 	<return: #Number>
 
 	^ anAttribute asGtExternalTextAttributeDuring: [ :aTextAttribute |
 		self
 			primAddAttribute: aTextAttribute
-			isByteRange: aGtTExtEditorRange isByteRange
-			start: aGtTExtEditorRange start - 1
-			end: aGtTExtEditorRange end - 1
-			documentId: aGtTExtEditorRange documentId ]
+			isByteRange: aGtTextEditorRange isByteRange
+			start: aGtTextEditorRange start - 1
+			end: aGtTextEditorRange end
+			documentId: aGtTextEditorRange documentId ]
 ]
 
 { #category : 'api - navigation' }
@@ -70,6 +57,16 @@ GtTextEditorHandle >> addCursorAtVisualPoint: aPoint [
 	self
 		primAddCursorAtVisualX: aPoint x
 		y: aPoint y
+]
+
+{ #category : 'api - highlighting' }
+GtTextEditorHandle >> addHighlight: aGtTextEditorHighlight overRange: aGtTextEditorRange [
+	self
+			primAddHighlight: aGtTextEditorHighlight
+			isByteRange: aGtTextEditorRange isByteRange
+			start: aGtTextEditorRange start - 1
+			end: aGtTextEditorRange end
+			documentId: aGtTextEditorRange documentId
 ]
 
 { #category : 'api - debugging' }
@@ -163,7 +160,7 @@ GtTextEditorHandle >> height [
 	^ self primGetHeight
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'initialization' }
 GtTextEditorHandle >> initialize [
 	super initialize.
 	
@@ -278,6 +275,17 @@ GtTextEditorHandle >> primAddCursorAtVisualX: aX y: aY [
 		self,
 		float64 aX,
 		float64 aY))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primAddHighlight: aHighlight isByteRange: isByteRange start: aStart end: anEnd documentId: documentId [
+	self ffiBareCall: #(void editor_handle_add_highlight(
+		self,
+		void* aHighlight,
+		bool isByteRange,
+		size_t aStart,
+		size_t anEnd,
+		void* documentId))
 ]
 
 { #category : 'private - ffi' }
@@ -472,6 +480,18 @@ GtTextEditorHandle >> primRemoveAttributeTagged: anAttributeTag overMarker: aMar
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primRemoveHighlightId: aHighlightId [
+	self ffiBareCall: #(void editor_handle_remove_highlight(
+		self,
+		void* aHighlightId))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primRequestEditorAction: anActionId [
+	^ self ffiCall: #(void editor_handle_request_embedder_action(self, uint64 anActionId))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primRequestStyling: aStylingTrigger [
 	self ffiCall: #(void editor_handle_request_styling(self, GtTextEditorStylingTrigger aStylingTrigger))
 ]
@@ -587,6 +607,18 @@ GtTextEditorHandle >> removeAttributeTagged: anAttributeTag overMarkerTag: aMark
 	self
 			primRemoveAttributeTagged: anAttributeTag
 			overMarker: aMarkerTag
+]
+
+{ #category : 'api - highlighting' }
+GtTextEditorHandle >> removeHighlightsWithId: aStringId [
+	self ffiLibrary
+		newString: aStringId asString
+		during: [ :aStringBox | self primRemoveHighlightId: aStringBox ]
+]
+
+{ #category : 'api - actions' }
+GtTextEditorHandle >> requestEditorAction: anActionId [
+	self primRequestEditorAction: anActionId
 ]
 
 { #category : 'api - styling' }

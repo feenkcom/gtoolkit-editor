@@ -189,6 +189,13 @@ GtTextEditorHandle >> measureWidth: aWidth top: aTopOrNil height: aHeightOrNil [
 		viewportHeight: (aHeightOrNil ifNil: [ 0.0])
 ]
 
+{ #category : 'api - events' }
+GtTextEditorHandle >> mouseMoveAt: aPoint [
+	self
+		primMouseMoveAtX: aPoint x
+		y: aPoint y
+]
+
 { #category : 'api - navigation' }
 GtTextEditorHandle >> moveCaretsDown [
 	^ self primMoveCaretsDown
@@ -394,6 +401,14 @@ GtTextEditorHandle >> primMeasureWidth: aWidth hasViewportTop: hasViewportTop vi
 		float64 viewportTop,
 		bool hasViewportHeight,
 		float64 viewportHeight))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primMouseMoveAtX: aX y: aY [
+	self ffiCall: #(void editor_handle_mouse_move_at_visual_point(
+		self,
+		float64 aX,
+		float64 aY))
 ]
 
 { #category : 'private - ffi' }

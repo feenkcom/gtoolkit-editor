@@ -31,11 +31,6 @@ GtTextEditorReplacingAttribute >> adornmentAttribute: anObject [
 	adornmentAttribute := anObject
 ]
 
-{ #category : 'accessing' }
-GtTextEditorReplacingAttribute >> attributeTag [
-	^ self primGetTag
-]
-
 { #category : 'testing' }
 GtTextEditorReplacingAttribute >> isAdornmentAttribute [
 	^ true

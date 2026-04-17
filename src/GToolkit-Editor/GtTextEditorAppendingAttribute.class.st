@@ -44,11 +44,6 @@ GtTextEditorAppendingAttribute >> adornmentAttribute: anObject [
 ]
 
 { #category : 'accessing' }
-GtTextEditorAppendingAttribute >> attributeTag [
-	^ self primGetTag
-]
-
-{ #category : 'accessing' }
 GtTextEditorAppendingAttribute >> beExactHeight: aNumber [
 	self primSetExactAdornmentHeight: aNumber
 ]

@@ -61,7 +61,7 @@ GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
 		markerAttribute: aMarkerAttribute;
 		attributeTag: attributeTag;
 		emit.
-					
+
 	^ attributeTag
 ]
 
@@ -321,6 +321,7 @@ GtTextEditorElement >> initialize [
 
 	self beInSeparateCompositionLayer.
 	self when: BlMouseWheelEvent do: [ :anEvent | self onMouseWheelEvent: anEvent ].
+	self when: BlMouseMoveEvent do: [ :anEvent | self onMouseMoveEvent: anEvent ].
 	self when: BlMouseDownEvent do: [ :anEvent | self onMouseDownEvent: anEvent ].
 	self when: BlMouseUpEvent do: [ :anEvent | self onMouseUpEvent: anEvent ].
 	self when: BlClickEvent do: [ :anEvent | self onClickEvent: anEvent ].
@@ -860,6 +861,11 @@ GtTextEditorElement >> onMouseDownEvent: anEvent [
 		ifFalse: [ self moveCursorToVisualPoint: anEvent localPosition ].
 		
 	self requestFocus
+]
+
+{ #category : 'initialization' }
+GtTextEditorElement >> onMouseMoveEvent: anEvent [ 
+	editorHandle mouseMoveAt: anEvent localPosition
 ]
 
 { #category : 'event handling' }

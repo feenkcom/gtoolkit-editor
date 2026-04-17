@@ -120,6 +120,11 @@ GtTextEditorAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBloc
 	^ self asGtExternalTextAttributeDuring: aBlock
 ]
 
+{ #category : 'accessing' }
+GtTextEditorAttribute >> attributeTag [
+	^ self primGetTag
+]
+
 { #category : 'testing' }
 GtTextEditorAttribute >> isAdornmentAttribute [
 	^ false
@@ -135,4 +140,9 @@ GtTextEditorAttribute >> primAsAttribute [
 	self subclassResponsibility.
 
 	"self ffiCall: #(void* replacing_attribute_into_attribute(self))"
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorAttribute >> primGetTag [
+	self subclassResponsibility
 ]

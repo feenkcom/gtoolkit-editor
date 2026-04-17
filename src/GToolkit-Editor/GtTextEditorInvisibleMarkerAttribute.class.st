@@ -21,11 +21,6 @@ GtTextEditorInvisibleMarkerAttribute class >> primRelease: aHandle [
 	self ffiCall: #(void marker_attribute_release(void* aHandle))
 ]
 
-{ #category : 'accessing' }
-GtTextEditorInvisibleMarkerAttribute >> attributeTag [
-	^ self primGetTag
-]
-
 { #category : 'testing' }
 GtTextEditorInvisibleMarkerAttribute >> isMarkerAttribute [
 	^ true

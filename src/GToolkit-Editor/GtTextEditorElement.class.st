@@ -927,6 +927,10 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 	viewportOffset := 0 @ (viewportTop ifNil: [ 0.0 ]).
 
 	textureExtent := self extent - viewportOffset.
+	(textureExtent x > 10000
+		or: [ textureExtent y > 10000 ])
+			ifTrue: [ 
+				^ self ].
 
 	externalMethods := GtTextEditorExternalMethods current.
 	
@@ -941,8 +945,6 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 		bounds: self invalidationBounds
 		compositing: BlCompositingSeparateLayerMode uniqueInstance
 		thenPaint: [ :aNewPainter :aNewOffset |  ].
-		
-	"self paintChildrenOn: aCompositorPainter offset: anOffset."
 
 	aCompositorPainter
 		pushChildren: self children sortedByElevation

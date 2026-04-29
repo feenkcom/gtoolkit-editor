@@ -181,6 +181,12 @@ GtTextEditorHandle >> insertTabOrIndent [
 
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> measureWidth: aWidth top: aTopOrNil height: aHeightOrNil [
+	GtTextEditorMeasureSignal new
+		width: aWidth;
+		top: aTopOrNil;
+		height: aHeightOrNil;
+		emit.
+
 	self
 		primMeasureWidth: aWidth
 		hasViewportTop: aTopOrNil isNotNil

@@ -36,6 +36,20 @@ GtTextEditorLibrary >> primTest [
 ]
 
 { #category : 'accessing - platform' }
+GtTextEditorLibrary >> unix32LibraryName [
+	"Note: we currently do not support (build) library for Linux."
+
+	^ FFIMacLibraryFinder findLibrary: 'libEditor.so'
+]
+
+{ #category : 'accessing - platform' }
+GtTextEditorLibrary >> unix64LibraryName [
+	"Note: we currently do not support (build) library for Linux."
+
+	^ FFIMacLibraryFinder findLibrary: 'libEditor.so'
+]
+
+{ #category : 'accessing - platform' }
 GtTextEditorLibrary >> win32LibraryName [
 	^ FFIWindowsLibraryFinder findLibrary: 'Editor.dll'
 ]

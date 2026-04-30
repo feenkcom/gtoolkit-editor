@@ -8,9 +8,31 @@ Class {
 	#tag : 'Library'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'testing' }
+GtTextEditorLibrary >> hasModule [
+	"Return if there is a loadable and working Skia library installed, false otherwise"
+	<return: #Boolean>
+	| aResult |
+
+	aResult := nil.
+	
+	[ aResult := self primTest ]
+		on: Error
+		do: [ :e | 
+			NonInteractiveTranscript stderr nextPutAll: e description; cr.
+			aResult := false ].
+
+	^ aResult ifNil: [ false ]
+]
+
+{ #category : 'accessing - platform' }
 GtTextEditorLibrary >> macLibraryName [
 	^ FFIMacLibraryFinder findLibrary: 'libEditor.dylib'
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorLibrary >> primTest [
+	^ self ffiCall: #(bool editor_test())
 ]
 
 { #category : 'accessing - platform' }

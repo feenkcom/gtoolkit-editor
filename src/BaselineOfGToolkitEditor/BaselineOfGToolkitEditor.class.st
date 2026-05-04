@@ -26,7 +26,7 @@ BaselineOfGToolkitEditor >> baseline: spec [
 	spec for: #'common' do: [
 		spec
 			baseline: 'GToolkitPhlowForRust' with: [
-				spec repository: 'github://feenkcom/gt4phlow-rs:v0.6.21/src' ].
+				spec repository: 'github://feenkcom/gt4phlow-rs:v0.6.22/src' ].
 
 		spec package: 'GToolkit-Editor' with: [
 			spec requires: #(#GToolkitPhlowForRust) ].

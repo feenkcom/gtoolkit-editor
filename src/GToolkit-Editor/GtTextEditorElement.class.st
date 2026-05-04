@@ -24,7 +24,8 @@ Class {
 		'editorHandle',
 		'heightSpec',
 		'editorHeight',
-		'pendingActions'
+		'pendingActions',
+		'ropeSnapshot'
 	],
 	#classVars : [
 		'UniqueActionIdGenerator'
@@ -294,6 +295,8 @@ GtTextEditorElement >> initialize [
 	adornmentsBank := OrderedDictionary new.
 	
 	pendingActions := AsyncSharedDictionary new.
+	
+	ropeSnapshot := BlCollectionRope collection: ''.
 
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
@@ -765,7 +768,9 @@ GtTextEditorElement >> onEditorPerformAction: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextChanged: aMessage [
-	self dispatchEvent: (BrTextEditorModifiedEvent new documentId: aMessage documentId)
+	aMessage modificationReasonsDo: [ :eachReason | eachReason sendTo: self with: aMessage ].
+
+	self dispatchEvent: (BrTextEditorModifiedEvent new documentId: aMessage documentId).
 ]
 
 { #category : 'event handling' }
@@ -796,6 +801,19 @@ GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
 			ifFalse: [ nil ] ].
 
 	completionFuture future: hasCompletionsFuture
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorTextDeleted: aDeletionReason withMessage: aTextChangedMessage [
+	aDeletionReason start > aDeletionReason end
+		ifTrue: [ ^ self ].
+
+	ropeSnapshot := ropeSnapshot delete: aDeletionReason start to: aDeletionReason end
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorTextInserted: anInsertion withMessage: aTextChangedMessage [
+	ropeSnapshot := ropeSnapshot insertItems: anInsertion string at: anInsertion start
 ]
 
 { #category : 'event handling' }
@@ -1144,13 +1162,7 @@ GtTextEditorElement >> stylerStrategy [
 
 { #category : 'accessing' }
 GtTextEditorElement >> text [
-	"Funny enough, users should not be able to get a text from an editor.
-	Instead, they should listen to text changes events.
-	The reason why we can't offer a text accessor is because the editor
-	lives outside of the Pharo memory and bringing a text into pharo is expensive."
-	self flag: #TODO.
-	
-	^ self unstyledText asRopedText
+	^ BlRunRopedText rope: ropeSnapshot
 ]
 
 { #category : 'accessing' }

@@ -42,3 +42,8 @@ GtTextEditorEmbedderModificationReasonType class >> externalDeclaration [
 GtTextEditorEmbedderModificationReasonType class >> externalType [
 	^ FFIUInt8 new
 ]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorEmbedderModificationReasonType class >> initialize [
+	super initialize
+]

@@ -32,6 +32,14 @@ GtTextEditorHandle class >> primRelease: aHandle [
 ]
 
 { #category : 'api - attributes' }
+GtTextEditorHandle >> addAppendingAttribute: anAppendingAttribute atAppendingAttributeTag: anotherAppendingAttributeTag [
+	<return: #Number>
+	^ anAppendingAttribute
+		asGtExternalTextAttributeDuring: [ :aTextAttribute |
+			self primAddAttribute: aTextAttribute atAppendingAttributeTag: anotherAppendingAttributeTag ]
+]
+
+{ #category : 'api - attributes' }
 GtTextEditorHandle >> addAttribute: anAttribute overMarkerTag: aMarkerTag [
 	<return: #Number>
 	^ anAttribute
@@ -252,6 +260,14 @@ GtTextEditorHandle >> moveCursorToVisualPoint: aPoint [
 { #category : 'api - editing' }
 GtTextEditorHandle >> pasteAtCarets [
 	self primPaste
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primAddAttribute: anAppendingAttribute atAppendingAttributeTag: anotherAppendingAttributeTag [
+	self ffiBareCall: #(uint64 editor_handle_add_appending_attribute_at_appending_attribute(
+		self,
+		void* anAppendingAttribute,
+		uint64 anotherAppendingAttributeTag))
 ]
 
 { #category : 'private - ffi' }

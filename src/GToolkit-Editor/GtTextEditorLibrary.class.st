@@ -45,7 +45,7 @@ GtTextEditorLibrary >> hasModule [
 GtTextEditorLibrary >> initEnvLogger [
 	[ self primInitEnvLogger ]
 		on: Error
-		do: [ :e | NonInteractiveTranscript stdout nextPutAll: '[Editor] Could not init env logger'; cr ]
+		do: [ :e | "explicitly ignore it, because the library is optional" ]
 ]
 
 { #category : 'accessing - platform' }

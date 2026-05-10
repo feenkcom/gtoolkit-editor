@@ -264,7 +264,7 @@ GtTextEditorHandle >> pasteAtCarets [
 
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primAddAttribute: anAppendingAttribute atAppendingAttributeTag: anotherAppendingAttributeTag [
-	self ffiBareCall: #(uint64 editor_handle_add_appending_attribute_at_appending_attribute(
+	^ self ffiCall: #(uint64 editor_handle_add_appending_attribute_at_appending_attribute(
 		self,
 		void* anAppendingAttribute,
 		uint64 anotherAppendingAttributeTag))

@@ -1041,6 +1041,9 @@ GtTextEditorElement >> pollEditorMessages [
 
 { #category : 'private' }
 GtTextEditorElement >> privateAddAttributeTagToBank: attributeTag attribute: externalAttribute [
+	"attributeTag = 0
+		ifTrue: [ self error: '?' ]."
+
 	externalAttribute isAdornmentAttribute
 		ifTrue: [ adornmentsBank at: attributeTag put: externalAttribute adornmentAttribute ].
 

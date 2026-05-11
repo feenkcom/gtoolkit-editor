@@ -41,10 +41,50 @@ GtTextEditorElement class >> initialize [
 ]
 
 { #category : 'api - attributes' }
+GtTextEditorElement >> addAppendingAttribute: anAppendingAttribute atAppendingAttribute: anotherAppendingAttribute [
+	<return: #Number>
+	| attributeTag |
+	attributeTag := 0.
+	
+	self
+		assert: [ anAppendingAttribute isKindOf: BlTextAttribute ]
+		description:  [ 'anAppendingAttribute must be a text attribute' ].
+
+	self
+		assert: [ anAppendingAttribute isAdornment and: [ anAppendingAttribute shouldAppend ] ]
+		description: [ 'anAppendingAttribute must be an appending text attribute' ].
+		
+	self
+		assert: [ anotherAppendingAttribute isKindOf: BlTextAttribute ]
+		description:  [ 'anotherAppendingAttribute must be a text attribute' ].
+
+	self
+		assert: [ anotherAppendingAttribute isAdornment and: [ anotherAppendingAttribute shouldAppend ] ]
+		description: [ 'anotherAppendingAttribute must be an appending text attribute' ].
+		
+	anAppendingAttribute
+		asGtExternalTextAttributeForTheme: self theme
+		during: [ :rustAttribute | 
+			(adornmentsBank keyAtValue: anotherAppendingAttribute ifAbsent: [ nil ])
+				ifNotNil: [ :rustAppendingTag | 
+					attributeTag := editorHandle
+							addAppendingAttribute: rustAttribute
+							atAppendingAttributeTag: rustAppendingTag.
+
+					self privateAddAttributeTagToBank: attributeTag attribute: rustAttribute ] ].
+
+	^ attributeTag
+]
+
+{ #category : 'api - attributes' }
 GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
 	<return: #Number>
 	| attributeTag |
 	attributeTag := 0.
+	
+	self
+		assert: [ aMarkerAttribute isKindOf: BrTextInvisibleMarkerAttribute ]
+		description:  [ 'aMarkerAttribute must be a marker attribute' ].
 
 	anAttribute
 		asGtExternalTextAttributeForTheme: self theme
@@ -1001,6 +1041,9 @@ GtTextEditorElement >> pollEditorMessages [
 
 { #category : 'private' }
 GtTextEditorElement >> privateAddAttributeTagToBank: attributeTag attribute: externalAttribute [
+	"attributeTag = 0
+		ifTrue: [ self error: '?' ]."
+
 	externalAttribute isAdornmentAttribute
 		ifTrue: [ adornmentsBank at: attributeTag put: externalAttribute adornmentAttribute ].
 
@@ -1036,6 +1079,14 @@ GtTextEditorElement >> privateRequestEditorAction: aBlock [
 { #category : 'api - editing' }
 GtTextEditorElement >> redo [
 	editorHandle redo
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorElement >> removeAdornmentAttribute: anAdornmentAttribute [
+	| attributeTagToRemove |
+	
+	attributeTagToRemove := adornmentsBank keyAtValue: anAdornmentAttribute ifAbsent: [ ^ self ].
+	self removeAttributeTagged: attributeTagToRemove
 ]
 
 { #category : 'api - attributes' }

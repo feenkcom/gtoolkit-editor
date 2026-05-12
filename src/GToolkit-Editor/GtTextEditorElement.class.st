@@ -25,7 +25,8 @@ Class {
 		'heightSpec',
 		'editorHeight',
 		'pendingActions',
-		'ropeSnapshot'
+		'ropeSnapshot',
+		'shouldReplicate'
 	],
 	#classVars : [
 		'UniqueActionIdGenerator'
@@ -224,6 +225,11 @@ GtTextEditorElement >> deselectAll [
 ]
 
 { #category : 'accessing' }
+GtTextEditorElement >> doNotReplicate [
+	shouldReplicate := false
+]
+
+{ #category : 'accessing' }
 GtTextEditorElement >> editor [
 	self flag: #TODO.
 
@@ -331,6 +337,8 @@ GtTextEditorElement >> initialize [
 	semaphore := Semaphore new.
 	semaphoreIndex := Smalltalk registerExternalObject: semaphore.
 
+	shouldReplicate := true.
+	
 	adornments := OrderedDictionary new.
 	adornmentsBank := OrderedDictionary new.
 	
@@ -845,15 +853,35 @@ GtTextEditorElement >> onEditorTextCompletionRequest: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextDeleted: aDeletionReason withMessage: aTextChangedMessage [
+	shouldReplicate
+		ifFalse: [ ^ self ].
+
 	aDeletionReason start > aDeletionReason end
 		ifTrue: [ ^ self ].
 
-	ropeSnapshot := ropeSnapshot delete: aDeletionReason start to: aDeletionReason end
+	ropeSnapshot := ropeSnapshot delete: aDeletionReason start to: aDeletionReason end.
+
+	self
+		dispatchEvent: (BrTextEditorDeletionModificationEvent new
+				documentId: aTextChangedMessage documentId;
+				indices: ({ aDeletionReason start });
+				lengths: ({ aDeletionReason end - aDeletionReason start });
+				yourself)
 ]
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextInserted: anInsertion withMessage: aTextChangedMessage [
-	ropeSnapshot := ropeSnapshot insertItems: anInsertion string at: anInsertion start
+	shouldReplicate
+		ifFalse: [ ^ self ].
+		
+	ropeSnapshot := ropeSnapshot insertItems: anInsertion string at: anInsertion start.
+
+	self
+		dispatchEvent: (BrTextEditorInsertionModificationEvent new
+				documentId: aTextChangedMessage documentId;
+				indices: { anInsertion start };
+				strings: { anInsertion string };
+				yourself)
 ]
 
 { #category : 'event handling' }
@@ -1041,9 +1069,6 @@ GtTextEditorElement >> pollEditorMessages [
 
 { #category : 'private' }
 GtTextEditorElement >> privateAddAttributeTagToBank: attributeTag attribute: externalAttribute [
-	"attributeTag = 0
-		ifTrue: [ self error: '?' ]."
-
 	externalAttribute isAdornmentAttribute
 		ifTrue: [ adornmentsBank at: attributeTag put: externalAttribute adornmentAttribute ].
 
@@ -1213,7 +1238,9 @@ GtTextEditorElement >> stylerStrategy [
 
 { #category : 'accessing' }
 GtTextEditorElement >> text [
-	^ BlRunRopedText rope: ropeSnapshot
+	^ shouldReplicate
+		ifTrue: [ BlRunRopedText rope: ropeSnapshot ]
+		ifFalse: [ self unstyledText asRopedText ]
 ]
 
 { #category : 'accessing' }

@@ -118,6 +118,28 @@ GtTextEditorExternalText >> attribute: aTextAttribute from: aStart to: anEnd [
 ]
 
 { #category : 'text - attributes' }
+GtTextEditorExternalText >> background: aColor [
+	GtTextEditorAttribute
+		background: aColor
+		during: [ :anAttribute | 
+			self
+				attribute: anAttribute
+				from: 1
+				to: self size ]
+]
+
+{ #category : 'text - attributes' }
+GtTextEditorExternalText >> fontSize: aNumber [
+	GtTextEditorAttribute
+		fontSize: aNumber
+		during: [ :anAttribute | 
+			self
+				attribute: anAttribute
+				from: 1
+				to: self size ]
+]
+
+{ #category : 'text - attributes' }
 GtTextEditorExternalText >> foreground: aColor [
 	GtTextEditorAttribute
 		foreground: aColor

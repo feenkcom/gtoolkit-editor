@@ -123,6 +123,11 @@ GtTextEditorHandle >> deletePreviousAtCursor [
 	self primDeletePreviousAtCursor
 ]
 
+{ #category : 'api - selection' }
+GtTextEditorHandle >> deselectAll [
+	self primDeselectAll
+]
+
 { #category : 'api - debugging' }
 GtTextEditorHandle >> enableInMemoryCommandsRecorder [
 	commandsRecorder := GtTextEditorInMemoryCommandsRecorder fromNativeHandle: self primCommandsRecorderSetInMemory
@@ -355,6 +360,11 @@ GtTextEditorHandle >> primDeleteNextAtCursor [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primDeletePreviousAtCursor [
 	self ffiCall: #(void editor_handle_delete_previous_at_carets(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primDeselectAll [
+	self ffiCall: #(void editor_handle_deselect_all(self))
 ]
 
 { #category : 'private - ffi' }

@@ -571,6 +571,20 @@ GtTextEditorHandle >> primScrollBy: aY result: aScrollByResult [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primScrollPageDown: aScrollByResult [
+	^ self ffiBareCall: #(bool editor_handle_scroll_page_down(
+		self,
+		void* aScrollByResult))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primScrollPageUp: aScrollByResult [
+	^ self ffiBareCall: #(bool editor_handle_scroll_page_up(
+		self,
+		void* aScrollByResult))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSelectAll [
 	self ffiCall: #(void editor_handle_select_all(self))
 ]
@@ -711,6 +725,42 @@ GtTextEditorHandle >> scrollBy: aY ifScrolled: scrolledBlock ifAtTopEdge: aTopEd
 	
 	result := GtTextEditorScrollByResult new.
 	didNotScroll := self primScrollBy: aY result: result.
+	didNotScroll
+		ifFalse: [ ^ scrolledBlock value ].
+	
+	result edge = GtTextEditorScrollEdgeType Top
+		ifTrue: [ ^ aTopEdgeBlock value: result ].
+		
+	result edge = GtTextEditorScrollEdgeType Bottom
+		ifTrue: [ ^ aBottomEdgeBlock value: result ].
+		
+	^ scrolledBlock value
+]
+
+{ #category : 'api - scrolling' }
+GtTextEditorHandle >> scrollPageDownIfScrolled: scrolledBlock ifAtTopEdge: aTopEdgeBlock ifAtBottomEdge: aBottomEdgeBlock [
+	| didNotScroll result |
+	
+	result := GtTextEditorScrollByResult new.
+	didNotScroll := self primScrollPageDown: result.
+	didNotScroll
+		ifFalse: [ ^ scrolledBlock value ].
+	
+	result edge = GtTextEditorScrollEdgeType Top
+		ifTrue: [ ^ aTopEdgeBlock value: result ].
+		
+	result edge = GtTextEditorScrollEdgeType Bottom
+		ifTrue: [ ^ aBottomEdgeBlock value: result ].
+		
+	^ scrolledBlock value
+]
+
+{ #category : 'api - scrolling' }
+GtTextEditorHandle >> scrollPageUpIfScrolled: scrolledBlock ifAtTopEdge: aTopEdgeBlock ifAtBottomEdge: aBottomEdgeBlock [
+	| didNotScroll result |
+	
+	result := GtTextEditorScrollByResult new.
+	didNotScroll := self primScrollPageUp: result.
 	didNotScroll
 		ifFalse: [ ^ scrolledBlock value ].
 	

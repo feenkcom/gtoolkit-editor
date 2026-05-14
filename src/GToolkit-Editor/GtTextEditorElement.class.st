@@ -416,6 +416,16 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination escape;
 				action: [ self deselectAll ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination pageUp;
+				action: [ self privateScrollPageUp ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination pageDown;
+				action: [ self privateScrollPageDown ]).
 
 	self
 		addShortcut: (BlShortcutWithAction new
@@ -1126,6 +1136,22 @@ GtTextEditorElement >> privateRequestEditorAction: aBlock [
 	nextId := UniqueActionIdGenerator generateUniqueId.
 	pendingActions at: nextId put: aBlock.
 	editorHandle requestEditorAction: nextId
+]
+
+{ #category : 'private' }
+GtTextEditorElement >> privateScrollPageDown [
+	editorHandle
+		scrollPageDownIfScrolled: [ ]
+		ifAtTopEdge: [ :result | ]
+		ifAtBottomEdge: [ :result | ]
+]
+
+{ #category : 'private' }
+GtTextEditorElement >> privateScrollPageUp [
+	editorHandle
+		scrollPageUpIfScrolled: [ ]
+		ifAtTopEdge: [ :result | ]
+		ifAtBottomEdge: [ :result | ]
 ]
 
 { #category : 'api - editing' }

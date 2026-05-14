@@ -1,54 +1,26 @@
 Class {
 	#name : 'GtTextEditorMeasureSignal',
-	#superclass : 'ContextStackSignal',
+	#superclass : 'GtTextEditorSignal',
 	#instVars : [
-		'width',
-		'top',
-		'height'
+		'measurementSpec'
 	],
-	#category : 'GToolkit-Editor-UI',
+	#category : 'GToolkit-Editor-Signals',
 	#package : 'GToolkit-Editor',
-	#tag : 'UI'
+	#tag : 'Signals'
 }
 
-{ #category : 'as yet unclassified' }
-GtTextEditorMeasureSignal >> gtInfoFor: aView [
-	<gtView>
-	
-	^ aView columnedList
-		title: 'Info';
-		priority: 1;
-		items: [ {'Width' -> self width . 'Height' -> self height. 'Top' -> self top} ];
-		column: 'Name' text: [ :each | each key ];
-		column: 'Value' text: [ :each | each value ]
+{ #category : 'accessing' }
+GtTextEditorMeasureSignal >> measurementSpec [
+	^ measurementSpec
 ]
 
 { #category : 'accessing' }
-GtTextEditorMeasureSignal >> height [
-	^ height
+GtTextEditorMeasureSignal >> measurementSpec: anObject [
+	measurementSpec := anObject
 ]
 
 { #category : 'as yet unclassified' }
-GtTextEditorMeasureSignal >> height: aHeightOrNil [
-	height := aHeightOrNil
-]
-
-{ #category : 'accessing' }
-GtTextEditorMeasureSignal >> top [
-	^ top
-]
-
-{ #category : 'as yet unclassified' }
-GtTextEditorMeasureSignal >> top: aTopOrNil [
-	top := aTopOrNil
-]
-
-{ #category : 'accessing' }
-GtTextEditorMeasureSignal >> width [
-	^ width
-]
-
-{ #category : 'as yet unclassified' }
-GtTextEditorMeasureSignal >> width: aWidth [
-	width := aWidth
+GtTextEditorMeasureSignal >> printOneLineContentsOn: aStream [
+	aStream nextPutAll: 'Measure '.
+	self measurementSpec printRoundedOn: aStream
 ]

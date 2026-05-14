@@ -189,7 +189,7 @@ GtTextEditorHandle >> insertTabOrIndent [
 
 { #category : 'as yet unclassified' }
 GtTextEditorHandle >> measureWidth: aWidth top: aTopOrNil height: aHeightOrNil [
-	GtTextEditorMeasureSignal new
+	GtTextEditorHandleMeasureSignal new
 		width: aWidth;
 		top: aTopOrNil;
 		height: aHeightOrNil;

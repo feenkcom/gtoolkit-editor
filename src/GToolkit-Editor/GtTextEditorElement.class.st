@@ -532,6 +532,15 @@ GtTextEditorElement >> insertTabAtCaretsOrIndent [
 	editorHandle insertTabOrIndent
 ]
 
+{ #category : 'layout' }
+GtTextEditorElement >> measure: anExtentMeasurementSpec [
+	GtTextEditorMeasureSignal new
+		measurementSpec: anExtentMeasurementSpec;
+		emit.
+
+	^ super measure: anExtentMeasurementSpec.
+]
+
 { #category : 'accessing' }
 GtTextEditorElement >> model [
 	^ userModel
@@ -772,6 +781,11 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 							ifPresent: [ :adornmentPosition |
 								eachChild relocate: adornmentPosition ]
 							ifAbsent: [  ] ] ] ].
+	
+	GtTextEditorLayoutReadySignal new
+		newMeasuredExtent: aMessage editorExtent;
+		previousMeasuredExtent: self measuredExtent;
+		emit.
 	
 	(aMessage editorExtent closeTo: self measuredExtent)
 		ifFalse: [ self requestLayout ]
@@ -1144,6 +1158,18 @@ GtTextEditorElement >> removeEditorShortcuts: aCollection [
 { #category : 'api - highlighting' }
 GtTextEditorElement >> removeHighlightsWithId: aStringId [
 	editorHandle removeHighlightsWithId: aStringId
+]
+
+{ #category : 'layout' }
+GtTextEditorElement >> requestLayout: aSourceElement [
+	| shouldStopRequest |
+	shouldStopRequest := super requestLayout: aSourceElement.
+	shouldStopRequest
+		ifFalse: [ GtTextEditorRequestLayoutSignal new
+				sourceElement: aSourceElement;
+				emit ].
+				
+	^ shouldStopRequest
 ]
 
 { #category : 'styling' }

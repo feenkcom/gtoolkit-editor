@@ -1,5 +1,5 @@
 Class {
-	#name : 'GtTextEditorAttributeSignal',
+	#name : 'GtTextEditorSignal',
 	#superclass : 'ContextStackSignal',
 	#category : 'GToolkit-Editor-Signals',
 	#package : 'GToolkit-Editor',

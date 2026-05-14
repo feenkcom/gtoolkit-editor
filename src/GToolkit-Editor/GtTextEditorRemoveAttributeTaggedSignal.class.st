@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'attributeTag'
 	],
-	#category : 'GToolkit-Editor-UI',
+	#category : 'GToolkit-Editor-Signals',
 	#package : 'GToolkit-Editor',
-	#tag : 'UI'
+	#tag : 'Signals'
 }
 
 { #category : 'accessing' }

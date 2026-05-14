@@ -535,7 +535,9 @@ GtTextEditorElement >> initializeShortcuts [
 
 { #category : 'api - editing' }
 GtTextEditorElement >> insertLineBreakAtCarets [
-	self insertStringAtCursor: OSPlatform current lineEnding
+	editorHandle
+		insertNewLine: GtTextEditorLineBreakStyle Auto
+		inheritWhitespace: true
 ]
 
 { #category : 'api - editing' }

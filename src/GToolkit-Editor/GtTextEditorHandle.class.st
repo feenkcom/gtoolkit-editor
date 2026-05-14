@@ -186,6 +186,13 @@ GtTextEditorHandle >> initialize [
 ]
 
 { #category : 'api - editing' }
+GtTextEditorHandle >> insertNewLine: aLineBreakStyle inheritWhitespace: shouldInheritWhitespace [
+	self
+		primInsertNewLine: aLineBreakStyle
+		inheritWhitespace: shouldInheritWhitespace
+]
+
+{ #category : 'api - editing' }
 GtTextEditorHandle >> insertStringAtCursor: aString [
 	self ffiLibrary
 		newString: aString
@@ -415,6 +422,14 @@ GtTextEditorHandle >> primGetPhlowVTable [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primGetUnstyledText [
 	self ffiCall: #(void* editor_handle_get_unstyled_text(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primInsertNewLine: aLineBreakStyle inheritWhitespace: shouldInheritWhitespace [
+	^ self ffiCall: #(void editor_handle_insert_newline(
+			self,
+			GtTextEditorLineBreakStyle aLineBreakStyle,
+			bool shouldInheritWhitespace))
 ]
 
 { #category : 'private - ffi' }

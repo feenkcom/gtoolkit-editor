@@ -365,6 +365,7 @@ GtTextEditorElement >> initialize [
 				GtTextEditorHandle forEmbedder: pharoEmbedder ].
 				
 	editorHandle tabWidth: 2.
+	editorHandle enableSmoothScrolling.
 
 	messagesQueueUpdater := BrElementUpdater new
 			element: self;
@@ -829,6 +830,11 @@ GtTextEditorElement >> onEditorPerformAction: aMessage [
 ]
 
 { #category : 'event handling' }
+GtTextEditorElement >> onEditorScrollEdgeReached: aMessage [
+	
+]
+
+{ #category : 'event handling' }
 GtTextEditorElement >> onEditorTextChanged: aMessage [
 	aMessage modificationReasonsDo: [ :eachReason | eachReason sendTo: self with: aMessage ].
 
@@ -979,9 +985,11 @@ GtTextEditorElement >> onMouseWheelEvent: anEvent [
 		and: [ self constraints vertical resizer isFitContentLimited not ])
 			ifTrue: [ ^ self ].
 
-	anEvent consumed: true.
-	
-	editorHandle scrollBy: anEvent vector y
+	editorHandle
+		scrollBy: anEvent vector y
+		ifScrolled:  [ anEvent consumed: true. ]
+		ifAtTopEdge: [ :aResult | ]
+		ifAtBottomEdge: [ :aResult ]
 ]
 
 { #category : 'hooks - children' }

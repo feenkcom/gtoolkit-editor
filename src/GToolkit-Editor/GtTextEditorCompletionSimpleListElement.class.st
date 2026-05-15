@@ -17,16 +17,21 @@ Class {
 GtTextEditorCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil: aListElementOrStencil [
 	| anAptitude |
 	anAptitude := BrGlamorousWithExplicitDropdownAptitude new
+			withoutGainFocusOnShow;
 			withoutHandle;
 			withoutMouseEventHandler;
-			withContainerAreaBuilders: {BlSteppedLayoutAreaBuilder dropdownBottomRight.
-					BlSteppedLayoutAreaBuilder allToBottom
-						alignTopRight;
-						mark: BlSteppedLayoutMark bottomLeft.
-					BlSteppedLayoutAreaBuilder dropdownUpRight.
-					BlSteppedLayoutAreaBuilder allToUp
-						alignBottomRight;
-						mark: BlSteppedLayoutMark upLeft};
+			withContainerAreaBuilders: {
+				BlSteppedLayoutAreaBuilder dropdownBottomRight.
+				
+				BlSteppedLayoutAreaBuilder allToBottom
+					alignTopRight;
+					mark: BlSteppedLayoutMark bottomLeft.
+		
+				BlSteppedLayoutAreaBuilder dropdownUpRight.
+				BlSteppedLayoutAreaBuilder allToUp
+					alignBottomRight;
+					mark: BlSteppedLayoutMark upLeft
+			};
 			stencil: [ :aBrMenuInitialContext | 
 				BrMenuExplicit new
 					stencil: [ aListElementOrStencil asStencil asElement removeFromParent ] ].
@@ -35,11 +40,6 @@ GtTextEditorCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnch
 		ifTrue: [ anAptitude relocator: BrEditorSearchTextPopoverContainerRelocator new ].
 
 	anAnchor addAptitude: anAptitude
-]
-
-{ #category : 'initialization' }
-GtTextEditorCompletionSimpleListElement >> defaultLayout [
-	^ BlFrameLayout new
 ]
 
 { #category : 'focus requesting' }
@@ -54,8 +54,9 @@ GtTextEditorCompletionSimpleListElement >> initialize [
 	settings := GtTextEditorCompletionSettings.
 	onCompleteBlock := [ :someItems | self phlow spawnObject: someItems ].
 
-	self initializeSettings.
-	self vFitContentLimited.
+	self
+		layout: BlFrameLayout new;
+		vFitContentLimited.
 
 	self initializeSimpleListElement.
 	self addChild: listElement.
@@ -71,10 +72,18 @@ GtTextEditorCompletionSimpleListElement >> initialize [
 ]
 
 { #category : 'initialization' }
-GtTextEditorCompletionSimpleListElement >> initializeSettings [
+GtTextEditorCompletionSimpleListElement >> initializeSettingsInSpace: aSpace [
+	| width maxHeight |
+
+	width := settings completionWidthOrNil
+		ifNil: [ aSpace width / 3.0 ].
+
+	maxHeight := settings completionMaxHeightOrNil
+		ifNil: [ aSpace height / 3.0 ].
+
 	self
-		width: settings completionWidth;
-		constraintsDo: [ :c | c maxHeight: settings completionMaxHeight ]
+		width: width;
+		constraintsDo: [ :c | c maxHeight: maxHeight ]
 ]
 
 { #category : 'initialization' }
@@ -104,6 +113,13 @@ GtTextEditorCompletionSimpleListElement >> initializeSimpleListElement [
 						GtCompletionController completeOnReturn
 							ifTrue: [ self onCompleteWithSelectedItems: aShortcutEvent currentTarget selectedItems ]
 							ifFalse: [ aShortcutEvent beNotConsumed ] ])
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorCompletionSimpleListElement >> onAddedToSceneGraph [
+	super onAddedToSceneGraph.
+	
+	self spaceDo: [ :aSpace | self initializeSettingsInSpace: aSpace ]
 ]
 
 { #category : 'api - initializationF' }
@@ -142,13 +158,13 @@ GtTextEditorCompletionSimpleListElement >> settings [
 GtTextEditorCompletionSimpleListElement >> settings: anObject [
 	"Set settings object that stores user values related to the completion element.
 	The object must understand:
-	- completionMaxHeight, and completionMaxHeight:,
-	- completionWidth, and completionWidth:.
+	- completionMaxHeightOrNil, and completionMaxHeight:,
+	- completionWidthOrNil, and completionWidth:.
 	Note: I should be called just during the element initialization.
 	Calling this method while being displayed may result in unexpected behavior."
 
 	settings := anObject.
-	self initializeSettings
+	self spaceDo: [ :aSpace | self initializeSettingsInSpace: aSpace ]
 ]
 
 { #category : 'api - accessing' }

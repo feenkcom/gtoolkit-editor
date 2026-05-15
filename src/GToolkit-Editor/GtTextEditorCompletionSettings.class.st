@@ -10,9 +10,10 @@ Class {
 	#tag : 'Completion'
 }
 
-{ #category : 'settings' }
-GtTextEditorCompletionSettings class >> completionMaxHeight [
-	^ CompletionMaxHeight ifNil: [ CompletionMaxHeight := 400 ]
+{ #category : 'cleanup' }
+GtTextEditorCompletionSettings class >> cleanUp [
+	CompletionMaxHeight := nil.
+	CompletionWidth := nil
 ]
 
 { #category : 'settings' }
@@ -21,11 +22,16 @@ GtTextEditorCompletionSettings class >> completionMaxHeight: aNumber [
 ]
 
 { #category : 'settings' }
-GtTextEditorCompletionSettings class >> completionWidth [
-	^ CompletionWidth ifNil: [ CompletionWidth := 600 ]
+GtTextEditorCompletionSettings class >> completionMaxHeightOrNil [
+	^ CompletionMaxHeight
 ]
 
 { #category : 'settings' }
 GtTextEditorCompletionSettings class >> completionWidth: aNumber [
 	CompletionWidth := aNumber
+]
+
+{ #category : 'settings' }
+GtTextEditorCompletionSettings class >> completionWidthOrNil [
+	^ CompletionWidth
 ]

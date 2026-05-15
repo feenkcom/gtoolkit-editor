@@ -26,7 +26,8 @@ Class {
 		'editorHeight',
 		'pendingActions',
 		'ropeSnapshot',
-		'shouldReplicate'
+		'shouldReplicate',
+		'shortcuts'
 	],
 	#classVars : [
 		'UniqueActionIdGenerator'
@@ -138,9 +139,18 @@ GtTextEditorElement >> addCursorAtVisualPoint: aPoint [
 	editorHandle addCursorAtVisualPoint: aPoint
 ]
 
+{ #category : 'api - shortcuts' }
+GtTextEditorElement >> addEditorShortcut: aBrTextEditorShortcut [
+	shortcuts
+		add: aBrTextEditorShortcut
+		ifAdded: [ :aNewEditorShortcut | self onShortcutAdded: aNewEditorShortcut ]
+		ifReplaced: [ :aPreviousEditorShortcut | self onShortcutRemoved: aPreviousEditorShortcut ]
+]
+
 { #category : 'adding' }
-GtTextEditorElement >> addEditorShortcuts: aCollection [ 
-	
+GtTextEditorElement >> addEditorShortcuts: aCollectionOfShortcuts [
+	aCollectionOfShortcuts
+		do: [ :eachShortcut | self addEditorShortcut: eachShortcut ]
 ]
 
 { #category : 'api - highlighting' }
@@ -349,6 +359,8 @@ GtTextEditorElement >> initialize [
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
 
+	shortcuts := BrTextEditorShortcuts new.
+	
 	self initializeCompletion.
 
 	editorHandle := GtTextEditorEmbedder
@@ -1045,6 +1057,17 @@ GtTextEditorElement >> onRemovedFromSceneGraph [
 	editorProcess := nil
 ]
 
+{ #category : 'api - shortcuts' }
+GtTextEditorElement >> onShortcutAdded: aNewEditorShortcut [
+	self removeShortcutsWithCombination: aNewEditorShortcut combinationForPlatform.
+	self addShortcut: aNewEditorShortcut asShortcut
+]
+
+{ #category : 'api - shortcuts' }
+GtTextEditorElement >> onShortcutRemoved: aPreviousEditorShortcut [
+	self removeShortcutsWithCombination: aPreviousEditorShortcut combinationForPlatform
+]
+
 { #category : 'event handling' }
 GtTextEditorElement >> onTextInputEvent: anEvent [
 	(anEvent text allSatisfy: [ :aCharacter | Unicode isPrintable: aCharacter ])
@@ -1217,9 +1240,17 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: aMarker
 		emit
 ]
 
+{ #category : 'api - shortcuts' }
+GtTextEditorElement >> removeEditorShortcut: aBrTextEditorShortcut [
+	shortcuts
+		remove: aBrTextEditorShortcut
+		ifFound: [ :aPreviousShortcut | self onShortcutRemoved: aPreviousShortcut ]
+]
+
 { #category : 'removing' }
-GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
-	
+GtTextEditorElement >> removeEditorShortcuts: aCollectionOfShortcuts [ 
+	aCollectionOfShortcuts
+		do: [ :eachShortcut | self removeEditorShortcut: eachShortcut ]
 ]
 
 { #category : 'api - highlighting' }
@@ -1270,6 +1301,14 @@ GtTextEditorElement >> runEditorProcess [
 { #category : 'api - selection' }
 GtTextEditorElement >> selectAll [
 	editorHandle selectAll
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [ 
+	self privateRequestEditorAction: [ :aState |
+		aState
+			selectedStringDo: aSelectedTextBlock
+			ifAbsent: [ aCursorTextPositionBlock value: aState caretOffset ] ]
 ]
 
 { #category : 'styling' }

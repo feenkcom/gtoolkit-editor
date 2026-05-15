@@ -17,7 +17,6 @@ Class {
 GtTextEditorCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnchor stencil: aListElementOrStencil [
 	| anAptitude |
 	anAptitude := BrGlamorousWithExplicitDropdownAptitude new
-			withoutGainFocusOnShow;
 			withoutHandle;
 			withoutMouseEventHandler;
 			withContainerAreaBuilders: {BlSteppedLayoutAreaBuilder dropdownBottomRight.

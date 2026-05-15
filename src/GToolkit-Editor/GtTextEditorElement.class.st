@@ -349,14 +349,7 @@ GtTextEditorElement >> initialize [
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
 
-	completionStrategy := self defaultCompletionStrategy.
-	completionElement := self newCompletionList.
-	completionFuture := self newCompletionFuture.
-
-	self eventDispatcher forwardShortcuts
-		targetObject: completionElement;
-		// GtTextEditorCompletionListId;
-		forwardWhen: [ :aTargetElement | aTargetElement isAddedToSceneGraph ].
+	self initializeCompletion.
 
 	editorHandle := GtTextEditorEmbedder
 			forSemaphoreIndex: semaphoreIndex
@@ -390,6 +383,18 @@ GtTextEditorElement >> initialize [
 
 	self when: BrTextStyledEvent do: [ :anEvent | self onTextStyledEvent: anEvent ].
 	self initializeShortcuts
+]
+
+{ #category : 'initialization' }
+GtTextEditorElement >> initializeCompletion [
+	completionStrategy := self defaultCompletionStrategy.
+	completionElement := self newCompletionList.
+	completionFuture := self newCompletionFuture.
+
+	self eventDispatcher forwardShortcuts
+		targetObject: completionElement;
+		// GtTextEditorCompletionListId;
+		forwardWhen: [ :aTargetElement | aTargetElement isAddedToSceneGraph ]
 ]
 
 { #category : 'initialization' }

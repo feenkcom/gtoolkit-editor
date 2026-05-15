@@ -1304,11 +1304,27 @@ GtTextEditorElement >> selectAll [
 ]
 
 { #category : 'api - selection' }
-GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [ 
-	self privateRequestEditorAction: [ :aState |
-		aState
-			selectedStringDo: aSelectedTextBlock
-			ifAbsent: [ aCursorTextPositionBlock value: aState caretOffset ] ]
+GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [
+	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
+	- aSelectedTextBlock have two optional parameters [ :aSelectedString :aSelectedInterval | ],
+	- aCursorTextPositionBlock has one parameter [ :aStringPosition | ]."
+	
+	self
+		privateRequestEditorAction: [ :aState | 
+			aState
+				selectedStringDo: [ :aSelectedString | 
+					| aStringPosition aStringInterval |
+					"How do we compute aStringInterval?
+					caretOffset can be to the left or to the right of the selection."
+					self flag: #TODO.
+					aStringPosition := aState caretOffset - 1 max: 1.
+					aStringInterval := aStringPosition to: aStringPosition + aSelectedString size - 1.
+					aSelectedTextBlock
+						cull: aSelectedString
+						cull: aStringInterval ]
+				ifAbsent: [ | aStringPosition |
+				aStringPosition := aState caretOffset max: 1.
+				aCursorTextPositionBlock value: aStringPosition ] ]
 ]
 
 { #category : 'styling' }

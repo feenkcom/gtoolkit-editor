@@ -221,7 +221,7 @@ GtTextEditorElement >> deletePreviousAtCursor [
 
 { #category : 'api - selection' }
 GtTextEditorElement >> deselectAll [
-	self flag: #TODO
+	editorHandle deselectAll
 ]
 
 { #category : 'accessing' }
@@ -365,6 +365,7 @@ GtTextEditorElement >> initialize [
 				GtTextEditorHandle forEmbedder: pharoEmbedder ].
 				
 	editorHandle tabWidth: 2.
+	editorHandle enableSmoothScrolling.
 
 	messagesQueueUpdater := BrElementUpdater new
 			element: self;
@@ -395,7 +396,7 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination backspace;
 				action: [ self deletePreviousAtCursor ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination delete;
@@ -405,12 +406,27 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination enter;
 				action: [ self insertLineBreakAtCarets ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination tab;
 				action: [ self insertTabAtCaretsOrIndent ]).
-	
+
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination escape;
+				action: [ self deselectAll ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination pageUp;
+				action: [ self privateScrollPageUp ]).
+				
+	self
+		addShortcut: (BlShortcutWithAction new
+				combination: BlKeyCombination pageDown;
+				action: [ self privateScrollPageDown ]).
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination shiftTab;
@@ -425,22 +441,22 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination shiftArrowLeft;
 				action: [ self extendSelectionLeft ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination shiftArrowRight;
 				action: [ self extendSelectionRight ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination shiftArrowUp;
 				action: [ self extendSelectionUp ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination shiftArrowDown;
 				action: [ self extendSelectionDown ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryA;
@@ -450,8 +466,8 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination arrowRight;
 				action: [ self moveCursorRight ]).
-				
-		self
+
+	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination arrowUp;
 				action: [ self moveCaretsUp ]).
@@ -465,12 +481,12 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryC;
 				action: [ self copySelected ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryX;
 				action: [ self cutSelected ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryV;
@@ -480,37 +496,37 @@ GtTextEditorElement >> initializeShortcuts [
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryZ;
 				action: [ self undo ]).
-	
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryShiftZ;
 				action: [ self redo ]).
-	
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination builder primary home build;
 				action: [ self moveCursorToBeginning ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination builder primary end build;
 				action: [ self moveCursorToEnd ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryArrowLeft;
 				action: [ self moveCursorToLineStart ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryArrowRight;
 				action: [ self moveCursorToLineEnd ]).
-		
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryShiftArrowLeft;
 				action: [ self extendSelectionToLineStart ]).
-				
+
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination primaryShiftArrowRight;
@@ -519,7 +535,9 @@ GtTextEditorElement >> initializeShortcuts [
 
 { #category : 'api - editing' }
 GtTextEditorElement >> insertLineBreakAtCarets [
-	self insertStringAtCursor: OSPlatform current lineEnding
+	editorHandle
+		insertNewLine: GtTextEditorLineBreakStyle Auto
+		inheritWhitespace: true
 ]
 
 { #category : 'api - editing' }
@@ -829,6 +847,11 @@ GtTextEditorElement >> onEditorPerformAction: aMessage [
 ]
 
 { #category : 'event handling' }
+GtTextEditorElement >> onEditorScrollEdgeReached: aMessage [
+	
+]
+
+{ #category : 'event handling' }
 GtTextEditorElement >> onEditorTextChanged: aMessage [
 	aMessage modificationReasonsDo: [ :eachReason | eachReason sendTo: self with: aMessage ].
 
@@ -979,9 +1002,11 @@ GtTextEditorElement >> onMouseWheelEvent: anEvent [
 		and: [ self constraints vertical resizer isFitContentLimited not ])
 			ifTrue: [ ^ self ].
 
-	anEvent consumed: true.
-	
-	editorHandle scrollBy: anEvent vector y
+	editorHandle
+		scrollBy: anEvent vector y
+		ifScrolled:  [ anEvent consumed: true. ]
+		ifAtTopEdge: [ :aResult | ]
+		ifAtBottomEdge: [ :aResult ]
 ]
 
 { #category : 'hooks - children' }
@@ -1113,6 +1138,22 @@ GtTextEditorElement >> privateRequestEditorAction: aBlock [
 	nextId := UniqueActionIdGenerator generateUniqueId.
 	pendingActions at: nextId put: aBlock.
 	editorHandle requestEditorAction: nextId
+]
+
+{ #category : 'private' }
+GtTextEditorElement >> privateScrollPageDown [
+	editorHandle
+		scrollPageDownIfScrolled: [ ]
+		ifAtTopEdge: [ :result | ]
+		ifAtBottomEdge: [ :result | ]
+]
+
+{ #category : 'private' }
+GtTextEditorElement >> privateScrollPageUp [
+	editorHandle
+		scrollPageUpIfScrolled: [ ]
+		ifAtTopEdge: [ :result | ]
+		ifAtBottomEdge: [ :result | ]
 ]
 
 { #category : 'api - editing' }

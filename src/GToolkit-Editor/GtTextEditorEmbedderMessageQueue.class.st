@@ -40,7 +40,8 @@ GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsent
 		GtTextEditorEmbedderTextChangedMessage.
 		GtTextEditorEmbedderTextCompletionRequestMessage.
 		GtTextEditorEmbedderTextStylingRequestMessage.
-		GtTextEditorEmbedderPerformActionMessage }.
+		GtTextEditorEmbedderPerformActionMessage.
+		GtTextEditorEmbedderScrollEdgeReachedMessage }.
 
 	^ (messageClasses at: messageType ifAbsent: [ ^ self ])
 		fromNativeHandle: messageHandle

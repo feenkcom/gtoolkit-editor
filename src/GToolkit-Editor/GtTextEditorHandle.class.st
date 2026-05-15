@@ -123,9 +123,19 @@ GtTextEditorHandle >> deletePreviousAtCursor [
 	self primDeletePreviousAtCursor
 ]
 
+{ #category : 'api - selection' }
+GtTextEditorHandle >> deselectAll [
+	self primDeselectAll
+]
+
 { #category : 'api - debugging' }
 GtTextEditorHandle >> enableInMemoryCommandsRecorder [
 	commandsRecorder := GtTextEditorInMemoryCommandsRecorder fromNativeHandle: self primCommandsRecorderSetInMemory
+]
+
+{ #category : 'api - scrolling' }
+GtTextEditorHandle >> enableSmoothScrolling [
+	self primSetSmoothScrolling: true
 ]
 
 { #category : 'api - selection' }
@@ -173,6 +183,13 @@ GtTextEditorHandle >> initialize [
 	super initialize.
 	
 	commandsRecorder := nil
+]
+
+{ #category : 'api - editing' }
+GtTextEditorHandle >> insertNewLine: aLineBreakStyle inheritWhitespace: shouldInheritWhitespace [
+	self
+		primInsertNewLine: aLineBreakStyle
+		inheritWhitespace: shouldInheritWhitespace
 ]
 
 { #category : 'api - editing' }
@@ -353,6 +370,11 @@ GtTextEditorHandle >> primDeletePreviousAtCursor [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primDeselectAll [
+	self ffiCall: #(void editor_handle_deselect_all(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primEndSelectionAtVisualPoint [
 	self ffiCall: #(void editor_handle_end_selection_at_visual_point(self))
 ]
@@ -400,6 +422,14 @@ GtTextEditorHandle >> primGetPhlowVTable [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primGetUnstyledText [
 	self ffiCall: #(void* editor_handle_get_unstyled_text(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primInsertNewLine: aLineBreakStyle inheritWhitespace: shouldInheritWhitespace [
+	^ self ffiCall: #(void editor_handle_insert_newline(
+			self,
+			GtTextEditorLineBreakStyle aLineBreakStyle,
+			bool shouldInheritWhitespace))
 ]
 
 { #category : 'private - ffi' }
@@ -548,6 +578,28 @@ GtTextEditorHandle >> primScrollBy: aY [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primScrollBy: aY result: aScrollByResult [
+	^ self ffiBareCall: #(bool editor_handle_scroll_by(
+		self,
+		float64 aY,
+		void* aScrollByResult))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primScrollPageDown: aScrollByResult [
+	^ self ffiBareCall: #(bool editor_handle_scroll_page_down(
+		self,
+		void* aScrollByResult))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primScrollPageUp: aScrollByResult [
+	^ self ffiBareCall: #(bool editor_handle_scroll_page_up(
+		self,
+		void* aScrollByResult))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSelectAll [
 	self ffiCall: #(void editor_handle_select_all(self))
 ]
@@ -585,6 +637,11 @@ GtTextEditorHandle >> primSetRenderThreadWakerThunk: thunk [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primSetSkiaTextLayouter [
 	self ffiCall: #(void editor_handle_set_text_layouter_skia(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primSetSmoothScrolling: isSmoothScrollingEnabled [
+	self ffiCall: #(void editor_handle_set_smooth_scrolling_enabled(self, bool isSmoothScrollingEnabled))
 ]
 
 { #category : 'private - ffi' }
@@ -678,8 +735,57 @@ GtTextEditorHandle >> resizeAdornment: anAttributeTag extent: aPoint [
 ]
 
 { #category : 'api - scrolling' }
-GtTextEditorHandle >> scrollBy: aY [
-	self primScrollBy: aY
+GtTextEditorHandle >> scrollBy: aY ifScrolled: scrolledBlock ifAtTopEdge: aTopEdgeBlock ifAtBottomEdge: aBottomEdgeBlock [
+	| didNotScroll result |
+	
+	result := GtTextEditorScrollByResult new.
+	didNotScroll := self primScrollBy: aY result: result.
+	didNotScroll
+		ifFalse: [ ^ scrolledBlock value ].
+	
+	result edge = GtTextEditorScrollEdgeType Top
+		ifTrue: [ ^ aTopEdgeBlock value: result ].
+		
+	result edge = GtTextEditorScrollEdgeType Bottom
+		ifTrue: [ ^ aBottomEdgeBlock value: result ].
+		
+	^ scrolledBlock value
+]
+
+{ #category : 'api - scrolling' }
+GtTextEditorHandle >> scrollPageDownIfScrolled: scrolledBlock ifAtTopEdge: aTopEdgeBlock ifAtBottomEdge: aBottomEdgeBlock [
+	| didNotScroll result |
+	
+	result := GtTextEditorScrollByResult new.
+	didNotScroll := self primScrollPageDown: result.
+	didNotScroll
+		ifFalse: [ ^ scrolledBlock value ].
+	
+	result edge = GtTextEditorScrollEdgeType Top
+		ifTrue: [ ^ aTopEdgeBlock value: result ].
+		
+	result edge = GtTextEditorScrollEdgeType Bottom
+		ifTrue: [ ^ aBottomEdgeBlock value: result ].
+		
+	^ scrolledBlock value
+]
+
+{ #category : 'api - scrolling' }
+GtTextEditorHandle >> scrollPageUpIfScrolled: scrolledBlock ifAtTopEdge: aTopEdgeBlock ifAtBottomEdge: aBottomEdgeBlock [
+	| didNotScroll result |
+	
+	result := GtTextEditorScrollByResult new.
+	didNotScroll := self primScrollPageUp: result.
+	didNotScroll
+		ifFalse: [ ^ scrolledBlock value ].
+	
+	result edge = GtTextEditorScrollEdgeType Top
+		ifTrue: [ ^ aTopEdgeBlock value: result ].
+		
+	result edge = GtTextEditorScrollEdgeType Bottom
+		ifTrue: [ ^ aBottomEdgeBlock value: result ].
+		
+	^ scrolledBlock value
 ]
 
 { #category : 'api - selection' }

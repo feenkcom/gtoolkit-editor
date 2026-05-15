@@ -375,6 +375,8 @@ GtTextEditorElement >> initialize [
 	self when: BlMouseWheelEvent do: [ :anEvent | self onMouseWheelEvent: anEvent ].
 	self when: BlMouseMoveEvent do: [ :anEvent | self onMouseMoveEvent: anEvent ].
 	self when: BlMouseDownEvent do: [ :anEvent | self onMouseDownEvent: anEvent ].
+	self when: BlMouseDoublePressEvent do: [ :anEvent | self onMouseDoublePressEvent: anEvent ].
+	
 	self when: BlMouseUpEvent do: [ :anEvent | self onMouseUpEvent: anEvent ].
 	self when: BlClickEvent do: [ :anEvent | self onClickEvent: anEvent ].
 
@@ -976,6 +978,15 @@ GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 ]
 
 { #category : 'event handling' }
+GtTextEditorElement >> onMouseDoublePressEvent: anEvent [
+	anEvent consumed: true.
+
+	editorHandle
+		selectWordAtVisualPoint: anEvent localPosition
+		overwriteSelection: anEvent modifiers isAlt not
+]
+
+{ #category : 'event handling' }
 GtTextEditorElement >> onMouseDownEvent: anEvent [
 	anEvent consumed: true.
 	
@@ -986,7 +997,7 @@ GtTextEditorElement >> onMouseDownEvent: anEvent [
 	self requestFocus
 ]
 
-{ #category : 'initialization' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onMouseMoveEvent: anEvent [ 
 	editorHandle mouseMoveAt: anEvent localPosition
 ]

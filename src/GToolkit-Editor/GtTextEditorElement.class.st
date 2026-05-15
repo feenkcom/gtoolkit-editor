@@ -1303,7 +1303,7 @@ GtTextEditorElement >> selectAll [
 	editorHandle selectAll
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'api - selection' }
 GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [ 
 	self privateRequestEditorAction: [ :aState |
 		aState

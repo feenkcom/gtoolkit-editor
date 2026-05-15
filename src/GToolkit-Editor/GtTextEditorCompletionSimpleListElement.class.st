@@ -36,9 +36,6 @@ GtTextEditorCompletionSimpleListElement class >> installAptitudeOnAnchor: anAnch
 				BrMenuExplicit new
 					stencil: [ aListElementOrStencil asStencil asElement removeFromParent ] ].
 
-	false
-		ifTrue: [ anAptitude relocator: BrEditorSearchTextPopoverContainerRelocator new ].
-
 	anAnchor addAptitude: anAptitude
 ]
 

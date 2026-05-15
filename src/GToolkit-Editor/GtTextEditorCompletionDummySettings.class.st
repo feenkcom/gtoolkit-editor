@@ -11,21 +11,21 @@ Class {
 }
 
 { #category : 'settings' }
-GtTextEditorCompletionDummySettings >> completionMaxHeight [
-	^ completionMaxHeight ifNil: [ completionMaxHeight := 400 ]
-]
-
-{ #category : 'settings' }
 GtTextEditorCompletionDummySettings >> completionMaxHeight: aNumber [
 	completionMaxHeight := aNumber
 ]
 
 { #category : 'settings' }
-GtTextEditorCompletionDummySettings >> completionWidth [
-	^ completionWidth ifNil: [ completionWidth := 600 ]
+GtTextEditorCompletionDummySettings >> completionMaxHeightOrNil [
+	^ completionMaxHeight
 ]
 
 { #category : 'settings' }
 GtTextEditorCompletionDummySettings >> completionWidth: aNumber [
 	completionWidth := aNumber
+]
+
+{ #category : 'settings' }
+GtTextEditorCompletionDummySettings >> completionWidthOrNil [
+	^ completionWidth
 ]

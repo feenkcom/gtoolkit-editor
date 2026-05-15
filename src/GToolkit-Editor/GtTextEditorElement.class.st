@@ -26,7 +26,8 @@ Class {
 		'editorHeight',
 		'pendingActions',
 		'ropeSnapshot',
-		'shouldReplicate'
+		'shouldReplicate',
+		'shortcuts'
 	],
 	#classVars : [
 		'UniqueActionIdGenerator'

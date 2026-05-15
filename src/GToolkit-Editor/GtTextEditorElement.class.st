@@ -705,11 +705,21 @@ GtTextEditorElement >> onClickEvent: anEvent [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onCompleteWithSelectedItem: selectedItem [
-	
-	(selectedItem isNil or: [ selectedItem isEmpty ])
-		ifFalse: [ "self phlow spawnObject: selectedItem" ].
+	| completionString |
+	(selectedItem isNil or: [ selectedItem isEmpty ]) 
+		ifTrue: [ ^ self ].
 
-		completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
+	completionAttributeTag ifNotNil: [ :aTag | 
+		self removeAttributeTagged: aTag.
+		completionAttributeTag := nil ].
+		
+	completionString := selectedItem text asString.
+	completionString := completionString copyReplaceAll: ':' with: ': _ '.
+
+	self insertStringAtCursor: completionString.
+	
+	"We also need to add an attribute to `_` to enable tab key to jump between them."
+	self flag: #TODO.
 ]
 
 { #category : 'event handling' }
@@ -1293,12 +1303,28 @@ GtTextEditorElement >> selectAll [
 	editorHandle selectAll
 ]
 
-{ #category : 'as yet unclassified' }
-GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [ 
-	self privateRequestEditorAction: [ :aState |
-		aState
-			selectedStringDo: aSelectedTextBlock
-			ifAbsent: [ aCursorTextPositionBlock value: aState caretOffset ] ]
+{ #category : 'api - selection' }
+GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [
+	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
+	- aSelectedTextBlock have two optional parameters [ :aSelectedString :aSelectedInterval | ],
+	- aCursorTextPositionBlock has one parameter [ :aStringPosition | ]."
+	
+	self
+		privateRequestEditorAction: [ :aState | 
+			aState
+				selectedStringDo: [ :aSelectedString | 
+					| aStringPosition aStringInterval |
+					"How do we compute aStringInterval?
+					caretOffset can be to the left or to the right of the selection."
+					self flag: #TODO.
+					aStringPosition := aState caretOffset - 1 max: 1.
+					aStringInterval := aStringPosition to: aStringPosition + aSelectedString size - 1.
+					aSelectedTextBlock
+						cull: aSelectedString
+						cull: aStringInterval ]
+				ifAbsent: [ | aStringPosition |
+				aStringPosition := aState caretOffset max: 1.
+				aCursorTextPositionBlock value: aStringPosition ] ]
 ]
 
 { #category : 'styling' }

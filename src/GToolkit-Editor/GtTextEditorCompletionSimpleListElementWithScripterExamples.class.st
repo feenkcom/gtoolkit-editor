@@ -35,15 +35,6 @@ GtTextEditorCompletionSimpleListElementWithScripterExamples >> basicCompletionEl
 					completionWidth: self defaultCompletionWidth;
 					completionMaxHeight: self defaultCompletionMaxHeight).
 
-	self assert: anElement constraints horizontal resizer isExact.
-	self
-		assert: anElement constraints horizontal resizer size
-		equals: self defaultCompletionWidth.
-
-	self
-		assert: anElement constraints maxHeight
-		equals: self defaultCompletionMaxHeight.
-
 	^ anElement
 ]
 

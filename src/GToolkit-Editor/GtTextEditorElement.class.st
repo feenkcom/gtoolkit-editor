@@ -26,7 +26,8 @@ Class {
 		'editorHeight',
 		'pendingActions',
 		'ropeSnapshot',
-		'shouldReplicate'
+		'shouldReplicate',
+		'shortcuts'
 	],
 	#classVars : [
 		'UniqueActionIdGenerator'
@@ -138,9 +139,18 @@ GtTextEditorElement >> addCursorAtVisualPoint: aPoint [
 	editorHandle addCursorAtVisualPoint: aPoint
 ]
 
+{ #category : 'api - shortcuts' }
+GtTextEditorElement >> addEditorShortcut: aBrTextEditorShortcut [
+	shortcuts
+		add: aBrTextEditorShortcut
+		ifAdded: [ :aNewEditorShortcut | self onShortcutAdded: aNewEditorShortcut ]
+		ifReplaced: [ :aPreviousEditorShortcut | self onShortcutRemoved: aPreviousEditorShortcut ]
+]
+
 { #category : 'adding' }
-GtTextEditorElement >> addEditorShortcuts: aCollection [ 
-	
+GtTextEditorElement >> addEditorShortcuts: aCollectionOfShortcuts [
+	aCollectionOfShortcuts
+		do: [ :eachShortcut | self addEditorShortcut: eachShortcut ]
 ]
 
 { #category : 'api - highlighting' }
@@ -349,14 +359,9 @@ GtTextEditorElement >> initialize [
 	styler := BlTextNullStyler new.
 	stylerStrategy := self defaultStylerStrategy.
 
-	completionStrategy := self defaultCompletionStrategy.
-	completionElement := self newCompletionList.
-	completionFuture := self newCompletionFuture.
-
-	self eventDispatcher forwardShortcuts
-		targetObject: completionElement;
-		// GtTextEditorCompletionListId;
-		forwardWhen: [ :aTargetElement | aTargetElement isAddedToSceneGraph ].
+	shortcuts := BrTextEditorShortcuts new.
+	
+	self initializeCompletion.
 
 	editorHandle := GtTextEditorEmbedder
 			forSemaphoreIndex: semaphoreIndex
@@ -375,6 +380,8 @@ GtTextEditorElement >> initialize [
 	self when: BlMouseWheelEvent do: [ :anEvent | self onMouseWheelEvent: anEvent ].
 	self when: BlMouseMoveEvent do: [ :anEvent | self onMouseMoveEvent: anEvent ].
 	self when: BlMouseDownEvent do: [ :anEvent | self onMouseDownEvent: anEvent ].
+	self when: BlMouseDoublePressEvent do: [ :anEvent | self onMouseDoublePressEvent: anEvent ].
+	
 	self when: BlMouseUpEvent do: [ :anEvent | self onMouseUpEvent: anEvent ].
 	self when: BlClickEvent do: [ :anEvent | self onClickEvent: anEvent ].
 
@@ -388,6 +395,18 @@ GtTextEditorElement >> initialize [
 
 	self when: BrTextStyledEvent do: [ :anEvent | self onTextStyledEvent: anEvent ].
 	self initializeShortcuts
+]
+
+{ #category : 'initialization' }
+GtTextEditorElement >> initializeCompletion [
+	completionStrategy := self defaultCompletionStrategy.
+	completionElement := self newCompletionList.
+	completionFuture := self newCompletionFuture.
+
+	self eventDispatcher forwardShortcuts
+		targetObject: completionElement;
+		// GtTextEditorCompletionListId;
+		forwardWhen: [ :aTargetElement | aTargetElement isAddedToSceneGraph ]
 ]
 
 { #category : 'initialization' }
@@ -686,11 +705,21 @@ GtTextEditorElement >> onClickEvent: anEvent [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onCompleteWithSelectedItem: selectedItem [
-	
-	(selectedItem isNil or: [ selectedItem isEmpty ])
-		ifFalse: [ "self phlow spawnObject: selectedItem" ].
+	| completionString |
+	(selectedItem isNil or: [ selectedItem isEmpty ]) 
+		ifTrue: [ ^ self ].
 
-		completionAttributeTag ifNotNil: [ :aTag | self removeAttributeTagged: aTag ].
+	completionAttributeTag ifNotNil: [ :aTag | 
+		self removeAttributeTagged: aTag.
+		completionAttributeTag := nil ].
+		
+	completionString := selectedItem text asString.
+	completionString := completionString copyReplaceAll: ':' with: ': _ '.
+
+	self insertStringAtCursor: completionString.
+	
+	"We also need to add an attribute to `_` to enable tab key to jump between them."
+	self flag: #TODO.
 ]
 
 { #category : 'event handling' }
@@ -976,6 +1005,15 @@ GtTextEditorElement >> onMeasure: anExtentMeasurementSpec [
 ]
 
 { #category : 'event handling' }
+GtTextEditorElement >> onMouseDoublePressEvent: anEvent [
+	anEvent consumed: true.
+
+	editorHandle
+		selectWordAtVisualPoint: anEvent localPosition
+		overwriteSelection: anEvent modifiers isAlt not
+]
+
+{ #category : 'event handling' }
 GtTextEditorElement >> onMouseDownEvent: anEvent [
 	anEvent consumed: true.
 	
@@ -986,7 +1024,7 @@ GtTextEditorElement >> onMouseDownEvent: anEvent [
 	self requestFocus
 ]
 
-{ #category : 'initialization' }
+{ #category : 'event handling' }
 GtTextEditorElement >> onMouseMoveEvent: anEvent [ 
 	editorHandle mouseMoveAt: anEvent localPosition
 ]
@@ -1017,6 +1055,17 @@ GtTextEditorElement >> onRemovedFromSceneGraph [
 	
 	editorProcess ifNotNil: [ :aProcess | aProcess terminate ].
 	editorProcess := nil
+]
+
+{ #category : 'api - shortcuts' }
+GtTextEditorElement >> onShortcutAdded: aNewEditorShortcut [
+	self removeShortcutsWithCombination: aNewEditorShortcut combinationForPlatform.
+	self addShortcut: aNewEditorShortcut asShortcut
+]
+
+{ #category : 'api - shortcuts' }
+GtTextEditorElement >> onShortcutRemoved: aPreviousEditorShortcut [
+	self removeShortcutsWithCombination: aPreviousEditorShortcut combinationForPlatform
 ]
 
 { #category : 'event handling' }
@@ -1191,9 +1240,17 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: aMarker
 		emit
 ]
 
+{ #category : 'api - shortcuts' }
+GtTextEditorElement >> removeEditorShortcut: aBrTextEditorShortcut [
+	shortcuts
+		remove: aBrTextEditorShortcut
+		ifFound: [ :aPreviousShortcut | self onShortcutRemoved: aPreviousShortcut ]
+]
+
 { #category : 'removing' }
-GtTextEditorElement >> removeEditorShortcuts: aCollection [ 
-	
+GtTextEditorElement >> removeEditorShortcuts: aCollectionOfShortcuts [ 
+	aCollectionOfShortcuts
+		do: [ :eachShortcut | self removeEditorShortcut: eachShortcut ]
 ]
 
 { #category : 'api - highlighting' }
@@ -1244,6 +1301,30 @@ GtTextEditorElement >> runEditorProcess [
 { #category : 'api - selection' }
 GtTextEditorElement >> selectAll [
 	editorHandle selectAll
+]
+
+{ #category : 'api - selection' }
+GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [
+	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
+	- aSelectedTextBlock have two optional parameters [ :aSelectedString :aSelectedInterval | ],
+	- aCursorTextPositionBlock has one parameter [ :aStringPosition | ]."
+	
+	self
+		privateRequestEditorAction: [ :aState | 
+			aState
+				selectedStringDo: [ :aSelectedString | 
+					| aStringPosition aStringInterval |
+					"How do we compute aStringInterval?
+					caretOffset can be to the left or to the right of the selection."
+					self flag: #TODO.
+					aStringPosition := aState caretOffset - 1 max: 1.
+					aStringInterval := aStringPosition to: aStringPosition + aSelectedString size - 1.
+					aSelectedTextBlock
+						cull: aSelectedString
+						cull: aStringInterval ]
+				ifAbsent: [ | aStringPosition |
+				aStringPosition := aState caretOffset max: 1.
+				aCursorTextPositionBlock value: aStringPosition ] ]
 ]
 
 { #category : 'styling' }

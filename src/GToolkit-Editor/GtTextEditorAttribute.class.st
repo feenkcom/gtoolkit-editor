@@ -17,6 +17,15 @@ GtTextEditorAttribute class >> background: aColor during: aBlock [
 		during: aBlock
 ]
 
+{ #category : 'instance creation' }
+GtTextEditorAttribute class >> doublePressToSelectTrimming: shouldTrimWhitespace onlyAtBoundary: onlyAtBoundary during: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: (self
+				primDoublePressToSelect: shouldTrimWhitespace
+				onlyAtIntervalBoundary: onlyAtBoundary)
+		during: aBlock
+]
+
 { #category : 'library path' }
 GtTextEditorAttribute class >> ffiLibrary [
 	^ GtTextEditorLibrary uniqueInstance
@@ -64,6 +73,13 @@ GtTextEditorAttribute class >> primBackgroundRed: red green: green blue: blue al
 		float32 green,
 		float32 blue,
 		float32 alpha))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorAttribute class >> primDoublePressToSelect: shouldTrimWhitespace onlyAtIntervalBoundary: onlyAtIntervalBoundaries [
+	^ self ffiCall: #(void* double_press_to_select_attribute_new(
+		bool shouldTrimWhitespace,
+		bool onlyAtIntervalBoundaries))
 ]
 
 { #category : 'private - ffi' }

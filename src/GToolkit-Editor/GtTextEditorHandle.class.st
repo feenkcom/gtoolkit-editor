@@ -605,6 +605,15 @@ GtTextEditorHandle >> primSelectAll [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primSelectWordAtX: aX y: aY overwriteSelection: shouldOverwriteSelection [
+	self ffiCall: #(void editor_handle_select_word_at_visual_point(
+		self,
+		float64 aX,
+		float64 aY,
+		bool shouldOverwriteSelection))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSetDefaultFontFamily: aStringBox [
 	self ffiCall: #(void editor_handle_set_default_font_family(self, void* aStringBox))
 ]
@@ -791,6 +800,14 @@ GtTextEditorHandle >> scrollPageUpIfScrolled: scrolledBlock ifAtTopEdge: aTopEdg
 { #category : 'api - selection' }
 GtTextEditorHandle >> selectAll [
 	self primSelectAll
+]
+
+{ #category : 'api - selection' }
+GtTextEditorHandle >> selectWordAtVisualPoint: aPoint overwriteSelection: shouldOverwriteSelection [
+	self
+		primSelectWordAtX: aPoint x
+		y: aPoint y
+		overwriteSelection: shouldOverwriteSelection
 ]
 
 { #category : 'initialization' }

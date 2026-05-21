@@ -68,6 +68,13 @@ GtTextEditorHandle >> addCursorAtVisualPoint: aPoint [
 ]
 
 { #category : 'api - highlighting' }
+GtTextEditorHandle >> addHighlight: aGtTextEditorHighlight overMarkerTag: aMarkerTag [
+	self
+		primAddHighlight: aGtTextEditorHighlight
+		overMarker: aMarkerTag
+]
+
+{ #category : 'api - highlighting' }
 GtTextEditorHandle >> addHighlight: aGtTextEditorHighlight overRange: aGtTextEditorRange [
 	self
 			primAddHighlight: aGtTextEditorHighlight
@@ -332,6 +339,14 @@ GtTextEditorHandle >> primAddHighlight: aHighlight isByteRange: isByteRange star
 		size_t aStart,
 		size_t anEnd,
 		void* documentId))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primAddHighlight: aHighlight overMarker: aMarkerTag [
+	self ffiCall: #(void editor_handle_add_highlight_over_marker(
+		self,
+		void* aHighlight,
+		uint64 aMarkerTag))
 ]
 
 { #category : 'private - ffi' }

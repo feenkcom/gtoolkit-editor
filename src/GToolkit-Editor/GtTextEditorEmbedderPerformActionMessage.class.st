@@ -20,7 +20,10 @@ GtTextEditorEmbedderPerformActionMessage >> actionId [
 
 { #category : 'accessing' }
 GtTextEditorEmbedderPerformActionMessage >> caretOffset [
-	^ self primGetActiveCursor
+	"Return a position of the active caret as a character offset.
+	The range of the values is [0..text size]"
+
+	^ self primGetActiveCursorCharacterOffset
 ]
 
 { #category : 'accessing' }
@@ -38,8 +41,13 @@ GtTextEditorEmbedderPerformActionMessage >> primGetActionId [
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorEmbedderPerformActionMessage >> primGetActiveCursor [
-	^ self ffiCall: #(size_t  to_embedder_perform_action_get_active_cursor_raw_offset(self))
+GtTextEditorEmbedderPerformActionMessage >> primGetActiveCursorByteOffset [
+	^ self ffiCall: #(size_t to_embedder_perform_action_get_active_cursor_raw_offset(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorEmbedderPerformActionMessage >> primGetActiveCursorCharacterOffset [
+	^ self ffiCall: #(size_t to_embedder_perform_action_get_active_cursor_raw_character_offset(self))
 ]
 
 { #category : 'private - ffi' }
@@ -52,6 +60,21 @@ GtTextEditorEmbedderPerformActionMessage >> primGetSelectedString: aStringBox [
 	^ self ffiCall: #(bool  to_embedder_perform_action_get_selected_string(self, void* aStringBox))
 ]
 
+{ #category : 'private - ffi' }
+GtTextEditorEmbedderPerformActionMessage >> primGetSelectionEnd [
+	^ self ffiCall: #(size_t to_embedder_perform_action_get_active_selection_end_raw_character_offset(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorEmbedderPerformActionMessage >> primGetSelectionStart [
+	^ self ffiCall: #(size_t to_embedder_perform_action_get_active_selection_start_raw_character_offset(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorEmbedderPerformActionMessage >> primHasSelection [
+	^ self ffiCall: #(bool to_embedder_perform_action_has_active_selection(self))
+]
+
 { #category : 'enumerating' }
 GtTextEditorEmbedderPerformActionMessage >> selectedStringDo: aBlock ifAbsent: anAbsentBlock [
 	| hasSelection selectedString |
@@ -61,6 +84,13 @@ GtTextEditorEmbedderPerformActionMessage >> selectedStringDo: aBlock ifAbsent: a
 	^ hasSelection
 		ifTrue: [ aBlock value: selectedString ]
 		ifFalse: [ anAbsentBlock value ]
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorEmbedderPerformActionMessage >> selectionInterval [
+	^ self primHasSelection
+		ifTrue: [ self primGetSelectionStart + 1 to: self primGetSelectionEnd ]
+		ifFalse: [ 1 to: 0 ]
 ]
 
 { #category : 'message - dispatch' }

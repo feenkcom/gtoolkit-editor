@@ -154,6 +154,19 @@ GtTextEditorElement >> addEditorShortcuts: aCollectionOfShortcuts [
 ]
 
 { #category : 'api - highlighting' }
+GtTextEditorElement >> addHighlight: aBrTextHighlight overMarker: aMarkerAttribute [
+	self
+		assert: [ aMarkerAttribute isKindOf: BrTextInvisibleMarkerAttribute ]
+		description: [ 'aMarkerAttribute must be a marker attribute' ].
+
+	aBrTextHighlight
+		asGtExternalTextHighlightForTheme: self theme
+		during: [ :externalHighlight | 
+			(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
+				ifNotNil: [ :rustMarkerTag | editorHandle addHighlight: externalHighlight overMarkerTag: rustMarkerTag ] ]
+]
+
+{ #category : 'api - highlighting' }
 GtTextEditorElement >> addHighlight: aBrTextHighlight overRange: aGtTextEditorRange [
 	aBrTextHighlight
 		asGtExternalTextHighlightForTheme: self theme
@@ -1304,7 +1317,7 @@ GtTextEditorElement >> selectAll [
 ]
 
 { #category : 'api - selection' }
-GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [
+GtTextEditorElement >> selectedStringAndIntervalDo: aSelectedTextBlock orCursorPositionDo: aCursorTextPositionBlock [
 	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
 	- aSelectedTextBlock have two optional parameters [ :aSelectedString :aSelectedInterval | ],
 	- aCursorTextPositionBlock has one parameter [ :aStringPosition | ]."
@@ -1312,16 +1325,10 @@ GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositi
 	self
 		privateRequestEditorAction: [ :aState | 
 			aState
-				selectedStringDo: [ :aSelectedString | 
-					| aStringPosition aStringInterval |
-					"How do we compute aStringInterval?
-					caretOffset can be to the left or to the right of the selection."
-					self flag: #TODO.
-					aStringPosition := aState caretOffset - 1 max: 1.
-					aStringInterval := aStringPosition to: aStringPosition + aSelectedString size - 1.
+				selectedStringDo: [ :aSelectedString |
 					aSelectedTextBlock
 						cull: aSelectedString
-						cull: aStringInterval ]
+						cull: aState selectionInterval ]
 				ifAbsent: [ | aStringPosition |
 				aStringPosition := aState caretOffset max: 1.
 				aCursorTextPositionBlock value: aStringPosition ] ]

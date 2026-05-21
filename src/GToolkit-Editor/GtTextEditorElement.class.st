@@ -1325,16 +1325,10 @@ GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositi
 	self
 		privateRequestEditorAction: [ :aState | 
 			aState
-				selectedStringDo: [ :aSelectedString | 
-					| aStringPosition aStringInterval |
-					"How do we compute aStringInterval?
-					caretOffset can be to the left or to the right of the selection."
-					self flag: #TODO.
-					aStringPosition := aState caretOffset - 1 max: 1.
-					aStringInterval := aStringPosition to: aStringPosition + aSelectedString size - 1.
+				selectedStringDo: [ :aSelectedString |
 					aSelectedTextBlock
 						cull: aSelectedString
-						cull: aStringInterval ]
+						cull: aState selectionInterval ]
 				ifAbsent: [ | aStringPosition |
 				aStringPosition := aState caretOffset max: 1.
 				aCursorTextPositionBlock value: aStringPosition ] ]

@@ -154,6 +154,19 @@ GtTextEditorElement >> addEditorShortcuts: aCollectionOfShortcuts [
 ]
 
 { #category : 'api - highlighting' }
+GtTextEditorElement >> addHighlight: aBrTextHighlight overMarker: aMarkerAttribute [
+	self
+		assert: [ aMarkerAttribute isKindOf: BrTextInvisibleMarkerAttribute ]
+		description: [ 'aMarkerAttribute must be a marker attribute' ].
+
+	aBrTextHighlight
+		asGtExternalTextHighlightForTheme: self theme
+		during: [ :externalHighlight | 
+			(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
+				ifNotNil: [ :rustMarkerTag | editorHandle addHighlight: externalHighlight overMarkerTag: rustMarkerTag ] ]
+]
+
+{ #category : 'api - highlighting' }
 GtTextEditorElement >> addHighlight: aBrTextHighlight overRange: aGtTextEditorRange [
 	aBrTextHighlight
 		asGtExternalTextHighlightForTheme: self theme

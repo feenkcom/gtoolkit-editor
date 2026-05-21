@@ -1317,7 +1317,7 @@ GtTextEditorElement >> selectAll [
 ]
 
 { #category : 'api - selection' }
-GtTextEditorElement >> selectedStringDo: aSelectedTextBlock orCursorStringPositionDo: aCursorTextPositionBlock [
+GtTextEditorElement >> selectedStringAndIntervalDo: aSelectedTextBlock orCursorPositionDo: aCursorTextPositionBlock [
 	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
 	- aSelectedTextBlock have two optional parameters [ :aSelectedString :aSelectedInterval | ],
 	- aCursorTextPositionBlock has one parameter [ :aStringPosition | ]."

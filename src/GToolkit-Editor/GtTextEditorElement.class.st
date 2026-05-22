@@ -157,7 +157,7 @@ GtTextEditorElement >> addEditorShortcuts: aCollectionOfShortcuts [
 GtTextEditorElement >> addHighlight: aBrTextHighlight overMarker: aMarkerAttribute [
 	self
 		assert: [ aMarkerAttribute isKindOf: BrTextInvisibleMarkerAttribute ]
-		description: [ 'aMarkerAttribute must be a marker attribute' ].
+		description: [ 'aMarkerAttribute must be a marker attribute: {1}' format: { aMarkerAttribute } ].
 
 	aBrTextHighlight
 		asGtExternalTextHighlightForTheme: self theme

@@ -1372,6 +1372,20 @@ GtTextEditorElement >> styledText: aTextToStyle [
 				documentId: aTextToStyle documentId ]
 ]
 
+{ #category : 'api - attributes' }
+GtTextEditorElement >> styledTextAttributesDo: aBlock [
+	"Iterate styled text attributes. 
+	`aBlock` have two optional parameters [ :allAttributes :eachPosition | ]"
+
+	currentStyledText ifNil: [ ^ self ].
+
+	"The text does not implements iterator."
+	self flag: #TODO.
+	true ifTrue: [ ^ self ].
+	
+	currentStyledText attributesDo: aBlock
+]
+
 { #category : 'styling' }
 GtTextEditorElement >> styler [
 	^ styler

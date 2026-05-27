@@ -1319,19 +1319,23 @@ GtTextEditorElement >> selectAll [
 { #category : 'api - selection' }
 GtTextEditorElement >> selectedStringAndIntervalDo: aSelectedTextBlock orCursorPositionDo: aCursorTextPositionBlock [
 	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
-	- aSelectedTextBlock have two optional parameters [ :aSelectedString :aSelectedInterval | ],
-	- aCursorTextPositionBlock has one parameter [ :aStringPosition | ]."
+	- aSelectedTextBlock have three optional parameters [ :aSelectedString :aSelectedInterval :aTextSize | ],
+	- aCursorTextPositionBlock has two optional parameters [ :aStringPosition :aTextSize | ]."
 	
 	self
 		privateRequestEditorAction: [ :aState | 
 			aState
 				selectedStringDo: [ :aSelectedString |
+					| aTextSize |
+					aTextSize := aState textSize.
 					aSelectedTextBlock
 						cull: aSelectedString
-						cull: aState selectionInterval ]
-				ifAbsent: [ | aStringPosition |
+						cull: aState selectionInterval
+						cull: aState textSize ]
+				ifAbsent: [ | aStringPosition aTextSize |
 				aStringPosition := aState caretOffset max: 1.
-				aCursorTextPositionBlock value: aStringPosition ] ]
+				aTextSize := aState textSize.
+				aCursorTextPositionBlock cull: aStringPosition cull: aTextSize ] ]
 ]
 
 { #category : 'styling' }

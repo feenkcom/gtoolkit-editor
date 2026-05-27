@@ -71,6 +71,11 @@ GtTextEditorEmbedderPerformActionMessage >> primGetSelectionStart [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorEmbedderPerformActionMessage >> primGetTextCharacterSize [
+	^ self ffiCall: #(size_t to_embedder_perform_action_get_text_raw_character_size(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorEmbedderPerformActionMessage >> primHasSelection [
 	^ self ffiCall: #(bool to_embedder_perform_action_has_active_selection(self))
 ]
@@ -96,4 +101,12 @@ GtTextEditorEmbedderPerformActionMessage >> selectionInterval [
 { #category : 'message - dispatch' }
 GtTextEditorEmbedderPerformActionMessage >> sendTo: anObject [
 	anObject onEditorPerformAction: self
+]
+
+{ #category : 'accessing' }
+GtTextEditorEmbedderPerformActionMessage >> textSize [
+	"Return a text size as a character offset.
+	The range of the values is [0..text size]"
+
+	^ self primGetTextCharacterSize
 ]

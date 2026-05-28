@@ -1379,14 +1379,18 @@ GtTextEditorElement >> styledText: aTextToStyle [
 { #category : 'api - attributes' }
 GtTextEditorElement >> styledTextAttributesDo: aBlock [
 	"Iterate styled text attributes. 
-	`aBlock` have two optional parameters [ :allAttributes :eachPosition | ]"
+	`aBlock` have two optional parameters [ :allAttributes :eachPosition | ].
+	
+	Note: Currently, eachPosition is not provided."
+
+	adornmentsBank keysAndValuesDo: [ :eachTag :eachAttribute |
+		aBlock cull: { eachAttribute } cull: 0 ].
 
 	currentStyledText ifNil: [ ^ self ].
-
 	"The text does not implements iterator."
 	self flag: #TODO.
 	true ifTrue: [ ^ self ].
-	
+
 	currentStyledText attributesDo: aBlock
 ]
 

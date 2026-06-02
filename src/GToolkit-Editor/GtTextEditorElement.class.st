@@ -86,7 +86,7 @@ GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
 	
 	self
 		assert: [ aMarkerAttribute isKindOf: BrTextInvisibleMarkerAttribute ]
-		description:  [ 'aMarkerAttribute must be a marker attribute' ].
+		description:  [ 'aMarkerAttribute must be a marker attribute: {1}' format: { aMarkerAttribute } ].
 
 	anAttribute
 		asGtExternalTextAttributeForTheme: self theme

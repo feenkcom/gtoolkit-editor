@@ -86,7 +86,7 @@ GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
 	
 	self
 		assert: [ aMarkerAttribute isKindOf: BrTextInvisibleMarkerAttribute ]
-		description:  [ 'aMarkerAttribute must be a marker attribute' ].
+		description:  [ 'aMarkerAttribute must be a marker attribute: {1}' format: { aMarkerAttribute } ].
 
 	anAttribute
 		asGtExternalTextAttributeForTheme: self theme
@@ -1319,19 +1319,23 @@ GtTextEditorElement >> selectAll [
 { #category : 'api - selection' }
 GtTextEditorElement >> selectedStringAndIntervalDo: aSelectedTextBlock orCursorPositionDo: aCursorTextPositionBlock [
 	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
-	- aSelectedTextBlock have two optional parameters [ :aSelectedString :aSelectedInterval | ],
-	- aCursorTextPositionBlock has one parameter [ :aStringPosition | ]."
+	- aSelectedTextBlock have three optional parameters [ :aSelectedString :aSelectedInterval :aTextSize | ],
+	- aCursorTextPositionBlock has two optional parameters [ :aStringPosition :aTextSize | ]."
 	
 	self
 		privateRequestEditorAction: [ :aState | 
 			aState
 				selectedStringDo: [ :aSelectedString |
+					| aTextSize |
+					aTextSize := aState textSize.
 					aSelectedTextBlock
 						cull: aSelectedString
-						cull: aState selectionInterval ]
-				ifAbsent: [ | aStringPosition |
+						cull: aState selectionInterval
+						cull: aState textSize ]
+				ifAbsent: [ | aStringPosition aTextSize |
 				aStringPosition := aState caretOffset max: 1.
-				aCursorTextPositionBlock value: aStringPosition ] ]
+				aTextSize := aState textSize.
+				aCursorTextPositionBlock cull: aStringPosition cull: aTextSize ] ]
 ]
 
 { #category : 'styling' }
@@ -1375,14 +1379,18 @@ GtTextEditorElement >> styledText: aTextToStyle [
 { #category : 'api - attributes' }
 GtTextEditorElement >> styledTextAttributesDo: aBlock [
 	"Iterate styled text attributes. 
-	`aBlock` have two optional parameters [ :allAttributes :eachPosition | ]"
+	`aBlock` have two optional parameters [ :allAttributes :eachPosition | ].
+	
+	Note: Currently, eachPosition is not provided."
+
+	adornmentsBank keysAndValuesDo: [ :eachTag :eachAttribute |
+		aBlock cull: { eachAttribute } cull: 0 ].
 
 	currentStyledText ifNil: [ ^ self ].
-
 	"The text does not implements iterator."
 	self flag: #TODO.
 	true ifTrue: [ ^ self ].
-	
+
 	currentStyledText attributesDo: aBlock
 ]
 

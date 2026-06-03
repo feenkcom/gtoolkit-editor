@@ -39,6 +39,11 @@ GtTextEditorTextToStyle >> attributes: anAttributesCollection from: aFromIndex t
 						to: aToIndex ] ].
 ]
 
+{ #category : 'text - attributes' }
+GtTextEditorTextToStyle >> attributesFinder [
+	^ GtTextEditorTextToStyleAttributesFinder new attributes: allAttributes
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorTextToStyle >> documentId [
 	^ documentId

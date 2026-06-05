@@ -47,23 +47,27 @@ GtTextEditorElement >> addAppendingAttribute: anAppendingAttribute atAppendingAt
 	<return: #Number>
 	| attributeTag |
 	attributeTag := 0.
-	
 	self
 		assert: [ anAppendingAttribute isKindOf: BlTextAttribute ]
-		description:  [ 'anAppendingAttribute must be a text attribute' ].
+		description: [ 'anAppendingAttribute must be a text attribute: {1}'
+				format: {anAppendingAttribute} ].
 
 	self
 		assert: [ anAppendingAttribute isAdornment and: [ anAppendingAttribute shouldAppend ] ]
-		description: [ 'anAppendingAttribute must be an appending text attribute' ].
-		
-	self
-		assert: [ anotherAppendingAttribute isKindOf: BlTextAttribute ]
-		description:  [ 'anotherAppendingAttribute must be a text attribute' ].
+		description: [ 'anAppendingAttribute must be an appending text attribute: {1}'
+				format: {anAppendingAttribute} ].
 
 	self
-		assert: [ anotherAppendingAttribute isAdornment and: [ anotherAppendingAttribute shouldAppend ] ]
-		description: [ 'anotherAppendingAttribute must be an appending text attribute' ].
-		
+		assert: [ anotherAppendingAttribute isKindOf: BlTextAttribute ]
+		description: [ 'anotherAppendingAttribute must be a text attribute: {1}'
+				format: {anotherAppendingAttribute} ].
+
+	self
+		assert: [ anotherAppendingAttribute isAdornment
+				and: [ anotherAppendingAttribute shouldAppend ] ]
+		description: [ 'anotherAppendingAttribute must be an appending text attribute: {1}'
+				format: {anotherAppendingAttribute} ].
+
 	anAppendingAttribute
 		asGtExternalTextAttributeForTheme: self theme
 		during: [ :rustAttribute | 
@@ -172,6 +176,29 @@ GtTextEditorElement >> addHighlight: aBrTextHighlight overRange: aGtTextEditorRa
 		asGtExternalTextHighlightForTheme: self theme
 		during: [ :externalHighlight |
 			editorHandle addHighlight: externalHighlight overRange: aGtTextEditorRange ]
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorElement >> attributesKindOf: anAppendingAttributeClass atRange: aBrTextCharacterRange [
+	"Find styled text attributes of kind.
+	TODO: maybe we can call it markerWithPurpose:atRange: and limit it to the specific markers."
+
+	self flag: #TODO.
+
+	self
+		assert: [ anAppendingAttributeClass inheritsFrom: BlTextAttribute ]
+		description: [ 'anAppendingAttributeClass must be a text attribute class: {1}'
+				format: {anAppendingAttributeClass} ].
+
+	currentStyledText ifNil: [ ^ #() ].
+
+	^ Array
+		streamContents: [ :aStream | 
+			(currentStyledText
+				from: aBrTextCharacterRange start
+				to: aBrTextCharacterRange end) attributesFinder
+				findAttributesSuchThat: [ :eachAttribute | eachAttribute isKindOf: anAppendingAttributeClass ]
+				indicesDo: [ :eachStart :eachStop :eachAttribute | aStream nextPut: eachAttribute ] ]
 ]
 
 { #category : 'api - mode' }
@@ -1319,23 +1346,26 @@ GtTextEditorElement >> selectAll [
 { #category : 'api - selection' }
 GtTextEditorElement >> selectedStringAndIntervalDo: aSelectedTextBlock orCursorPositionDo: aCursorTextPositionBlock [
 	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
-	- aSelectedTextBlock have three optional parameters [ :aSelectedString :aSelectedInterval :aTextSize | ],
-	- aCursorTextPositionBlock has two optional parameters [ :aStringPosition :aTextSize | ]."
+	- aSelectedTextBlock have three optional parameters [ :aSelectedString :aSelectedInterval :aTextSize :aDocumentId | ],
+	- aCursorTextPositionBlock has two optional parameters [ :aStringPosition :aTextSize :aDocumentId | ]."
 	
 	self
 		privateRequestEditorAction: [ :aState | 
 			aState
 				selectedStringDo: [ :aSelectedString |
-					| aTextSize |
+					| aTextSize aDocumentId |
 					aTextSize := aState textSize.
+					aDocumentId := aState documentId.
 					aSelectedTextBlock
 						cull: aSelectedString
 						cull: aState selectionInterval
-						cull: aState textSize ]
-				ifAbsent: [ | aStringPosition aTextSize |
+						cull: aState textSize
+						cull: aDocumentId ]
+				ifAbsent: [ | aStringPosition aTextSize aDocumentId |
 				aStringPosition := aState caretOffset max: 1.
 				aTextSize := aState textSize.
-				aCursorTextPositionBlock cull: aStringPosition cull: aTextSize ] ]
+				aDocumentId := aState documentId.
+				aCursorTextPositionBlock cull: aStringPosition cull: aTextSize cull: aDocumentId ] ]
 ]
 
 { #category : 'styling' }

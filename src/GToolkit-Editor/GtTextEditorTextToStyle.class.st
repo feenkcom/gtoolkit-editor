@@ -90,8 +90,8 @@ GtTextEditorTextToStyle >> isEmpty [
 { #category : 'text - enumeration' }
 GtTextEditorTextToStyle >> iterator: aFromIndex to: aToIndex [
 	"Return an iterator pointing to the anStartIndex text item (character) limited by anEndIndex"
+
 	<return: #BlTextIterator>
-	
 	self
 		assert: [ aFromIndex <= (aToIndex + 1) ]
 		description: [ 'Start must not exceed end more than by one' ].
@@ -100,7 +100,11 @@ GtTextEditorTextToStyle >> iterator: aFromIndex to: aToIndex [
 		assert: [ aFromIndex > 0 or: [ aFromIndex = 0 and: [ aToIndex = 0 ] ] ]
 		description: [ 'Start and end must be positive or both zero' ].
 
-	^ GtTextEditorTextToStyleIterator text: self from: aFromIndex to: aToIndex
+	^ GtTextEditorTextToStyleIterator
+		text: self
+		attributes: allAttributes
+		from: aFromIndex
+		to: aToIndex
 ]
 
 { #category : 'as yet unclassified' }

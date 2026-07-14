@@ -1,5 +1,5 @@
 Extension { #name : 'BrTextEventHandlerAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BrTextEventHandlerAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBlock [
+BrTextEventHandlerAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 ]

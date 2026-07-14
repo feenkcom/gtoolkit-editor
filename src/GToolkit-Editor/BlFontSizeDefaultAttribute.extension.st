@@ -1,6 +1,6 @@
 Extension { #name : 'BlFontSizeDefaultAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BlFontSizeDefaultAttribute >> asGtExternalTextAttributeForTheme: aBrGlamorousLightTheme during: aFullBlockClosure [ 
+BlFontSizeDefaultAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 	self flag: #TODO
 ]

@@ -1,6 +1,6 @@
 Extension { #name : 'BlTextHighlightAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BlTextHighlightAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBlock [
+BlTextHighlightAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 	self flag: #TODO
 ]

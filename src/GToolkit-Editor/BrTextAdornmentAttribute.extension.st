@@ -1,19 +1,36 @@
 Extension { #name : 'BrTextAdornmentAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BrTextAdornmentAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBlock [
+BrTextAdornmentAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 	self shouldAppend
 		ifTrue: [ ^ GtTextEditorAppendingAttribute newDuring: [ :attribute |
-			attribute adornmentAttribute: self.
 			self gtExternalTextConfigureAppendingAttribute: attribute.
 			aBlock value: attribute ] ].
 			
 	self shouldReplace
 		ifTrue: [ ^ GtTextEditorReplacingAttribute newDuring: [ :attribute |
-			attribute adornmentAttribute: self.
 			aBlock value: attribute ] ].
 
-	^ self
+	self error: 'TODO'
+]
+
+{ #category : '*GToolkit-Editor' }
+BrTextAdornmentAttribute >> gtEditorCreateExternalTextAttributeTagged: anAttributeTag registry: anAttributesRegistry forTheme: aTheme during: aBlock [
+	self shouldAppend
+		ifTrue: [ ^ GtTextEditorAppendingAttribute newWithTag: anAttributeTag during:  [ :attribute |
+			self gtExternalTextConfigureAppendingAttribute: attribute.
+			aBlock value: attribute ] ].
+			
+	self shouldReplace
+		ifTrue: [ ^ GtTextEditorReplacingAttribute newWithTag: anAttributeTag during: [ :attribute |
+			aBlock value: attribute ] ].
+
+	self error: 'TODO'
+]
+
+{ #category : '*GToolkit-Editor' }
+BrTextAdornmentAttribute >> gtEditorShouldBeAddedToRegistry [
+	^ true
 ]
 
 { #category : '*GToolkit-Editor' }

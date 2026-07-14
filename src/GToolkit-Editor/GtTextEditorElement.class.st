@@ -18,7 +18,6 @@ Class {
 		'completionAttributeTag',
 		'completionElement',
 		'completionFuture',
-		'adornmentsBank',
 		'userModel',
 		'history',
 		'editorHandle',
@@ -27,7 +26,8 @@ Class {
 		'pendingActions',
 		'ropeSnapshot',
 		'shouldReplicate',
-		'shortcuts'
+		'shortcuts',
+		'attributesRegistry'
 	],
 	#classVars : [
 		'UniqueActionIdGenerator'
@@ -68,16 +68,16 @@ GtTextEditorElement >> addAppendingAttribute: anAppendingAttribute atAppendingAt
 		description: [ 'anotherAppendingAttribute must be an appending text attribute: {1}'
 				format: {anotherAppendingAttribute} ].
 
-	anAppendingAttribute
-		asGtExternalTextAttributeForTheme: self theme
-		during: [ :rustAttribute | 
-			(adornmentsBank keyAtValue: anotherAppendingAttribute ifAbsent: [ nil ])
-				ifNotNil: [ :rustAppendingTag | 
+	attributesRegistry
+		findAttributeTag: anotherAppendingAttribute
+		ifFound: [ :rustAppendingTag | 
+			anAppendingAttribute
+				gtEditorAsExternalTextAttribute: attributesRegistry
+				forTheme: self theme
+				during: [ :rustAttribute | 
 					attributeTag := editorHandle
 							addAppendingAttribute: rustAttribute
-							atAppendingAttributeTag: rustAppendingTag.
-
-					self privateAddAttributeTagToBank: attributeTag attribute: rustAttribute ] ].
+							atAppendingAttributeTag: rustAppendingTag ] ].
 
 	^ attributeTag
 ]
@@ -87,21 +87,21 @@ GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
 	<return: #Number>
 	| attributeTag |
 	attributeTag := 0.
-	
+
 	self
 		assert: [ aMarkerAttribute isKindOf: BrTextInvisibleMarkerAttribute ]
-		description:  [ 'aMarkerAttribute must be a marker attribute: {1}' format: { aMarkerAttribute } ].
+		description: [ 'aMarkerAttribute must be a marker attribute: {1}' format: {aMarkerAttribute} ].
 
-	anAttribute
-		asGtExternalTextAttributeForTheme: self theme
-		during: [ :rustAttribute | 
-			(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
-				ifNotNil: [ :rustMarkerTag | 
+	attributesRegistry
+		findAttributeTag: aMarkerAttribute
+		ifFound: [ :rustMarkerTag | 
+			anAttribute
+				gtEditorAsExternalTextAttribute: attributesRegistry
+				forTheme: self theme
+				during: [ :rustAttribute | 
 					attributeTag := editorHandle
 							addAttribute: rustAttribute
-							overMarkerTag: rustMarkerTag.
-
-					self privateAddAttributeTagToBank: attributeTag attribute: rustAttribute ] ].
+							overMarkerTag: rustMarkerTag ] ].
 
 	GtTextEditorAddAttributeOverMarkerSignal new
 		attribute: anAttribute;
@@ -116,24 +116,22 @@ GtTextEditorElement >> addAttribute: anAttribute overMarker: aMarkerAttribute [
 GtTextEditorElement >> addAttribute: anAttribute overRange: aGtTextEditorRange [
 	<return: #Number>
 	| attributeTag |
-	
 	attributeTag := 0.
-	
+
 	anAttribute
-		asGtExternalTextAttributeForTheme: self theme
-		during: [ :externalAttribute |			
+		gtEditorAsExternalTextAttribute: attributesRegistry
+		forTheme: self theme
+		during: [ :externalAttribute | 
 			attributeTag := editorHandle
-				addAttribute: externalAttribute
-				overRange: aGtTextEditorRange.
-			
-			self privateAddAttributeTagToBank: attributeTag attribute: externalAttribute ].
-			
+					addAttribute: externalAttribute
+					overRange: aGtTextEditorRange ].
+
 	GtTextEditorAddAttributeOverRangeSignal new
 		attribute: anAttribute;
 		attributeTag: attributeTag;
 		range: aGtTextEditorRange;
 		emit.
-			
+
 	^ attributeTag
 ]
 
@@ -161,13 +159,14 @@ GtTextEditorElement >> addEditorShortcuts: aCollectionOfShortcuts [
 GtTextEditorElement >> addHighlight: aBrTextHighlight overMarker: aMarkerAttribute [
 	self
 		assert: [ aMarkerAttribute isKindOf: BrTextInvisibleMarkerAttribute ]
-		description: [ 'aMarkerAttribute must be a marker attribute: {1}' format: { aMarkerAttribute } ].
+		description: [ 'aMarkerAttribute must be a marker attribute: {1}' format: {aMarkerAttribute} ].
 
 	aBrTextHighlight
 		asGtExternalTextHighlightForTheme: self theme
 		during: [ :externalHighlight | 
-			(adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ])
-				ifNotNil: [ :rustMarkerTag | editorHandle addHighlight: externalHighlight overMarkerTag: rustMarkerTag ] ]
+			attributesRegistry
+				findAttributeTag: aMarkerAttribute
+				ifFound: [ :rustMarkerTag | editorHandle addHighlight: externalHighlight overMarkerTag: rustMarkerTag ] ]
 ]
 
 { #category : 'api - highlighting' }
@@ -327,11 +326,10 @@ GtTextEditorElement >> extendSelectionUp [
 { #category : 'gt - extensions' }
 GtTextEditorElement >> gtAdornmentsViewFor: aView [
 	<gtView>
-	adornmentsBank ifNil: [ ^ aView empty ].
 
 	^ aView tree
 		title: 'Adornments';
-		items: [ adornmentsBank associations ];
+		items: [ attributesRegistry tagsAndAttributes ];
 		expandUpTo: 1;
 		children: [ :anObject | 
 			(anObject isKindOf: Association)
@@ -390,7 +388,7 @@ GtTextEditorElement >> initialize [
 	shouldReplicate := true.
 	
 	adornments := OrderedDictionary new.
-	adornmentsBank := OrderedDictionary new.
+	attributesRegistry := GtTextEditorAttributesRegistry new.
 	
 	pendingActions := AsyncSharedDictionary new.
 	
@@ -417,6 +415,9 @@ GtTextEditorElement >> initialize [
 			action: (MessageSend receiver: self selector: #pollEditorMessages).
 
 	self beInSeparateCompositionLayer.
+	
+	self when: BlFocusEvent do: [ :anEvent | self onGotFocus: anEvent ].
+	self when: BlBlurEvent do: [ :anEvent | self onLostFocus: anEvent ].
 	self when: BlMouseWheelEvent do: [ :anEvent | self onMouseWheelEvent: anEvent ].
 	self when: BlMouseMoveEvent do: [ :anEvent | self onMouseMoveEvent: anEvent ].
 	self when: BlMouseDownEvent do: [ :anEvent | self onMouseDownEvent: anEvent ].
@@ -819,15 +820,14 @@ GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentsAdded: aMessage [
-	aMessage adornmentTags do: [ :eachTag |
-		adornmentsBank
-			at: eachTag
-			ifPresent: [ :pharoAttribute |
-				adornments
-					at: eachTag
-					ifAbsent: [
-						adornments at: eachTag put: (pharoAttribute -> nil)
-					] ] ].
+	aMessage adornmentTags
+		do: [ :eachTag | 
+			attributesRegistry
+				findAttribute: eachTag
+				ifFound: [ :pharoAttribute | 
+					adornments
+						at: eachTag
+						ifAbsent: [ adornments at: eachTag put: pharoAttribute -> nil ] ] ]
 ]
 
 { #category : 'event handling' }
@@ -840,7 +840,7 @@ GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
 		
 		"what happens when we  redo/undo? maybe we shouldn't remove it from the bank yet."
 		self flag: #TODO.
-		adornmentsBank removeKey: eachTag ifAbsent: [ ] ].
+		attributesRegistry unregisterAttributeByTag: eachTag ].
 	
 	removedTags := removedTags asSet.
 	
@@ -1003,6 +1003,16 @@ GtTextEditorElement >> onEditorTextStylingRequest: aMessage [
 		styleText: textToStyle
 		inEditorElement: self
 		thenDo: [ :aText | ]
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onGotFocus: anEvent [
+	editorHandle showCursors
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onLostFocus: anEvent [
+	editorHandle hideCursors
 ]
 
 { #category : 'layout' }
@@ -1195,15 +1205,6 @@ GtTextEditorElement >> pollEditorMessages [
 	] repeat
 ]
 
-{ #category : 'private' }
-GtTextEditorElement >> privateAddAttributeTagToBank: attributeTag attribute: externalAttribute [
-	externalAttribute isAdornmentAttribute
-		ifTrue: [ adornmentsBank at: attributeTag put: externalAttribute adornmentAttribute ].
-
-	externalAttribute isMarkerAttribute
-		ifTrue: [ adornmentsBank at: attributeTag put: externalAttribute markerAttribute ]
-]
-
 { #category : 'styling' }
 GtTextEditorElement >> privateDoStyleTextAndAfterDo: aBlock [
 	"Actually trigger a text styler"
@@ -1252,10 +1253,9 @@ GtTextEditorElement >> redo [
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> removeAdornmentAttribute: anAdornmentAttribute [
-	| attributeTagToRemove |
-	
-	attributeTagToRemove := adornmentsBank keyAtValue: anAdornmentAttribute ifAbsent: [ ^ self ].
-	self removeAttributeTagged: attributeTagToRemove
+	attributesRegistry
+		findAttributeTag: anAdornmentAttribute
+		ifFound: [ :attributeTagToRemove | self removeAttributeTagged: attributeTagToRemove ]
 ]
 
 { #category : 'api - attributes' }
@@ -1269,15 +1269,16 @@ GtTextEditorElement >> removeAttributeTagged: anAttributeTag [
 
 { #category : 'api - attributes' }
 GtTextEditorElement >> removeAttributeTagged: anAttributeTag overMarker: aMarkerAttribute [
-	| aRustMarkerTag |
-	aRustMarkerTag := (adornmentsBank keyAtValue: aMarkerAttribute ifAbsent: [ nil ]).
-	aRustMarkerTag	ifNotNil: [ :rustMarkerTag | editorHandle removeAttributeTagged: anAttributeTag overMarkerTag: rustMarkerTag ].
-	
-	GtTextEditorRemoveAttributeTaggedOverMarkerSignal new 
-		attributeTag: anAttributeTag;
-		markerAttribute: aMarkerAttribute;
-		markerTag: aRustMarkerTag;
-		emit
+	attributesRegistry
+		findAttributeTag: aMarkerAttribute
+		ifFound: [ :aRustMarkerTag | 
+			editorHandle removeAttributeTagged: anAttributeTag overMarkerTag: aRustMarkerTag.
+
+			GtTextEditorRemoveAttributeTaggedOverMarkerSignal new
+				attributeTag: anAttributeTag;
+				markerAttribute: aMarkerAttribute;
+				markerTag: aRustMarkerTag;
+				emit ]
 ]
 
 { #category : 'api - shortcuts' }
@@ -1393,14 +1394,13 @@ GtTextEditorElement >> styleTextAndAfterDo: aBlock [
 GtTextEditorElement >> styledText: aTextToStyle [
 	currentStyledText := aTextToStyle.
 
+	self flag: #TODO.
+	"questionable use of the global attributes registry! What should we do when the styled text is rejected because of the wrong document id"
+	
 	aTextToStyle
-		asGtTextEditorTextForTheme: self theme
+		asGtTextEditorText: attributesRegistry
+		forTheme: self theme
 		during: [ :textEditorText |
-			self flag: #TODO.
-			"questionable! What should we do when the styled text is rejected because of the wrong document id"
-			
-			adornmentsBank addAll: textEditorText adornments.
-			
 			editorHandle
 				styledText: textEditorText
 				documentId: aTextToStyle documentId ]
@@ -1413,7 +1413,7 @@ GtTextEditorElement >> styledTextAttributesDo: aBlock [
 	
 	Note: Currently, eachPosition is not provided."
 
-	adornmentsBank keysAndValuesDo: [ :eachTag :eachAttribute |
+	attributesRegistry attributes do: [ :eachAttribute |
 		aBlock cull: { eachAttribute } cull: 0 ].
 
 	currentStyledText ifNil: [ ^ self ].
@@ -1453,10 +1453,9 @@ GtTextEditorElement >> text [
 { #category : 'accessing' }
 GtTextEditorElement >> text: aBlText [
 	aBlText
-		asGtTextEditorTextForTheme: self theme
-		during: [ :textEditorText |
-			adornmentsBank addAll: textEditorText adornments.
-			editorHandle text: textEditorText ]
+		asGtTextEditorText: attributesRegistry
+		forTheme: self theme
+		during: [ :textEditorText | editorHandle text: textEditorText ]
 ]
 
 { #category : 'api - editing' }

@@ -9,9 +9,19 @@ Class {
 	#tag : 'Text'
 }
 
+{ #category : 'instance creation' }
+GtTextEditorReplacingAttribute class >> newWithTag: anAttributeTag during: aBlock [
+	^ self fromNativeHandle: (self primCreateWithTag: anAttributeTag) during: aBlock
+]
+
 { #category : 'private - ffi' }
 GtTextEditorReplacingAttribute class >> primCreate [
 	^ self ffiCall: #(void* replacing_attribute_new())
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorReplacingAttribute class >> primCreateWithTag: anAttributeTag [
+	^ self ffiCall: #(void* replacing_attribute_new_with_tag(uint64 anAttributeTag))
 ]
 
 { #category : 'private - ffi' }

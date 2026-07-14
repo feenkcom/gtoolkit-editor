@@ -1,7 +1,7 @@
 Extension { #name : 'BrTextInvisibleMarkerAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BrTextInvisibleMarkerAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBlock [
+BrTextInvisibleMarkerAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 	^ GtTextEditorInvisibleMarkerAttribute
 		newDuring: [ :rustAttribute | 
 			rustAttribute markerAttribute: self.

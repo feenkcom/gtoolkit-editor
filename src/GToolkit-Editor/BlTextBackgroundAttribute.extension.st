@@ -1,9 +1,8 @@
 Extension { #name : 'BlTextBackgroundAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BlTextBackgroundAttribute >> asGtExternalTextAttributeForTheme: aBlTheme during: aBlock [
-
+BlTextBackgroundAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 	^ GtTextEditorAttribute
-		background: (self paint blocResolveColorForTheme: aBlTheme)
+		background: (self paint blocResolveColorForTheme: aTheme)
 		during: aBlock
 ]

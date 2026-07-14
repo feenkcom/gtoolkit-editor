@@ -1,7 +1,7 @@
-Extension { #name : 'BrTextHoverStylableAttribute' }
+Extension { #name : 'BrTextCursorStylableAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BrTextHoverStylableAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
+BrTextCursorStylableAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 	self attributes ifNotEmpty: [ :theAttributes |
 		theAttributes first
 			gtEditorAsExternalTextAttribute: anAttributesRegistry

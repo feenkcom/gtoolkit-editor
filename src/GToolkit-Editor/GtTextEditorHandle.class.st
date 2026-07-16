@@ -185,6 +185,11 @@ GtTextEditorHandle >> height [
 	^ self primGetHeight
 ]
 
+{ #category : 'api - navigation' }
+GtTextEditorHandle >> hideCursors [
+	self primSetCursorsVisible: false
+]
+
 { #category : 'initialization' }
 GtTextEditorHandle >> initialize [
 	super initialize.
@@ -629,6 +634,11 @@ GtTextEditorHandle >> primSelectWordAtX: aX y: aY overwriteSelection: shouldOver
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primSetCursorsVisible: isVisible [
+	self ffiCall: #(void editor_handle_set_cursors_visible(self, bool isVisible))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSetDefaultFontFamily: aStringBox [
 	self ffiCall: #(void editor_handle_set_default_font_family(self, void* aStringBox))
 ]
@@ -828,6 +838,11 @@ GtTextEditorHandle >> selectWordAtVisualPoint: aPoint overwriteSelection: should
 { #category : 'initialization' }
 GtTextEditorHandle >> setRenderThreadWakerThunk: aWindow [
 	self primSetRenderThreadWakerThunk: aWindow
+]
+
+{ #category : 'api - navigation' }
+GtTextEditorHandle >> showCursors [
+	self primSetCursorsVisible: true
 ]
 
 { #category : 'api - selection' }

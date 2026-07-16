@@ -1,9 +1,6 @@
 Class {
 	#name : 'GtTextEditorAppendingAttribute',
 	#superclass : 'GtTextEditorAttribute',
-	#instVars : [
-		'adornmentAttribute'
-	],
 	#category : 'GToolkit-Editor-Text',
 	#package : 'GToolkit-Editor',
 	#tag : 'Text'
@@ -14,6 +11,11 @@ GtTextEditorAppendingAttribute class >> appendingText: anExternalText during: aB
 	^ GtTextEditorAppendingAttribute
 			fromNativeHandle: (self primAppendingText: anExternalText)
 			during: aBlock
+]
+
+{ #category : 'instance creation' }
+GtTextEditorAppendingAttribute class >> newWithTag: anAttributeTag during: aBlock [
+	^ self fromNativeHandle: (self primCreateWithTag: anAttributeTag) during: aBlock
 ]
 
 { #category : 'private - ffi' }
@@ -27,20 +29,15 @@ GtTextEditorAppendingAttribute class >> primCreate [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorAppendingAttribute class >> primCreateWithTag: anAttributeTag [
+	^ self ffiCall: #(void* appending_attribute_new_with_tag(uint64 anAttributeTag))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorAppendingAttribute class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void appending_attribute_release(void* aHandle))
-]
-
-{ #category : 'accessing' }
-GtTextEditorAppendingAttribute >> adornmentAttribute [
-	^ adornmentAttribute
-]
-
-{ #category : 'accessing' }
-GtTextEditorAppendingAttribute >> adornmentAttribute: anObject [
-	adornmentAttribute := anObject
 ]
 
 { #category : 'accessing' }

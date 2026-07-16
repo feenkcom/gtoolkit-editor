@@ -1,6 +1,6 @@
 Extension { #name : 'BlFontWeightAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BlFontWeightAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBlock [
+BlFontWeightAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 	^ GtTextEditorAttribute fontWeight: weight during: aBlock
 ]

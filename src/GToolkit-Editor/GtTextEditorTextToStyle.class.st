@@ -5,7 +5,8 @@ Class {
 		'theme',
 		'externalText',
 		'allAttributes',
-		'documentId'
+		'documentId',
+		'attributesRegistry'
 	],
 	#category : 'GToolkit-Editor-Text',
 	#package : 'GToolkit-Editor',
@@ -13,7 +14,9 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-GtTextEditorTextToStyle >> asGtTextEditorTextForTheme: aTheme during: aBlock [
+GtTextEditorTextToStyle >> asGtTextEditorText: anAttributesRegistry forTheme: aTheme during: aBlock [
+	anAttributesRegistry.
+
 	^ aBlock value: externalText
 ]
 
@@ -31,7 +34,8 @@ GtTextEditorTextToStyle >> attributes: anAttributesCollection from: aFromIndex t
 	
 	anAttributesCollection do: [ :eachAttribute |
 			eachAttribute
-				asGtExternalTextAttributeForTheme: theme
+				gtEditorAsExternalTextAttribute: attributesRegistry
+				forTheme: theme
 				during: [ :externalAttribute |
 					externalText
 						attribute: externalAttribute
@@ -79,7 +83,8 @@ GtTextEditorTextToStyle >> gtTextFor: aView [
 GtTextEditorTextToStyle >> initialize [
 	super initialize.
 	
-	allAttributes := OrderedCollection new
+	allAttributes := OrderedCollection new.
+	attributesRegistry := GtTextEditorAttributesRegistry new
 ]
 
 { #category : 'as yet unclassified' }

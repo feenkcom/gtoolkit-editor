@@ -1,9 +1,6 @@
 Class {
 	#name : 'GtTextEditorExternalText',
 	#superclass : 'GtBoxerValueBox',
-	#instVars : [
-		'adornments'
-	],
 	#category : 'GToolkit-Editor-Text',
 	#package : 'GToolkit-Editor',
 	#tag : 'Text'
@@ -32,13 +29,6 @@ GtTextEditorExternalText class >> fromString: aString during: aBlock [
 ]
 
 { #category : 'as yet unclassified' }
-GtTextEditorExternalText class >> fromText: aBlText theme: aBlTheme during: aBlock [
-	^ aBlText
-		asGtTextEditorTextForTheme: aBlTheme
-		during: aBlock
-]
-
-{ #category : 'as yet unclassified' }
 GtTextEditorExternalText class >> primFromString: aStringBox [
 	^ self ffiCall: #(void* text_from_string(void* aStringBox))
 ]
@@ -48,11 +38,6 @@ GtTextEditorExternalText class >> primRelease: aHandle [
 	
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void text_release(void* aHandle))
-]
-
-{ #category : 'accessing' }
-GtTextEditorExternalText >> adornments [
-	^ adornments
 ]
 
 { #category : 'text - attributes' }
@@ -98,18 +83,6 @@ GtTextEditorExternalText >> asString [
 
 { #category : 'text - attributes' }
 GtTextEditorExternalText >> attribute: aTextAttribute from: aStart to: anEnd [
-	aTextAttribute isAdornmentAttribute
-		ifTrue: [
-			adornments
-				at: aTextAttribute attributeTag
-				put: aTextAttribute adornmentAttribute ].
-				
-	aTextAttribute isMarkerAttribute
-		ifTrue: [
-			adornments
-				at: aTextAttribute attributeTag
-				put: aTextAttribute markerAttribute ].
-
 	aTextAttribute asGtExternalTextAttributeDuring: [ :attr |
 		self
 			primAddAttribute: attr
@@ -188,13 +161,6 @@ GtTextEditorExternalText >> gtTextWithReplacementsFor: aView [
 		items: [ self textWithReplacements asArray ];
 		column: 'Kind' text: [ :each | each kindName ];
 		column: 'Range' text: [ :each | each range ] 
-]
-
-{ #category : 'initialization' }
-GtTextEditorExternalText >> initialize [
-	super initialize.
-	
-	adornments := Dictionary new
 ]
 
 { #category : 'text - modifications' }

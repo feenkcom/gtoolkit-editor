@@ -1,6 +1,6 @@
 Extension { #name : 'BlTextDecorationAttribute' }
 
 { #category : '*GToolkit-Editor' }
-BlTextDecorationAttribute >> asGtExternalTextAttributeForTheme: aTheme during: aBlock [ 
+BlTextDecorationAttribute >> gtEditorCreateExternalTextAttribute: anAttributesRegistry forTheme: aTheme during: aBlock [
 	self flag: #TODO
 ]

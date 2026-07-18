@@ -10,19 +10,24 @@ BlTextAttribute >> gtEditorAsExternalTextAttribute: anAttributesRegistry forThem
 						gtEditorCreateExternalTextAttributeTagged: anExistingTag
 						registry: anAttributesRegistry
 						forTheme: aTheme
-						during: aBlock ]
+						during: [ :aTypedExternalAttribute | 
+							aTypedExternalAttribute
+								asGtExternalTextAttributeDuring: [ :anExternalAttribute | aBlock value: anExternalAttribute ] ] ]
 				ifNone: [ self
 						gtEditorCreateExternalTextAttribute: anAttributesRegistry
 						forTheme: aTheme
-						during: [ :anExternalAttribute | 
+						during: [ :aTypedExternalAttribute | 
 							anAttributesRegistry
-									registerAttribute: self
-									attributeTag: anExternalAttribute attributeTag.
-							aBlock value: anExternalAttribute ] ] ]
+								registerAttribute: self
+								attributeTag: aTypedExternalAttribute attributeTag.
+							aTypedExternalAttribute
+								asGtExternalTextAttributeDuring: [ :anExternalAttribute | aBlock value: anExternalAttribute ] ] ] ]
 		ifFalse: [ self
 				gtEditorCreateExternalTextAttribute: anAttributesRegistry
 				forTheme: aTheme
-				during: aBlock ]
+				during: [ :aTypedExternalAttribute | 
+					aTypedExternalAttribute
+						asGtExternalTextAttributeDuring: [ :anExternalAttribute | aBlock value: anExternalAttribute ] ] ]
 ]
 
 { #category : '*GToolkit-Editor' }

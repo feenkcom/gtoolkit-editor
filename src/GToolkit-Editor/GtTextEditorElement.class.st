@@ -791,7 +791,6 @@ GtTextEditorElement >> onEditorActiveCaretMoved: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
-	self halt.
 	adornments
 		at: aMessage adornmentTag
 		ifPresent: [ :anAssociation |

@@ -840,7 +840,7 @@ GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
 		
 		"what happens when we  redo/undo? maybe we shouldn't remove it from the bank yet."
 		self flag: #TODO.
-		attributesRegistry unregisterAttributeByTag: eachTag ].
+		"attributesRegistry unregisterAttributeByTag: eachTag" ].
 	
 	removedTags := removedTags asSet.
 	

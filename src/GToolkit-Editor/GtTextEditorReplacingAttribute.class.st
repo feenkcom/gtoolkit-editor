@@ -31,6 +31,30 @@ GtTextEditorReplacingAttribute class >> primRelease: aHandle [
 	self ffiCall: #(void replacing_attribute_release(void* aHandle))
 ]
 
+{ #category : 'private - ffi' }
+GtTextEditorReplacingAttribute class >> primReplacingText: aText [
+	^ self ffiCall: #(void* replacing_attribute_new_text(void* aText))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorReplacingAttribute class >> primReplacingText: aText withTag: anAttributeTag [
+	^ self ffiCall: #(void* replacing_attribute_new_text_with_tag(void* aText, uint64 anAttributeTag))
+]
+
+{ #category : 'instance creation' }
+GtTextEditorReplacingAttribute class >> replacingText: anExternalText during: aBlock [
+	^ self
+			fromNativeHandle: (self primReplacingText: anExternalText)
+			during: aBlock
+]
+
+{ #category : 'instance creation' }
+GtTextEditorReplacingAttribute class >> replacingText: anExternalText withTag: anAttributeTag during: aBlock [
+	^ self
+		fromNativeHandle: (self primReplacingText: anExternalText withTag: anAttributeTag)
+		during: aBlock
+]
+
 { #category : 'accessing' }
 GtTextEditorReplacingAttribute >> adornmentAttribute [
 	^ adornmentAttribute

@@ -6,46 +6,45 @@ Class {
 	#tag : 'Text'
 }
 
+{ #category : 'instance creation' }
+GtTextEditorCursorMoveAttribute class >> newWithTag: anAttributeTag during: aBlock [
+	^ self fromNativeHandle: (self primCreateWithTag: anAttributeTag) during: aBlock
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorCursorMoveAttribute class >> primCreate [
+	^ self ffiCall: #(void* caret_move_attribute_new())
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorCursorMoveAttribute class >> primCreateWithTag: anAttributeTag [
+	^ self ffiCall: #(void* caret_move_attribute_new_with_tag(uint64 anAttributeTag))
+]
+
 { #category : 'private - ffi' }
 GtTextEditorCursorMoveAttribute class >> primRelease: aHandle [
 	"Plain pointers must be deleted using delete(), all users must implement a specific method"
 	self ffiCall: #(void caret_move_attribute_release(void* aHandle))
 ]
 
-{ #category : 'private - ffi' }
-GtTextEditorCursorMoveAttribute class >> primWithAttributeOnEnterOverSelf: aGtTextExternalAttribute [
-	^ self ffiCall: #(void* caret_move_attribute_new_add_attributes_over_self_on_enter_remove_on_leave(void* aGtTextExternalAttribute))
+{ #category : 'as yet unclassified' }
+GtTextEditorCursorMoveAttribute >> addCursorEnterAction: anEventAction [
+	self primAddCaretEnterAction: anEventAction
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorCursorMoveAttribute >> addCursorLeaveAction: anEventAction [
+	self primAddCaretLeaveAction: anEventAction
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorCursorMoveAttribute class >> primWithAttributeOnLeave: aGtTextExternalAttribute overMarker: aMarkerTag [
-	^ self ffiCall: #(void* caret_move_attribute_new_remove_attributes_over_marker_on_enter_add_on_leave(void* aGtTextExternalAttribute, uint64 aMarkerTag))
+GtTextEditorCursorMoveAttribute >> primAddCaretEnterAction: aEventHandlingAction [
+	self ffiCall: #(void caret_move_attribute_add_caret_enter_action(self, void* aEventHandlingAction))
 ]
 
 { #category : 'private - ffi' }
-GtTextEditorCursorMoveAttribute class >> primWithAttributeOnLeaveOverSelf: aGtTextExternalAttribute [
-	^ self ffiCall: #(void* caret_move_attribute_new_remove_attributes_over_self_on_enter_add_on_leave(void* aGtTextExternalAttribute))
-]
-
-{ #category : 'instance creation' }
-GtTextEditorCursorMoveAttribute class >> withAttributeOnEnter: aGtTextExternalAttribute during: aBlock [
-	^ self
-		fromNativeHandle: (self primWithAttributeOnEnterOverSelf: aGtTextExternalAttribute)
-		during: aBlock
-]
-
-{ #category : 'instance creation' }
-GtTextEditorCursorMoveAttribute class >> withAttributeOnLeave: aGtTextExternalAttribute during: aBlock [
-	^ self
-		fromNativeHandle: (self primWithAttributeOnLeaveOverSelf: aGtTextExternalAttribute)
-		during: aBlock
-]
-
-{ #category : 'instance creation' }
-GtTextEditorCursorMoveAttribute class >> withAttributeOnLeave: aGtTextExternalAttribute overMarker: aMarkerTag during: aBlock [
-	^ self
-		fromNativeHandle: (self primWithAttributeOnLeave: aGtTextExternalAttribute overMarker: aMarkerTag)
-		during: aBlock
+GtTextEditorCursorMoveAttribute >> primAddCaretLeaveAction: aEventHandlingAction [
+	self ffiCall: #(void caret_move_attribute_add_caret_leave_action(self, void* aEventHandlingAction))
 ]
 
 { #category : 'private - ffi' }
@@ -56,4 +55,14 @@ GtTextEditorCursorMoveAttribute >> primAsAttribute [
 { #category : 'private - ffi' }
 GtTextEditorCursorMoveAttribute >> primGetTag [
 	^ self ffiCall: #(uint64 caret_move_attribute_get_tag(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorCursorMoveAttribute >> primSetSelectionBehavior: aCaretMoveSelectionBehavior [
+	self ffiCall: #(void caret_move_attribute_set_selection_behavior(self, GtTextEditorCaretMoveSelectionBehavior aCaretMoveSelectionBehavior))
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorCursorMoveAttribute >> selectionBehavior: aCaretMoveSelectionBehavior [
+	self primSetSelectionBehavior: aCaretMoveSelectionBehavior
 ]

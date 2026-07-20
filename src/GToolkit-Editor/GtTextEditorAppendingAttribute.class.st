@@ -8,8 +8,15 @@ Class {
 
 { #category : 'as yet unclassified' }
 GtTextEditorAppendingAttribute class >> appendingText: anExternalText during: aBlock [
-	^ GtTextEditorAppendingAttribute
+	^ self
 			fromNativeHandle: (self primAppendingText: anExternalText)
+			during: aBlock
+]
+
+{ #category : 'as yet unclassified' }
+GtTextEditorAppendingAttribute class >> appendingText: anExternalText withTag: anAttributeTag during: aBlock [
+	^ self
+			fromNativeHandle: (self primAppendingText: anExternalText withTag: anAttributeTag)
 			during: aBlock
 ]
 
@@ -21,6 +28,11 @@ GtTextEditorAppendingAttribute class >> newWithTag: anAttributeTag during: aBloc
 { #category : 'private - ffi' }
 GtTextEditorAppendingAttribute class >> primAppendingText: aText [
 	^ self ffiCall: #(void* appending_attribute_new_text(void* aText))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorAppendingAttribute class >> primAppendingText: aText withTag: anAttributeTag [
+	^ self ffiCall: #(void* appending_attribute_new_text_with_tag(void* aText, uint64 anAttributeTag))
 ]
 
 { #category : 'private - ffi' }

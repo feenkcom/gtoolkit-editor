@@ -155,5 +155,5 @@ GtTextEditorAttribute >> primAsAttribute [
 
 { #category : 'private - ffi' }
 GtTextEditorAttribute >> primGetTag [
-	self subclassResponsibility
+	^ self ffiCall: #(uint64 attribute_get_tag(self))
 ]

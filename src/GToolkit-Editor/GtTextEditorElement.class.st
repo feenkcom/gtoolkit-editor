@@ -663,6 +663,13 @@ GtTextEditorElement >> moveCursorRight [
 ]
 
 { #category : 'api - navigation' }
+GtTextEditorElement >> moveCursorTo: aTextIndex [
+	"Moves cursor to a given position"
+
+	self flag: #TODO
+]
+
+{ #category : 'api - navigation' }
 GtTextEditorElement >> moveCursorToBeginning [
 	"Moves the cursor to the beginning of the current editor and deselects any selected text."
 	
@@ -1347,8 +1354,8 @@ GtTextEditorElement >> selectAll [
 { #category : 'api - selection' }
 GtTextEditorElement >> selectedStringAndIntervalDo: aSelectedTextBlock orCursorPositionDo: aCursorTextPositionBlock [
 	"If a text is selected, evaluate aSelectedTextBlock, aCursorTextPositionBlock otherwise.
-	- aSelectedTextBlock have three optional parameters [ :aSelectedString :aSelectedInterval :aTextSize :aDocumentId | ],
-	- aCursorTextPositionBlock has two optional parameters [ :aStringPosition :aTextSize :aDocumentId | ]."
+	- aSelectedTextBlock have three optional parameters [ :aSelectedString :aSelectedInterval :aTextSize :aDocumentId :aCaretOffset | ],
+	- aCursorTextPositionBlock has two optional parameters [ :aStringPosition :aTextSize :aDocumentId :aCaretOffset | ]."
 	
 	self
 		privateRequestEditorAction: [ :aState | 
@@ -1357,16 +1364,22 @@ GtTextEditorElement >> selectedStringAndIntervalDo: aSelectedTextBlock orCursorP
 					| aTextSize aDocumentId |
 					aTextSize := aState textSize.
 					aDocumentId := aState documentId.
-					aSelectedTextBlock
-						cull: aSelectedString
-						cull: aState selectionInterval
-						cull: aState textSize
-						cull: aDocumentId ]
-				ifAbsent: [ | aStringPosition aTextSize aDocumentId |
-				aStringPosition := aState caretOffset max: 1.
-				aTextSize := aState textSize.
-				aDocumentId := aState documentId.
-				aCursorTextPositionBlock cull: aStringPosition cull: aTextSize cull: aDocumentId ] ]
+					aSelectedTextBlock valueWithEnoughArguments: {
+						aSelectedString.
+						aState selectionInterval.
+						aState textSize.
+						aDocumentId.
+						aState caretOffset } ]
+				ifAbsent: [ | aStringPosition aTextSize aDocumentId aCaretOffset |
+					aCaretOffset := aState caretOffset.
+					aStringPosition := aCaretOffset max: 1.
+					aTextSize := aState textSize.
+					aDocumentId := aState documentId.
+					aCursorTextPositionBlock valueWithEnoughArguments: { 
+						aStringPosition. 
+						aTextSize. 
+						aDocumentId. 
+						aCaretOffset } ] ]
 ]
 
 { #category : 'styling' }

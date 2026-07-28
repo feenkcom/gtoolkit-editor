@@ -2,7 +2,8 @@ Class {
 	#name : 'GtTextEditorHandle',
 	#superclass : 'GtBoxerValueBox',
 	#instVars : [
-		'commandsRecorder'
+		'commandsRecorder',
+		'toEmbedderCommandsRecorder'
 	],
 	#category : 'GToolkit-Editor-FFI',
 	#package : 'GToolkit-Editor',
@@ -84,11 +85,6 @@ GtTextEditorHandle >> addHighlight: aGtTextEditorHighlight overRange: aGtTextEdi
 			documentId: aGtTextEditorRange documentId
 ]
 
-{ #category : 'api - debugging' }
-GtTextEditorHandle >> commandsRecorder [
-	^ commandsRecorder
-]
-
 { #category : 'api - editing' }
 GtTextEditorHandle >> copySelected [
 	self primCopySelected
@@ -137,7 +133,9 @@ GtTextEditorHandle >> deselectAll [
 
 { #category : 'api - debugging' }
 GtTextEditorHandle >> enableInMemoryCommandsRecorder [
-	commandsRecorder := GtTextEditorInMemoryCommandsRecorder fromNativeHandle: self primCommandsRecorderSetInMemory
+	commandsRecorder := GtTextEditorInMemoryCommandsRecorder fromNativeHandle: self primCommandsRecorderSetInMemory.
+	
+	toEmbedderCommandsRecorder := GtTextEditorInMemoryToEmbedderCommandsRecorder fromNativeHandle: self primSetInMemoryToEmbedderCommandsRecorder
 ]
 
 { #category : 'api - scrolling' }
@@ -148,6 +146,11 @@ GtTextEditorHandle >> enableSmoothScrolling [
 { #category : 'api - selection' }
 GtTextEditorHandle >> endSelectionAtVisualPoint [
 	self primEndSelectionAtVisualPoint
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorHandle >> executeAdornmentAction: anAdornmentAttributeTag [
+	self primExecuteAdornmentAction: anAdornmentAttributeTag
 ]
 
 { #category : 'api - selection' }
@@ -194,7 +197,8 @@ GtTextEditorHandle >> hideCursors [
 GtTextEditorHandle >> initialize [
 	super initialize.
 	
-	commandsRecorder := nil
+	commandsRecorder := nil.
+	toEmbedderCommandsRecorder := nil
 ]
 
 { #category : 'api - editing' }
@@ -397,6 +401,13 @@ GtTextEditorHandle >> primDeselectAll [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primEndSelectionAtVisualPoint [
 	self ffiCall: #(void editor_handle_end_selection_at_visual_point(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primExecuteAdornmentAction: anAdornmentAttributeTag [
+	self ffiCall: #(void editor_handle_execute_adornment_action(
+		self,
+		uint64 anAdornmentAttributeTag))
 ]
 
 { #category : 'private - ffi' }
@@ -659,6 +670,11 @@ GtTextEditorHandle >> primSetDefaultForegroundRed: red green: green blue: blue a
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorHandle >> primSetInMemoryToEmbedderCommandsRecorder [
+	^ self ffiCall: #(void* editor_handle_set_in_memory_to_embedder_messages_recorder(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorHandle >> primSetMockedTextLayouter: aGlyphSize [
 	self ffiCall: #(void editor_handle_set_text_layouter_mocked(self, float64 aGlyphSize))
 ]
@@ -699,6 +715,11 @@ GtTextEditorHandle >> primStartSelectionAtVisualX: aX y: aY [
 		self,
 		float64 aX,
 		float64 aY))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primToEmbedderCommandsRecorderReset [
+	self ffiCall: #(void editor_handle_reset_to_embedder_messages_recorder(self))
 ]
 
 { #category : 'private - ffi' }
@@ -757,7 +778,9 @@ GtTextEditorHandle >> requestStyling: aStylingTrigger [
 { #category : 'api - debugging' }
 GtTextEditorHandle >> resetCommandsRecorder [
 	self primCommandsRecorderReset.
-	commandsRecorder := nil
+	self primToEmbedderCommandsRecorderReset.
+	commandsRecorder := nil.
+	toEmbedderCommandsRecorder := nil.
 ]
 
 { #category : 'as yet unclassified' }

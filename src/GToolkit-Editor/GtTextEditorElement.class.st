@@ -67,7 +67,7 @@ GtTextEditorElement >> addAppendingAttribute: anAppendingAttribute atAppendingAt
 				and: [ anotherAppendingAttribute shouldAppend ] ]
 		description: [ 'anotherAppendingAttribute must be an appending text attribute: {1}'
 				format: {anotherAppendingAttribute} ].
-
+				
 	attributesRegistry
 		findAttributeTag: anotherAppendingAttribute
 		ifFound: [ :rustAppendingTag | 
@@ -291,6 +291,13 @@ GtTextEditorElement >> ensureEditorProcess [
 		ifFalse: [ ^ self ].
 		
 	editorProcess := [ self runEditorProcess ] forkAt: Processor userInterruptPriority named: 'Editor'.
+]
+
+{ #category : 'api - attributes' }
+GtTextEditorElement >> executeAdornmentActionOfAdornmentAttribute: anAdornmentAttribute [
+	attributesRegistry
+		findAttributeTag: anAdornmentAttribute
+		ifFound: [ :anAttributeTag | editorHandle executeAdornmentAction: anAttributeTag ]
 ]
 
 { #category : 'api - selection' }
@@ -847,7 +854,7 @@ GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
 		
 		"what happens when we  redo/undo? maybe we shouldn't remove it from the bank yet."
 		self flag: #TODO.
-		"attributesRegistry unregisterAttributeByTag: eachTag" ].
+		attributesRegistry unregisterAttributeByTag: eachTag ].
 	
 	removedTags := removedTags asSet.
 	
@@ -881,6 +888,8 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 		previousMeasuredExtent: self measuredExtent;
 		emit.
 	
+	self invalidate.
+	
 	(aMessage editorExtent closeTo: self measuredExtent)
 		ifFalse: [ self requestLayout ]
 ]
@@ -909,7 +918,7 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 				anAssociation value: theAdornmentElements
 			].
 		]
-		ifAbsent: [ ]
+		ifAbsent: [ self halt ]
 ]
 
 { #category : 'event handling' }

@@ -66,6 +66,27 @@ GtTextEditorAttribute class >> foreground: aColor during: aBlock [
 		during: aBlock
 ]
 
+{ #category : 'instance creation' }
+GtTextEditorAttribute class >> italicDuring: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: self primItalic
+		during: aBlock
+]
+
+{ #category : 'instance creation' }
+GtTextEditorAttribute class >> normalDuring: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: self primNormal
+		during: aBlock
+]
+
+{ #category : 'instance creation' }
+GtTextEditorAttribute class >> obliqueDuring: aBlock [
+	^ GtTextEditorAttribute
+		fromNativeHandle: self primOblique
+		during: aBlock
+]
+
 { #category : 'private - ffi' }
 GtTextEditorAttribute class >> primBackgroundRed: red green: green blue: blue alpha: alpha [
 	^ self ffiCall: #(void* text_background_attribute_new(
@@ -104,6 +125,21 @@ GtTextEditorAttribute class >> primForegroundRed: red green: green blue: blue al
 		float32 green,
 		float32 blue,
 		float32 alpha))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorAttribute class >> primItalic [
+	^ self ffiCall: #(void* font_italic_attribute_new())
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorAttribute class >> primNormal [
+	^ self ffiCall: #(void* font_normal_attribute_new())
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorAttribute class >> primOblique [
+	^ self ffiCall: #(void* font_oblique_attribute_new())
 ]
 
 { #category : 'private - ffi' }

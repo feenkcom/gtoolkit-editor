@@ -918,7 +918,7 @@ GtTextEditorElement >> onEditorMeasureAdornment: aMessage [
 				anAssociation value: theAdornmentElements
 			].
 		]
-		ifAbsent: [ self halt ]
+		ifAbsent: [  ]
 ]
 
 { #category : 'event handling' }

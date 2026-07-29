@@ -663,10 +663,10 @@ GtTextEditorElement >> moveCursorRight [
 ]
 
 { #category : 'api - navigation' }
-GtTextEditorElement >> moveCursorTo: aTextIndex [
-	"Moves cursor to a given position"
+GtTextEditorElement >> moveCursorTo: aCharacterOffset [
+	"Moves cursor to a given 0-based character offset (same convention as the position returned by #caretOffset)."
 
-	self flag: #TODO
+	editorHandle moveCursorTo: aCharacterOffset
 ]
 
 { #category : 'api - navigation' }

@@ -260,6 +260,13 @@ GtTextEditorHandle >> moveCursorRight [
 ]
 
 { #category : 'api - navigation' }
+GtTextEditorHandle >> moveCursorTo: aCharacterOffset [
+	"Moves cursor to a given 0-based character offset (same convention as the position returned by #caretOffset)."
+
+	^ self primMoveCursorToCharacterOffset: aCharacterOffset
+]
+
+{ #category : 'api - navigation' }
 GtTextEditorHandle >> moveCursorToBeginning [
 	^ self primMoveCursorToBeginning
 ]
@@ -506,6 +513,11 @@ GtTextEditorHandle >> primMoveCursorRight [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primMoveCursorToBeginning [
 	self ffiCall: #(void editor_handle_move_cursor_to_beginning(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primMoveCursorToCharacterOffset: aCharacterOffset [
+	self ffiCall: #(void editor_handle_move_cursor_to_character_offset(self, size_t aCharacterOffset))
 ]
 
 { #category : 'private - ffi' }

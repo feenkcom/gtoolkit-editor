@@ -6,14 +6,14 @@ Class {
 	#tag : 'Text'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 GtTextEditorAppendingAttribute class >> appendingText: anExternalText during: aBlock [
 	^ self
 			fromNativeHandle: (self primAppendingText: anExternalText)
 			during: aBlock
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 GtTextEditorAppendingAttribute class >> appendingText: anExternalText withTag: anAttributeTag during: aBlock [
 	^ self
 			fromNativeHandle: (self primAppendingText: anExternalText withTag: anAttributeTag)
@@ -92,7 +92,17 @@ GtTextEditorAppendingAttribute >> primSetOverwritableByStyler: aBoolean [
 	^ self ffiCall: #(void appending_attribute_set_overwritable_by_styler(self, bool aBoolean))
 ]
 
+{ #category : 'private - ffi' }
+GtTextEditorAppendingAttribute >> primSetToggleAppendingAttributeAction: anExternalAttribute [
+	^ self ffiCall: #(void appending_attribute_set_toggle_appending_attribute_action(self, void* anExternalAttribute))
+]
+
 { #category : 'accessing' }
 GtTextEditorAppendingAttribute >> setOverwritableByStyler: aBoolean [
 	self primSetOverwritableByStyler: aBoolean
+]
+
+{ #category : 'accessing' }
+GtTextEditorAppendingAttribute >> setToggleAppendingAttributeAction: anExternalAttribute [
+	self primSetToggleAppendingAttributeAction: anExternalAttribute
 ]

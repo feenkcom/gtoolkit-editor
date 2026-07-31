@@ -48,6 +48,16 @@ GtTextEditorTextToStyle >> attributesFinder [
 	^ GtTextEditorTextToStyleAttributesFinder new attributes: allAttributes
 ]
 
+{ #category : 'accessing' }
+GtTextEditorTextToStyle >> attributesRegistry [
+	^ attributesRegistry
+]
+
+{ #category : 'accessing' }
+GtTextEditorTextToStyle >> attributesRegistry: anObject [
+	attributesRegistry := anObject
+]
+
 { #category : 'as yet unclassified' }
 GtTextEditorTextToStyle >> documentId [
 	^ documentId

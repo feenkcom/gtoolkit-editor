@@ -899,10 +899,11 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 		previousMeasuredExtent: self measuredExtent;
 		emit.
 	
-	self invalidate.
-	
 	(aMessage editorExtent closeTo: self measuredExtent)
-		ifFalse: [ self requestLayout ]
+		ifFalse: [ self privatePreviousMeasurementSpec: nil ].
+	
+	self invalidate.
+	self requestLayout
 ]
 
 { #category : 'event handling' }
@@ -1024,7 +1025,8 @@ GtTextEditorElement >> onEditorTextStylingRequest: aMessage [
 	textToStyle := GtTextEditorTextToStyle new
 		setExternalText: aMessage unstyledText
 		documentId: aMessage documentId
-		theme: self theme.
+		theme: self theme;
+		attributesRegistry: attributesRegistry.
 	
 	self stylerStrategy
 		styleText: textToStyle

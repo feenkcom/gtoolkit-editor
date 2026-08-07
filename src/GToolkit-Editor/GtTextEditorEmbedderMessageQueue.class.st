@@ -20,6 +20,7 @@ GtTextEditorEmbedderMessageQueue class >> primRelease: aHandle [
 
 { #category : 'accessing' }
 GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsentBlock [
+	"Subscribe to the cursor reached boundary event and return an event handler"
 	| typeBuffer messageHandle messageType messageClasses |
 	
 	typeBuffer := ByteArray new: FFIUInt8 externalTypeSize.
@@ -41,7 +42,8 @@ GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsent
 		GtTextEditorEmbedderTextCompletionRequestMessage.
 		GtTextEditorEmbedderTextStylingRequestMessage.
 		GtTextEditorEmbedderPerformActionMessage.
-		GtTextEditorEmbedderScrollEdgeReachedMessage }.
+		GtTextEditorEmbedderScrollEdgeReachedMessage.
+		GtTextEditorEmbedderCursorReachedBoundaryMessage }.
 
 	^ (messageClasses at: messageType ifAbsent: [ ^ self ])
 		fromNativeHandle: messageHandle

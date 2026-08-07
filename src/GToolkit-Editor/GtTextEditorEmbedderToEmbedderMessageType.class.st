@@ -6,7 +6,7 @@ Class {
 	#tag : 'Messages'
 }
 
-{ #category : 'ffi' }
+{ #category : 'accessing' }
 GtTextEditorEmbedderToEmbedderMessageType class >> externalDeclaration [
 	^ #(
 		Unknown,
@@ -16,6 +16,7 @@ GtTextEditorEmbedderToEmbedderMessageType class >> externalDeclaration [
 		TextChanged,
 		TextCompletionRequest,
 		TextStylingRequest,
+		CursorReachedBoundary,
 	)
 ]
 

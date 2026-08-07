@@ -868,6 +868,17 @@ GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
 	self removeChildren: removedElements. 
 ]
 
+{ #category : 'editor callbacks' }
+GtTextEditorElement >> onEditorCursorReachedBoundary: aMessage [
+	| anEvent |
+	anEvent := BrTextEditorCursorReachedBoundaryEvent new
+		cursor: (BrTextEditorCursor at: aMessage cursorCharacterOffset).
+	aMessage isTop
+		ifTrue: [ anEvent beTop ]
+		ifFalse: [ anEvent beBottom ].
+	self dispatchEvent: anEvent
+]
+
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorLayoutReady: aMessage [	
 	self ignoreRequestLayoutDuring:  [

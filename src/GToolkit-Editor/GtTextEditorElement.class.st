@@ -472,7 +472,7 @@ GtTextEditorElement >> initializeShortcuts [
 	self
 		addShortcut: (BlShortcutWithAction new
 				combination: BlKeyCombination enter;
-				action: [ self insertLineBreakAtCarets ]).
+				action: [ self insertLineEndingAtCursor ]).
 
 	self
 		addShortcut: (BlShortcutWithAction new
@@ -601,7 +601,7 @@ GtTextEditorElement >> initializeShortcuts [
 ]
 
 { #category : 'api - editing' }
-GtTextEditorElement >> insertLineBreakAtCarets [
+GtTextEditorElement >> insertLineEndingAtCursor [
 	editorHandle
 		insertNewLine: GtTextEditorLineBreakStyle Auto
 		inheritWhitespace: true

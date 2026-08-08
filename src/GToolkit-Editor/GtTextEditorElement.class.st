@@ -800,7 +800,7 @@ GtTextEditorElement >> onDragStartEvent: anEvent [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorActiveCaretMoved: aMessage [
-	self dispatchEvent: (BrTextEditorCursorChangedEvent new cursors: (BrTextEditorCursor at: aMessage newOffset))
+	self dispatchEvent: (BrTextEditorCursorChangedEvent new cursors: (BrTextEditorCursor at: aMessage newCharacterOffset))
 ]
 
 { #category : 'event handling' }

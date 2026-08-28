@@ -750,7 +750,8 @@ GtTextEditorElement >> onAddedToSceneGraph [
 
 	editorHandle setRenderThreadWakerThunk: window.
 
-	self ensureEditorProcess
+	self ensureEditorProcess.
+	self pollEditorMessagesRequest.
 ]
 
 { #category : 'event handling' }

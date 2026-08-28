@@ -6,7 +6,6 @@ Class {
 	#instVars : [
 		'viewportTop',
 		'viewportHeight',
-		'semaphore',
 		'editorProcess',
 		'messagesQueue',
 		'messagesQueueUpdater',
@@ -288,10 +287,9 @@ GtTextEditorElement >> editor [
 
 { #category : 'private' }
 GtTextEditorElement >> ensureEditorProcess [
-	(editorProcess isNil or: [ editorProcess isSuspended or: [ editorProcess isTerminated or: [ editorProcess isTerminating ] ] ])
-		ifFalse: [ ^ self ].
-		
-	editorProcess := [ self runEditorProcess ] forkAt: Processor userInterruptPriority named: 'Editor'.
+	editorProcess
+		registerEditor: self;
+		ensureEditorProcess
 ]
 
 { #category : 'api - attributes' }
@@ -390,9 +388,9 @@ GtTextEditorElement >> initialize [
 	| semaphoreIndex |
 	super initialize.
 	self beFocusable.
-	semaphore := Semaphore new.
-	semaphoreIndex := Smalltalk registerExternalObject: semaphore.
-
+	editorProcess := GtTextEditorProcess current.
+	semaphoreIndex := editorProcess semaphoreIndex.
+	
 	shouldReplicate := true.
 	
 	adornments := OrderedDictionary new.
@@ -1134,8 +1132,7 @@ GtTextEditorElement >> onRemovedFromSceneGraph [
 	
 	editorHandle setRenderThreadWakerThunk: ExternalAddress null.
 	
-	editorProcess ifNotNil: [ :aProcess | aProcess terminate ].
-	editorProcess := nil
+	editorProcess ifNotNil: [ :aProcess | aProcess unregisterEditor: self ].
 ]
 
 { #category : 'api - shortcuts' }
@@ -1234,6 +1231,11 @@ GtTextEditorElement >> pollEditorMessages [
 			pollMessageDuring: [ :aMessage | aMessage sendTo: self ]
 			ifAbsent: [ ^ self ]
 	] repeat
+]
+
+{ #category : 'api - events' }
+GtTextEditorElement >> pollEditorMessagesRequest [
+	messagesQueueUpdater requestUpdate
 ]
 
 { #category : 'styling' }
@@ -1360,14 +1362,6 @@ GtTextEditorElement >> restoreState: aMemento [
 { #category : 'todo' }
 GtTextEditorElement >> restoreText: aBlRunRopedText [ 
 	self text: aBlRunRopedText
-]
-
-{ #category : 'private' }
-GtTextEditorElement >> runEditorProcess [
-	[
-		semaphore wait.
-		messagesQueueUpdater requestUpdate
-	] repeat
 ]
 
 { #category : 'api - selection' }

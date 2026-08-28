@@ -27,7 +27,8 @@ Class {
 		'ropeSnapshot',
 		'shouldReplicate',
 		'shortcuts',
-		'attributesRegistry'
+		'attributesRegistry',
+		'editorId'
 	],
 	#classVars : [
 		'UniqueActionIdGenerator'
@@ -414,6 +415,7 @@ GtTextEditorElement >> initialize [
 				messagesQueue := pharoEmbedder messagesQueue.
 				GtTextEditorHandle forEmbedder: pharoEmbedder ].
 				
+	editorId := GtTextEditorId withId: editorHandle editorId.
 	editorHandle tabWidth: 2.
 	editorHandle enableSmoothScrolling.
 

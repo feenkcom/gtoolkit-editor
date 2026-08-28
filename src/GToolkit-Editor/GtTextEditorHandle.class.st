@@ -131,6 +131,11 @@ GtTextEditorHandle >> deselectAll [
 	self primDeselectAll
 ]
 
+{ #category : 'accessing' }
+GtTextEditorHandle >> editorId [
+	^ self primGetEditorId
+]
+
 { #category : 'api - debugging' }
 GtTextEditorHandle >> enableInMemoryCommandsRecorder [
 	commandsRecorder := GtTextEditorInMemoryCommandsRecorder fromNativeHandle: self primCommandsRecorderSetInMemory.
@@ -445,6 +450,11 @@ GtTextEditorHandle >> primExtendSelectionToLineStart [
 { #category : 'private - ffi' }
 GtTextEditorHandle >> primExtendSelectionUp [
 	self ffiCall: #(void editor_handle_extend_selection_up(self))
+]
+
+{ #category : 'private - ffi' }
+GtTextEditorHandle >> primGetEditorId [
+	self ffiCall: #(uint64 editor_handle_get_editor_id(self))
 ]
 
 { #category : 'private - ffi' }

@@ -17,6 +17,7 @@ Class {
 
 { #category : 'cleanup' }
 GtTextEditorProcess class >> cleanUp: aggressive [
+	<script: 'self cleanUp: true'>
 	aggressive ifTrue: [ currentInstance := nil ]
 ]
 
@@ -34,7 +35,12 @@ GtTextEditorProcess >> editorProcessStatus [
 	^ 'running'
 ]
 
-{ #category : 'api - process' }
+{ #category : 'accessing' }
+GtTextEditorProcess >> editorsSnaphost [
+	^ editors lock: [ :aSet | aSet asOrderedCollection ]
+]
+
+{ #category : 'private' }
 GtTextEditorProcess >> ensureEditorProcess [
 	(editorProcess isNil or: [ editorProcess isSuspended or: [ editorProcess isTerminated or: [ editorProcess isTerminating ] ] ])
 		ifFalse: [ ^ self ].
@@ -45,7 +51,7 @@ GtTextEditorProcess >> ensureEditorProcess [
 { #category : 'finalization' }
 GtTextEditorProcess >> finalize [
 	semaphore ifNotNil: [ Smalltalk unregisterExternalObject: semaphore ].
-	editorProcess ifNotNil: #terminate.
+	self terminate
 ]
 
 { #category : 'views' }
@@ -54,7 +60,7 @@ GtTextEditorProcess >> gtEditorsFor: aView [
 	editors ifNil: [ ^ aView empty ].
 	^ aView columnedList
 		title: 'Editors';
-		items: [ editors asOrderedCollection ];
+		items: [ self editorsSnaphost ];
 		column: 'Editor' text: [ :each | each gtDisplayString ]
 ]
 
@@ -64,7 +70,7 @@ GtTextEditorProcess >> initialize [
 	semaphore := Semaphore new.
 	semaphoreIndex := Smalltalk registerExternalObject: semaphore.
 
-	editors := WeakIdentitySet new
+	editors := AsyncMutex for: WeakIdentitySet new
 ]
 
 { #category : 'testing' }
@@ -89,18 +95,24 @@ GtTextEditorProcess >> printOn: aStream [
 		nextPutAll: ' (';
 		nextPutAll: self editorProcessStatus;
 		nextPutAll: ', editors: ';
-		print: (editors ifNotNil: #size);
+		print: (editors ifNotNil: [ self editorsSnaphost ] ifNil: [ 0 ]);
 		nextPutAll: ')'
 ]
 
 { #category : 'api - process' }
 GtTextEditorProcess >> registerEditor: aGtTextEditorElement [
-	editors add: aGtTextEditorElement
+	editors lock: [ :aSet | 
+		| aSize | 
+		aSize := aSet size.
+		aSet add: aGtTextEditorElement.
+		aSize = aSet size ifFalse: [
+			self ensureEditorProcess ] ]
 ]
 
 { #category : 'api - process' }
 GtTextEditorProcess >> requestUpdates [
-	editors do: #pollEditorMessagesRequest
+	editors lock: [ :aSet | 
+		aSet do: #pollEditorMessagesRequest ]
 ]
 
 { #category : 'api - process' }
@@ -115,7 +127,16 @@ GtTextEditorProcess >> semaphoreIndex [
 	^ semaphoreIndex
 ]
 
+{ #category : 'private' }
+GtTextEditorProcess >> terminate [
+	editorProcess ifNotNil: #terminate.
+	editorProcess := nil.
+]
+
 { #category : 'api - process' }
 GtTextEditorProcess >> unregisterEditor: aGtTextEditorElement [
-	editors remove: aGtTextEditorElement ifAbsent: [  ]
+	editors lock: [ :aSet | 
+		aSet remove: aGtTextEditorElement ifAbsent: [  ].
+		aSet isEmpty ifFalse: [
+			self terminate ] ]
 ]

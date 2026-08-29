@@ -287,9 +287,7 @@ GtTextEditorElement >> editor [
 
 { #category : 'private' }
 GtTextEditorElement >> ensureEditorProcess [
-	editorProcess
-		registerEditor: self;
-		ensureEditorProcess
+	editorProcess registerEditor: self
 ]
 
 { #category : 'api - attributes' }

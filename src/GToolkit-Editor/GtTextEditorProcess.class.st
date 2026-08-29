@@ -95,7 +95,7 @@ GtTextEditorProcess >> printOn: aStream [
 		nextPutAll: ' (';
 		nextPutAll: self editorProcessStatus;
 		nextPutAll: ', editors: ';
-		print: (editors ifNotNil: [ self editorsSnaphost ] ifNil: [ 0 ]);
+		print: (editors ifNotNil: [ self editorsSnaphost size ] ifNil: [ 0 ]);
 		nextPutAll: ')'
 ]
 

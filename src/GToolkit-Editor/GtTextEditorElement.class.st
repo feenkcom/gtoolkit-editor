@@ -899,10 +899,10 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 		emit.
 	
 	(aMessage editorExtent closeTo: self measuredExtent)
-		ifFalse: [ self privatePreviousMeasurementSpec: nil ].
-	
-	self invalidate.
-	self requestLayout
+    ifTrue: [ self invalidate ]
+    ifFalse: [ self privatePreviousMeasurementSpec: nil.
+               self invalidate.
+               self requestLayout ]
 ]
 
 { #category : 'event handling' }

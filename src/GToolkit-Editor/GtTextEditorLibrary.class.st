@@ -8,6 +8,51 @@ Class {
 	#tag : 'Library'
 }
 
+{ #category : 'testing' }
+GtTextEditorLibrary class >> canExampleBeExecuted [
+	"Answer whether an example that needs the Rust text editor can really run in this
+	image, and report on stdout when it cannot.
+
+	Examples guarded by this method return early, so they are reported as successful
+	although nothing was exercised. In the JUnit report that is indistinguishable from
+	a real pass, which is why the reason is written to stdout: the CI console log is
+	the only place where the difference is visible. Grep a build log for
+	`LIB-EDITOR-EXAMPLE-SKIPPED` to see which agents actually exercised the editor,
+	and which silently skipped it.
+
+	The two halves of the message are diagnosed separately, because they mean very
+	different things. A missing libEditor is a packaging problem: the library was not
+	shipped to that platform, or cannot be loaded there. A missing windowing event loop
+	is expected whenever the image runs headless without `--interactive`, which is how
+	`GlamorousToolkit-cli` runs examples on CI. See `isSupported` for the full set of
+	conditions behind each one.
+
+	The platform and architecture are included because all CI agents write into a
+	single interleaved console log, and are otherwise impossible to tell apart."
+
+	| hasLibrary hasEventLoop |
+	hasLibrary := self uniqueInstance hasModule.
+	hasEventLoop := RustWindowingEventFetcher default notNil.
+	(hasLibrary and: [ hasEventLoop ]) ifTrue: [ ^ true ].
+
+	NonInteractiveTranscript stdout
+		nextPutAll: ' (LIB-EDITOR-EXAMPLE-SKIPPED';
+		nextPutAll: ' on ';
+		nextPutAll: Smalltalk os name;
+		nextPutAll: '/';
+		nextPutAll: Smalltalk vm architectureName;
+		nextPutAll: ', libEditor: ';
+		nextPutAll: (hasLibrary
+				ifTrue: [ 'installed' ]
+				ifFalse: [ 'NOT INSTALLED' ]);
+		nextPutAll: ', windowing event loop: ';
+		nextPutAll: (hasEventLoop
+				ifTrue: [ 'available' ]
+				ifFalse: [ 'NOT AVAILABLE (headless image?)' ]);
+		nextPutAll: ', the example is reported as successful without being executed) '.
+	^ false
+]
+
 { #category : 'logger' }
 GtTextEditorLibrary class >> initEnvLogger [
 	self uniqueInstance initEnvLogger

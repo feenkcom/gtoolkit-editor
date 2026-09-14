@@ -9,6 +9,12 @@ Class {
 	#tag : 'Signals'
 }
 
+{ #category : 'printing' }
+GtTextEditorRequestLayoutSignal >> printOneLineContentsOn: stream [
+	stream nextPutAll: 'Request layout: '.
+	sourceElement gtDisplayOn: stream
+]
+
 { #category : 'accessing' }
 GtTextEditorRequestLayoutSignal >> sourceElement [
 	^ sourceElement

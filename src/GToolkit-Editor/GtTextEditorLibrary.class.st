@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : 'testing' }
-GtTextEditorLibrary class >> canExampleBeExecuted [
+GtTextEditorLibrary class >> canRunExamples [
 	"Answer whether an example that needs the Rust text editor can really run in this
 	image, and report on stdout when it cannot.
 

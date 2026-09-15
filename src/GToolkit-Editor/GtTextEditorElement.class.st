@@ -42,6 +42,16 @@ GtTextEditorElement class >> initialize [
 	UniqueActionIdGenerator := BlUniqueIdGenerator new.
 ]
 
+{ #category : 'event handling' }
+GtTextEditorElement >> addAdornmentElementsWithTags: visibleTags [
+	visibleTags do: [ :eachTag |
+		adornments
+			at: eachTag
+			ifPresent: [ :anAssociation |
+				anAssociation value ifNotNil: [ :theAdornmentElements |
+					self addChildren: theAdornmentElements ] ] ]
+]
+
 { #category : 'api - attributes' }
 GtTextEditorElement >> addAppendingAttribute: anAppendingAttribute atAppendingAttribute: anotherAppendingAttribute [
 	<return: #Number>
@@ -844,30 +854,35 @@ GtTextEditorElement >> onEditorAdornmentsAdded: aMessage [
 ]
 
 { #category : 'event handling' }
-GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
-	| removedTags removedElements |
+GtTextEditorElement >> onEditorAdornmentsGone: aMessage [
+	| goneTags |
 	
-	removedTags := aMessage adornmentTags.
-	removedTags do: [ :eachTag |
-		adornments removeKey: eachTag ifAbsent: [ ].
-		
-		"what happens when we  redo/undo? maybe we shouldn't remove it from the bank yet."
-		self flag: #TODO.
-		attributesRegistry unregisterAttributeByTag: eachTag ].
+	goneTags := aMessage adornmentTags asSet.
 	
-	removedTags := removedTags asSet.
-	
-	removedElements := self children
-			select: [ :eachChild | 
-				eachChild userData
-					at: #editorAdornmentId
-					ifPresent: [ :anAdornmentTag | removedTags includes: anAdornmentTag ]
-					ifAbsent: [ false ] ].
-
-	self removeChildren: removedElements. 
+	self removeAdornmentElementsWithTags: goneTags
 ]
 
-{ #category : 'editor callbacks' }
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
+	| removedTags |
+	"what happens when we  redo/undo? maybe we shouldn't remove it from the bank yet."
+	removedTags := aMessage adornmentTags.
+	removedTags
+		do: [ :eachTag | 
+			adornments removeKey: eachTag ifAbsent: [  ].
+			self flag: #TODO.
+			attributesRegistry unregisterAttributeByTag: eachTag ].
+	
+	removedTags := removedTags asSet.
+	self removeAdornmentElementsWithTags: removedTags
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> onEditorAdornmentsVisible: aMessage [
+	self addAdornmentElementsWithTags: aMessage adornmentTags asSet
+]
+
+{ #category : 'event handling' }
 GtTextEditorElement >> onEditorCursorReachedBoundary: aMessage [
 	| anEvent |
 	anEvent := BrTextEditorCursorReachedBoundaryEvent new
@@ -1288,6 +1303,19 @@ GtTextEditorElement >> removeAdornmentAttribute: anAdornmentAttribute [
 	attributesRegistry
 		findAttributeTag: anAdornmentAttribute
 		ifFound: [ :attributeTagToRemove | self removeAttributeTagged: attributeTagToRemove ]
+]
+
+{ #category : 'event handling' }
+GtTextEditorElement >> removeAdornmentElementsWithTags: removedTags [
+	| removedElements |
+	removedElements := self children
+			select: [ :eachChild | 
+				eachChild userData
+					at: #editorAdornmentId
+					ifPresent: [ :anAdornmentTag | removedTags includes: anAdornmentTag ]
+					ifAbsent: [ false ] ].
+
+	self removeChildren: removedElements
 ]
 
 { #category : 'api - attributes' }

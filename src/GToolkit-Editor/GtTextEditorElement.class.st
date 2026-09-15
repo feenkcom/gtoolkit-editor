@@ -843,6 +843,8 @@ GtTextEditorElement >> onEditorAdornmentMeasured: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentsAdded: aMessage [
+	"The aMessage adornmentTags message includes adornment tags that are added to a text. Adornments that are referenced by other adornments and repeatedly added to the text are included in #onEditorAdornmentsVisible: messages."
+
 	aMessage adornmentTags
 		do: [ :eachTag | 
 			attributesRegistry
@@ -855,15 +857,18 @@ GtTextEditorElement >> onEditorAdornmentsAdded: aMessage [
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentsGone: aMessage [
+	"The aMessage adornmentTags message includes adornment tags that were removed from a text but are still referenced by other adornments. For example, it happens in case of collapsed expanders. The collapsed adornment is removed from the text, but is still referenced by the expander adornment."
+
 	| goneTags |
-	
 	goneTags := aMessage adornmentTags asSet.
-	
+
 	self removeAdornmentElementsWithTags: goneTags
 ]
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
+	"The aMessage adornmentTags message includes only adornment tags that are not referenced by any other adornment. For cases like collapsed expander, the collapsed adornment is not included in this message. Instead, #onEditorAdornmentsGone: is sent."
+
 	| removedTags |
 	"what happens when we  redo/undo? maybe we shouldn't remove it from the bank yet."
 	removedTags := aMessage adornmentTags.
@@ -872,13 +877,15 @@ GtTextEditorElement >> onEditorAdornmentsRemoved: aMessage [
 			adornments removeKey: eachTag ifAbsent: [  ].
 			self flag: #TODO.
 			attributesRegistry unregisterAttributeByTag: eachTag ].
-	
+
 	removedTags := removedTags asSet.
 	self removeAdornmentElementsWithTags: removedTags
 ]
 
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorAdornmentsVisible: aMessage [
+	"The aMessage adornmentTags message includes adornmet tags that are referenced by other adornments (e.g., expanders) and are newly added to the text (when expander is expanded)."
+
 	self addAdornmentElementsWithTags: aMessage adornmentTags asSet
 ]
 

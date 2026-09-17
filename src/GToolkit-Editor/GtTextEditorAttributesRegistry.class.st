@@ -34,6 +34,14 @@ GtTextEditorAttributesRegistry >> findAttribute: anAttributeTag ifFound: aFoundB
 ]
 
 { #category : 'as yet unclassified' }
+GtTextEditorAttributesRegistry >> findAttribute: anAttributeTag ifFound: aFoundBlock ifNone: aNoneBlock [
+	^ tagsToAttributes
+			at: anAttributeTag
+			ifPresent: aFoundBlock
+			ifAbsent: aNoneBlock
+]
+
+{ #category : 'as yet unclassified' }
 GtTextEditorAttributesRegistry >> findAttributeTag: anAttribute ifFound: aFoundBlock [
 	^ attributesToTags
 			at: anAttribute

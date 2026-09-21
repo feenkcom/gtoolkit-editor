@@ -1,8 +1,8 @@
 Class {
 	#name : 'GtTextEditorLibrary',
 	#superclass : 'FFILibrary',
-	#traits : 'TGtWithStringBox + TGtWithPointBoxF32 + TGtWithPhlowRust',
-	#classTraits : 'TGtWithStringBox classTrait + TGtWithPointBoxF32 classTrait + TGtWithPhlowRust classTrait',
+	#traits : 'TGtWithStringBox + TGtWithPointBoxF32 + TGtWithPhlowRust + TGtWithArrayBoxU8',
+	#classTraits : 'TGtWithStringBox classTrait + TGtWithPointBoxF32 classTrait + TGtWithPhlowRust classTrait + TGtWithArrayBoxU8 classTrait',
 	#category : 'GToolkit-Editor-Library',
 	#package : 'GToolkit-Editor',
 	#tag : 'Library'
@@ -136,9 +136,42 @@ GtTextEditorLibrary >> primInitEnvLogger [
 	^ self ffiCall: #(void editor_init_logger())
 ]
 
+{ #category : 'primitives - fonts' }
+GtTextEditorLibrary >> primRegisterFontFamily: aGtStringBox weight: aWeight emphasis: anEmphasis bytes: aGtArrayBoxU8 [
+	"Register one font face in the Rust editor's process-wide font registry, so that every Rust
+	editor can resolve that family by name instead of falling back to an OS font.
+	See font_registry_register_font in libeditor.
+	Emphasis is 0 normal, 1 italic, 2 oblique, matching SpartaFontSlant's own values."
+	^ self ffiCall: #(void font_registry_register_font(
+		GtStringBox aGtStringBox,
+		int32 aWeight,
+		int32 anEmphasis,
+		GtArrayBoxU8 aGtArrayBoxU8))
+]
+
 { #category : 'private - ffi' }
 GtTextEditorLibrary >> primTest [
 	^ self ffiCall: #(bool editor_test())
+]
+
+{ #category : 'fonts' }
+GtTextEditorLibrary >> registerFontFamilyNamed: aFamilyName weight: aWeight emphasis: anEmphasis bytes: aByteArray [
+	"Register one font face from a family name and the raw contents of a font file.
+	Both boxes live only for the duration of the call: Rust copies the bytes immediately,
+	so there is no cross-FFI lifetime to manage.
+	Registration is idempotent - registering the same family, weight and emphasis again with
+	the same bytes does nothing."
+	^ self
+		newString: aFamilyName
+		during: [ :aStringBox |
+			self
+				newArrayU8FromByteArray: aByteArray
+				during: [ :anArrayBox |
+					self
+						primRegisterFontFamily: aStringBox
+						weight: aWeight
+						emphasis: anEmphasis
+						bytes: anArrayBox ] ]
 ]
 
 { #category : 'accessing - platform' }

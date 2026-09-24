@@ -188,6 +188,30 @@ GtTextEditorHandle >> extendSelectionUp [
 	self primExtendSelectionUp
 ]
 
+{ #category : 'views' }
+GtTextEditorHandle >> gtDebugFor: aView [
+	<gtView>
+	commandsRecorder ifNil: [ ^ aView empty ].
+	toEmbedderCommandsRecorder ifNil: [ ^ aView empty ].
+
+	^ aView details
+		title: 'Debug';
+		row: 'Commands'
+			value: [ commandsRecorder ]
+			text: [ :aRecorder |
+				'{1} commands, {2} adornment commands'
+					format: {
+						self rustViewItemsCountOf: aRecorder titled: 'Commands'.
+						self rustViewItemsCountOf: aRecorder titled: 'Adornment Commands' } ];
+		row: 'Messages'
+			value: [ toEmbedderCommandsRecorder ]
+			text: [ :aRecorder |
+				'{1} messages, {2} adornment messages'
+					format: {
+						self rustViewItemsCountOf: aRecorder titled: 'Messages'.
+						self rustViewItemsCountOf: aRecorder titled: 'Adornment Messages' } ]
+]
+
 { #category : 'accessing' }
 GtTextEditorHandle >> height [
 	^ self primGetHeight
@@ -762,6 +786,25 @@ GtTextEditorHandle >> primUpdateSelectionAtVisualX: aX y: aY [
 		float64 aY))
 ]
 
+{ #category : 'api - debugging' }
+GtTextEditorHandle >> recordersSnapshotLabeled: aString [
+	"Answer a snapshot of what my in-memory recorders captured so far.
+	The snapshot holds plain strings, so it outlives me and can be compared with a snapshot
+	taken from another editor, for instance from a passing and a failing example execution."
+	<return: #GtTextEditorRecordersSnapshot>
+	^ GtTextEditorRecordersSnapshot new
+		label: aString;
+		commands: (self rustViewItemTextsOf: commandsRecorder titled: 'Commands');
+		adornmentCommands: (self
+				rustViewItemTextsOf: commandsRecorder
+				titled: 'Adornment Commands');
+		messages: (self rustViewItemTextsOf: toEmbedderCommandsRecorder titled: 'Messages');
+		adornmentMessages: (self
+				rustViewItemTextsOf: toEmbedderCommandsRecorder
+				titled: 'Adornment Messages');
+		yourself
+]
+
 { #category : 'api - editing' }
 GtTextEditorHandle >> redo [
 	self primRedo
@@ -811,6 +854,47 @@ GtTextEditorHandle >> resizeAdornment: anAttributeTag extent: aPoint [
 		primResizeAdornment: anAttributeTag
 		width: aPoint x
 		height: aPoint y
+]
+
+{ #category : 'api - debugging' }
+GtTextEditorHandle >> rustPhlowViewOf: aRecorder titled: aString [
+	"Answer the Rust-defined phlow view of aRecorder titled aString, or nil if there is none.
+	The recorders hold their recorded commands and messages on the Rust side and expose
+	them only through their phlow views, so the view is the only way in.
+	aRecorder is nil until the in-memory recorders are enabled."
+	<return: #GtRustPhlowView or: nil>
+	aRecorder ifNil: [ ^ nil ].
+	^ aRecorder
+		asPhlowObjectDo: [ :aPhlowObject |
+			aPhlowObject rustPhlowViews
+				detect: [ :eachRustView | eachRustView title = aString ]
+				ifFound: [ :eachRustView | eachRustView ]
+				ifNone: [ nil ] ]
+		ifNone: [ nil ]
+]
+
+{ #category : 'api - debugging' }
+GtTextEditorHandle >> rustViewItemTextsOf: aRecorder titled: aString [
+	"Answer the item texts of the Rust-defined phlow list view of aRecorder titled aString.
+	The count and the texts are read from one view object on purpose: each view keeps its own
+	view instance, so asking a second view for the texts could read them from a later moment
+	than the count was taken at, and run past the end of a live editor's recording."
+	<return: #Array of: #String>
+	^ (self rustPhlowViewOf: aRecorder titled: aString)
+		ifNil: [ #() ]
+		ifNotNil: [ :aRustView |
+			(1 to: aRustView itemsCount)
+				collect: [ :anIndex | aRustView itemTextAt: anIndex ] ]
+]
+
+{ #category : 'api - debugging' }
+GtTextEditorHandle >> rustViewItemsCountOf: aRecorder titled: aString [
+	"Answer how many items the Rust-defined phlow list view of aRecorder titled aString holds.
+	The count is read when it is asked for, so it is a point in time value."
+	<return: #Number>
+	^ (self rustPhlowViewOf: aRecorder titled: aString)
+		ifNil: [ 0 ]
+		ifNotNil: [ :aRustView | aRustView itemsCount ]
 ]
 
 { #category : 'api - scrolling' }

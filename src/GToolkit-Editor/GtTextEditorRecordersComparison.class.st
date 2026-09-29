@@ -26,6 +26,28 @@ GtTextEditorRecordersComparison class >> from: aFromSnapshot to: aToSnapshot [
 		yourself
 ]
 
+{ #category : 'instance creation' }
+GtTextEditorRecordersComparison class >> fromElement: aFromElement toElement: aToElement [
+	<return: #GtTextEditorRecordersComparison>
+	| aFromSnapshot aToSnapshot |
+	aFromSnapshot := aFromElement privateEditorHandle
+			recordersSnapshotLabeled: '1st element'.
+	aToSnapshot := aToElement privateEditorHandle
+			recordersSnapshotLabeled: '2nd element'.
+
+	^ self from: aFromSnapshot to: aToSnapshot
+]
+
+{ #category : 'instance creation' }
+GtTextEditorRecordersComparison class >> fromScripter: aFromScripter toScripter: aToScripter [
+	<return: #GtTextEditorRecordersComparison>
+	| aFromElement aToElement |
+	aFromElement := (aFromScripter root query // GtTextEditorElement) anyOne.
+	aToElement := (aToScripter root query // GtTextEditorElement) anyOne.
+
+	^ self fromElement: aFromElement toElement: aToElement
+]
+
 { #category : 'accessing' }
 GtTextEditorRecordersComparison >> countsTextFor: aSelector [
 	"Answer how many entries aSelector holds on each side, so it is visible at a glance

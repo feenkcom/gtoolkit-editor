@@ -969,6 +969,18 @@ GtTextEditorElement >> onEditorScrollEdgeReached: aMessage [
 	
 ]
 
+{ #category : 'private - styling' }
+GtTextEditorElement >> onEditorStyledTextRejected: aMessage [
+	"The editor discarded a styled text I sent, because the document moved while I was styling.
+	Nothing to repair here: the styled text is gone and a newer styling round is what replaces it.
+	The signal is what makes the discarded round visible on a timeline."
+	GtTextEditorStyledTextRejectedSignal new
+		element: self;
+		expectedDocumentId: aMessage expectedDocumentId;
+		receivedDocumentId: aMessage receivedDocumentId;
+		emit
+]
+
 { #category : 'event handling' }
 GtTextEditorElement >> onEditorTextChanged: aMessage [
 	aMessage modificationReasonsDo: [ :eachReason | eachReason sendTo: self with: aMessage ].
@@ -1039,15 +1051,23 @@ GtTextEditorElement >> onEditorTextInserted: anInsertion withMessage: aTextChang
 				yourself)
 ]
 
-{ #category : 'event handling' }
+{ #category : 'private - styling' }
 GtTextEditorElement >> onEditorTextStylingRequest: aMessage [
 	| textToStyle |
-	
+
 	textToStyle := GtTextEditorTextToStyle new
 		setExternalText: aMessage unstyledText
 		documentId: aMessage documentId
 		theme: self theme;
 		attributesRegistry: attributesRegistry.
+
+	GtTextEditorStylingRequestedSignal new
+		element: self;
+		documentId: aMessage documentId;
+		trigger: aMessage trigger;
+		textSize: textToStyle size;
+		lastStyledDocumentId: (currentStyledText ifNotNil: [ :aText | aText documentId ]);
+		emit.
 	
 	self stylerStrategy
 		styleText: textToStyle
@@ -1455,13 +1475,19 @@ GtTextEditorElement >> styleTextAndAfterDo: aBlock [
 	GtJustContextStackSignal emit
 ]
 
-{ #category : 'styling' }
+{ #category : 'private - styling' }
 GtTextEditorElement >> styledText: aTextToStyle [
 	currentStyledText := aTextToStyle.
 
 	self flag: #TODO.
 	"questionable use of the global attributes registry! What should we do when the styled text is rejected because of the wrong document id"
 	
+	GtTextEditorStyledTextAppliedSignal new
+		element: self;
+		documentId: aTextToStyle documentId;
+		textSize: aTextToStyle size;
+		emit.
+
 	aTextToStyle
 		asGtTextEditorText: attributesRegistry
 		forTheme: self theme
@@ -1517,6 +1543,12 @@ GtTextEditorElement >> text [
 
 { #category : 'accessing' }
 GtTextEditorElement >> text: aBlText [
+	GtTextEditorTextSetSignal new
+		element: self;
+		documentId: aBlText documentId;
+		textSize: aBlText size;
+		emit.
+
 	aBlText
 		asGtTextEditorText: attributesRegistry
 		forTheme: self theme

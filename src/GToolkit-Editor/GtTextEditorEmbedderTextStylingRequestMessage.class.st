@@ -27,6 +27,11 @@ GtTextEditorEmbedderTextStylingRequestMessage >> primGetDocumentId: documentId [
 ]
 
 { #category : 'private - ffi' }
+GtTextEditorEmbedderTextStylingRequestMessage >> primGetTrigger [
+	^ self ffiCall: #(GtTextEditorStylingTrigger to_embedder_text_styling_request_get_trigger(self))
+]
+
+{ #category : 'private - ffi' }
 GtTextEditorEmbedderTextStylingRequestMessage >> primGetUnstyledText [
 	^ self ffiCall: #(void* to_embedder_text_styling_request_get_text(self))
 ]
@@ -34,6 +39,13 @@ GtTextEditorEmbedderTextStylingRequestMessage >> primGetUnstyledText [
 { #category : 'dispatching' }
 GtTextEditorEmbedderTextStylingRequestMessage >> sendTo: anObject [
 	anObject onEditorTextStylingRequest: self
+]
+
+{ #category : 'accessing' }
+GtTextEditorEmbedderTextStylingRequestMessage >> trigger [
+	"Answer whether this styling was asked for explicitly or scheduled from a text change."
+	<return: #GtTextEditorStylingTrigger>
+	^ self primGetTrigger
 ]
 
 { #category : 'accessing' }

@@ -67,6 +67,11 @@ GtTextEditorExternalText >> appendingAttribute: anAppendingAttribute anchor: anA
 ]
 
 { #category : 'converting' }
+GtTextEditorExternalText >> asGtTextEditorText: anAttributesRegistry forTheme: aTheme during: aBlock [
+	^ aBlock value: self
+]
+
+{ #category : 'converting' }
 GtTextEditorExternalText >> asGtTextEditorTextForTheme: aTheme during: aBlock [
 	^ aBlock value: self
 ]

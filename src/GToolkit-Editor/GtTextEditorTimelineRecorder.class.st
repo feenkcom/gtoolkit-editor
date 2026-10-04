@@ -1,17 +1,22 @@
 "
 I record what happened during one editor run, from every source at once, into a single ordered timeline.
 
+I am off by default. `GtTextEditorTimelineRecorder isEnabled: true` switches recording on image wide, and `#start` does nothing while it is off. My defaults cover the whole ${class:GtTextEditorSignal}$ tree, whose layout and measure subclasses capture a full call stack on every emit, so leaving recording on for longer than the run being investigated makes the image unusable rather than slow.
+
 I collect Beacon signals with a memory logger, and I subscribe to any announcer I am given, re-emitting each announcement as a ${class:GtTextEditorAnnouncementSignal}$ so that announcements and signals land in the same sink rather than in two lists that have to be merged afterwards.
 
-I subscribe generically, with `when: Announcement do:`, and never name an announcement class. That is what lets me observe a coder view model without `GToolkit-Editor` depending on the packages that define its announcements. The caller passes me the announcer:
+By default I subscribe to `Announcement` itself and never name an announcement class, which is what lets me observe a coder view model without `GToolkit-Editor` depending on the packages that define its announcements. `observeAnnouncer:announcement:labeled:` narrows that to one class when a generic subscription records too much:
 
 ```
 aRecorder := GtTextEditorTimelineRecorder new
 	observeAnnouncer: aCoderViewModel announcer labeled: 'coder view model';
-	start
+	yourself.
+aRecorder runDuring: [ aScripter play ]
 ```
 
-Beacon timestamps are not fine grained enough to order events that land in the same millisecond, which here is the common case, so I stamp every entry with my own monotonic sequence number and order by it.
+`runDuring:` keeps the value of the block in `executionResult`, and when the block fails it freezes the exception there and tags it with me, so the recorder of a failed run is reachable as `anError tag`.
+
+Beacon timestamps are not fine grained enough to order events that land in the same millisecond, which here is the common case, so I order by the arrival index of the memory logger and expose it as the sequence number of each ${class:GtTextEditorTimelineEntry}$.
 "
 Class {
 	#name : 'GtTextEditorTimelineRecorder',
@@ -21,7 +26,8 @@ Class {
 		'announcements',
 		'signalClasses',
 		'executionResult',
-		'isEnabled'
+		'isEnabled',
+		'isRunning'
 	],
 	#classVars : [
 		'IsEnabled'
@@ -43,23 +49,10 @@ GtTextEditorTimelineRecorder class >> isEnabled: aBoolean [
 
 { #category : 'initialization' }
 GtTextEditorTimelineRecorder >> defaultSignalClasses [
-	"The signals worth putting on one timeline when an editor run is being explained.
-
-	Deliberately narrow. GtTextEditorSignal itself must not be used: it is a ContextStackSignal,
-	so every emit captures a full call stack, and its layout, measure and request layout
-	subclasses fire continuously for every live editor in the image. Recording that class makes
-	the image unusable rather than slow."
+	"The signals worth putting on one timeline when an editor run is being explained."
 	<return: #Collection>
 	^ {ExceptionSignal.
 		GtTextEditorSignal.
-		"GtTextEditorTextSetSignal.
-		GtTextEditorStylingRequestedSignal.
-		GtTextEditorStyledTextAppliedSignal.
-		GtTextEditorStyledTextRejectedSignal.
-		GtTextEditorEmbedderUnknownMessageSignal.
-		GtTextEditorAttributeSignal.
-		GtTextEditorAnnouncementSignal.
-		BlTextStylerRequestedSignal."
 		BrAsyncElementFutureAboutToCancelPromiseSignal.
 		BrAsyncElementFutureSkippedFutureSignal}
 ]
@@ -106,12 +99,20 @@ GtTextEditorTimelineRecorder >> initialize [
 	
 	announcements := OrderedCollection new.
 	signalClasses := self defaultSignalClasses.
-	executionResult := nil
+	executionResult := nil.
+	
+	isEnabled := nil.
+	isRunning := false.
 ]
 
 { #category : 'running' }
 GtTextEditorTimelineRecorder >> isEnabled [
 	^ isEnabled ifNil: [ self class isEnabled ].
+]
+
+{ #category : 'running' }
+GtTextEditorTimelineRecorder >> isEnabled: aBoolean [
+	isEnabled := aBoolean
 ]
 
 { #category : 'accessing' }
@@ -124,11 +125,13 @@ GtTextEditorTimelineRecorder >> memoryLogger [
 GtTextEditorTimelineRecorder >> observeAnnouncer: anAnnouncer announcement: anAnnouncementClass labeled: aString [
 	"Re-emit everything anAnnouncer announces as a beacon signal tagged with aString."
 
-	announcements
-		add: (GtTextEditorTimelineAnnouncement new
-				announcer: anAnnouncer;
-				announcementClass: anAnnouncementClass;
-				label: aString)
+	| aTimelineAnnouncement |
+	aTimelineAnnouncement := GtTextEditorTimelineAnnouncement new
+			announcer: anAnnouncer;
+			announcementClass: anAnnouncementClass;
+			label: aString.
+	announcements add: aTimelineAnnouncement.
+	isRunning ifTrue: [ aTimelineAnnouncement subscribe ].
 ]
 
 { #category : 'observing' }
@@ -156,6 +159,8 @@ GtTextEditorTimelineRecorder >> runDuring: aBlock [
 	^ [ [ executionResult := aBlock value ]
 		onErrorDo: [ :anError | 
 			executionResult := GtSystemUtility freeze: anError.
+			executionResult tag: self.
+			anError tag: self.
 			anError pass ] ] ensure: [ self stop ]
 ]
 
@@ -191,6 +196,7 @@ GtTextEditorTimelineRecorder >> start [
 			inject: signalClasses first
 			into: [ :aSet :eachClass | aSet , eachClass ].
 
+	isRunning := true.
 	memoryLogger startFor: aSignalSet.
 	announcements do: #subscribe
 ]
@@ -200,7 +206,8 @@ GtTextEditorTimelineRecorder >> stop [
 	"Stop collecting."
 
 	announcements do: #unsubscribe.
-	memoryLogger stop
+	memoryLogger stop.
+	isRunning := false.
 ]
 
 { #category : 'accessing' }

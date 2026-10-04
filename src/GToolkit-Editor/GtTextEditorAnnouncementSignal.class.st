@@ -46,7 +46,7 @@ GtTextEditorAnnouncementSignal >> label: anObject [
 GtTextEditorAnnouncementSignal >> printOneLineContentsOn: aStream [
 	aStream
 		nextPutAll: label;
-		nextPutAll: ': ';
-		nextPutAll: self announcementClassName;
-		space
+		nextPutAll: ': '.
+	self announcement gtDisplayOn: aStream.
+	aStream space
 ]

@@ -1543,16 +1543,17 @@ GtTextEditorElement >> text [
 
 { #category : 'accessing' }
 GtTextEditorElement >> text: aBlText [
-	GtTextEditorTextSetSignal new
-		element: self;
-		documentId: aBlText documentId;
-		textSize: aBlText size;
-		emit.
-
 	aBlText
 		asGtTextEditorText: attributesRegistry
 		forTheme: self theme
-		during: [ :textEditorText | editorHandle text: textEditorText ]
+		during: [ :textEditorText | 
+			GtTextEditorTextSetSignal new
+				element: self;
+				sourceDocumentId: aBlText documentId;
+				sourceTextSize: aBlText size;
+				targetDocumentId: textEditorText documentId;
+				emit.
+			editorHandle text: textEditorText ]
 ]
 
 { #category : 'api - editing' }

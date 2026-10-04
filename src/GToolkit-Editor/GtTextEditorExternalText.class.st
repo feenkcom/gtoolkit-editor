@@ -106,6 +106,18 @@ GtTextEditorExternalText >> background: aColor [
 				to: self size ]
 ]
 
+{ #category : 'accessing' }
+GtTextEditorExternalText >> documentId [
+	"Answer the document this text belongs to, as the rust side knows it, 
+	or nil if it cannot be read."
+	<return: #GtTextEditorDocumentId or: nil>
+	| aDocumentId |
+	aDocumentId := GtTextEditorDocumentId new.
+	^ (self primGetDocumentId: aDocumentId)
+		ifTrue: [ aDocumentId ]
+		ifFalse: [ BlTextDocumentId textId: 0 revisionId: 0 ]
+]
+
 { #category : 'text - attributes' }
 GtTextEditorExternalText >> fontSize: aNumber [
 	GtTextEditorAttribute
@@ -193,6 +205,11 @@ GtTextEditorExternalText >> primAddAttribute: anAttribute start: aStart end: anE
 		void* anAttribute,
 		size_t aStart,
 		size_t anEnd))
+]
+
+{ #category : 'accessing' }
+GtTextEditorExternalText >> primGetDocumentId: aDocumentId [
+	^ self ffiCall: #(bool text_get_document_id(self, void* aDocumentId))
 ]
 
 { #category : 'private - ffi' }

@@ -6,6 +6,7 @@ ${class:GtTextEditorTimelineRecorder}$ needs no reference to any announcement cl
 Class {
 	#name : 'GtTextEditorExampleAnnouncement',
 	#superclass : 'Announcement',
-	#category : 'GToolkit-Editor',
-	#package : 'GToolkit-Editor'
+	#category : 'GToolkit-Editor-Examples',
+	#package : 'GToolkit-Editor',
+	#tag : 'Examples'
 }

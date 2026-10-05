@@ -8,8 +8,9 @@ I skip when the editor library is unavailable, as the other rust editor examples
 Class {
 	#name : 'GtTextEditorExternalTextExamples',
 	#superclass : 'Object',
-	#category : 'GToolkit-Editor',
-	#package : 'GToolkit-Editor'
+	#category : 'GToolkit-Editor-Examples',
+	#package : 'GToolkit-Editor',
+	#tag : 'Examples'
 }
 
 { #category : 'examples' }

@@ -14,7 +14,11 @@ BrTextAdornmentTextAttribute >> gtEditorCreateExternalTextAttribute: anAttribute
 							aBlock value: anExternalAttribute ] ].
 
 			self shouldReplace
-				ifTrue: [ ^ GtTextEditorReplacingAttribute replacingText: anExternalText during: aBlock ] ]
+				ifTrue: [ ^ GtTextEditorReplacingAttribute
+						replacingText: anExternalText
+						during: [ :anExternalAttribute | 
+							self gtExternalTextConfigureReplacingAttribute: anExternalAttribute.
+							aBlock value: anExternalAttribute ] ] ]
 ]
 
 { #category : '*GToolkit-Editor' }
@@ -35,5 +39,7 @@ BrTextAdornmentTextAttribute >> gtEditorCreateExternalTextAttributeTagged: anAtt
 				ifTrue: [ ^ GtTextEditorReplacingAttribute
 						replacingText: anExternalText
 						withTag: anAttributeTag
-						during: aBlock ] ]
+						during: [ :anExternalAttribute | 
+							self gtExternalTextConfigureReplacingAttribute: anExternalAttribute.
+							aBlock value: anExternalAttribute ] ] ]
 ]

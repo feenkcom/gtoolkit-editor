@@ -47,12 +47,17 @@ GtTextEditorTimelineRecorder class >> isEnabled: aBoolean [
 	IsEnabled := aBoolean
 ]
 
+{ #category : 'observing' }
+GtTextEditorTimelineRecorder >> addSignalClass: aBeaconClass [
+	signalClasses add: aBeaconClass
+]
+
 { #category : 'initialization' }
 GtTextEditorTimelineRecorder >> defaultSignalClasses [
 	"The signals worth putting on one timeline when an editor run is being explained."
 	<return: #Collection>
 	^ {ExceptionSignal.
-		GtTextEditorSignal.
+		GtCoderAstStylerSignal .
 		BrAsyncElementFutureAboutToCancelPromiseSignal.
 		BrAsyncElementFutureSkippedFutureSignal}
 ]
@@ -98,7 +103,7 @@ GtTextEditorTimelineRecorder >> initialize [
 	memoryLogger := MemoryLogger new.
 	
 	announcements := OrderedCollection new.
-	signalClasses := self defaultSignalClasses.
+	signalClasses := OrderedCollection withAll: self defaultSignalClasses.
 	executionResult := nil.
 	
 	isEnabled := nil.

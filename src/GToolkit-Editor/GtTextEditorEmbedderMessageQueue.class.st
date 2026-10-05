@@ -18,9 +18,15 @@ GtTextEditorEmbedderMessageQueue class >> primRelease: aHandle [
 	self ffiCall: #(void editor_embedder_messages_release(void* aHandle))
 ]
 
-{ #category : 'polling' }
+{ #category : 'accessing' }
 GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsentBlock [
-	"Subscribe to the cursor reached boundary event and return an event handler"
+	"Poll one message from the editor and evaluate aBlock with it.
+	The order of messageClasses is the order of the rust ToEmbedderMessageType enumeration.
+
+	Polling takes ownership of the message: whoever receives it has to release it, which
+	#fromNativeHandle:during: does from an ensure:. A message type with no class here is dropped
+	without being released, so its allocation leaks. Releasing it would mean knowing its type,
+	which is exactly what is missing, so the mismatch is reported instead of repaired."
 	| typeBuffer messageHandle messageType messageClasses |
 	
 	typeBuffer := ByteArray new: FFIUInt8 externalTypeSize.
@@ -45,9 +51,18 @@ GtTextEditorEmbedderMessageQueue >> pollMessageDuring: aBlock ifAbsent: anAbsent
 		GtTextEditorEmbedderScrollEdgeReachedMessage.
 		GtTextEditorEmbedderCursorReachedBoundaryMessage.
 		GtTextEditorEmbedderAdornmentsVisibleMessage.
-		GtTextEditorEmbedderAdornmentsGoneMessage }.
+		GtTextEditorEmbedderAdornmentsGoneMessage.
+		GtTextEditorEmbedderStyledTextRejectedMessage }.
 
-	^ (messageClasses at: messageType ifAbsent: [ ^ self ])
+	^ (messageClasses
+		at: messageType
+		ifAbsent: [
+			GtTextEditorEmbedderUnknownMessageSignal new
+					messageType: messageType;
+					knownTypesCount: messageClasses size;
+					emit;
+					reportToStderr.
+			^ self ])
 		fromNativeHandle: messageHandle
 		during: aBlock
 ]

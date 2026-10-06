@@ -79,3 +79,18 @@ GtTextEditorReplacingAttribute >> primAsAttribute [
 GtTextEditorReplacingAttribute >> primGetTag [
 	^ self ffiCall: #(uint64 replacing_attribute_get_tag(self))
 ]
+
+{ #category : 'private - ffi' }
+GtTextEditorReplacingAttribute >> primSetOverwritableByStyler: aBoolean [
+	^ self ffiCall: #(void replacing_attribute_set_overwritable_by_styler(self, bool aBoolean))
+]
+
+{ #category : 'accessing' }
+GtTextEditorReplacingAttribute >> setOverwritableByStyler: aBoolean [
+	"Tell the rust side whether a styling pass may remove this attribute.
+
+	The counterpart of ${method:GtTextEditorAppendingAttribute>>#setOverwritableByStyler:}$. Until the rust
+	side gained this setter the flag could not be carried for a replacing attribute at all, so an attribute
+	the embedder had marked as its own arrived overwritable and the next styling pass removed it."
+	self primSetOverwritableByStyler: aBoolean
+]

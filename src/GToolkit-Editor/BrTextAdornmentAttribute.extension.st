@@ -18,7 +18,9 @@ BrTextAdornmentAttribute >> gtEditorCreateExternalTextAttribute: anAttributesReg
 
 	self shouldReplace
 		ifTrue: [ ^ GtTextEditorReplacingAttribute
-				newDuring: [ :attribute | aBlock value: attribute ] ].
+				newDuring: [ :attribute | 
+					self gtExternalTextConfigureReplacingAttribute: attribute.
+					aBlock value: attribute ] ].
 
 	self error: 'TODO'
 ]
@@ -26,12 +28,13 @@ BrTextAdornmentAttribute >> gtEditorCreateExternalTextAttribute: anAttributesReg
 { #category : '*GToolkit-Editor' }
 BrTextAdornmentAttribute >> gtEditorCreateExternalTextAttributeTagged: anAttributeTag registry: anAttributesRegistry forTheme: aTheme during: aBlock [
 	self shouldAppend
-		ifTrue: [ ^ GtTextEditorAppendingAttribute newWithTag: anAttributeTag during:  [ :attribute |
+		ifTrue: [ ^ GtTextEditorAppendingAttribute newWithTag: anAttributeTag during: [ :attribute |
 			self gtExternalTextConfigureAppendingAttribute: attribute.
 			aBlock value: attribute ] ].
 			
 	self shouldReplace
 		ifTrue: [ ^ GtTextEditorReplacingAttribute newWithTag: anAttributeTag during: [ :attribute |
+			self gtExternalTextConfigureReplacingAttribute: attribute.
 			aBlock value: attribute ] ].
 
 	self error: 'TODO'
@@ -44,5 +47,10 @@ BrTextAdornmentAttribute >> gtEditorShouldBeAddedToRegistry [
 
 { #category : '*GToolkit-Editor' }
 BrTextAdornmentAttribute >> gtExternalTextConfigureAppendingAttribute: anAttribute [
+	anAttribute setOverwritableByStyler: self isOverwritableByStyler
+]
+
+{ #category : '*GToolkit-Editor' }
+BrTextAdornmentAttribute >> gtExternalTextConfigureReplacingAttribute: anAttribute [
 	anAttribute setOverwritableByStyler: self isOverwritableByStyler
 ]

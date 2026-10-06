@@ -53,8 +53,12 @@ GtTextEditorTimelineRecorderExamples >> ifLibEditorIsMissingDo: aBlock [
 
 { #category : 'examples' }
 GtTextEditorTimelineRecorderExamples >> observingOneAnnouncementClassIgnoresTheOthers [
-	"An observation is narrowed to one announcement class when a generic subscription records too
-	much. Everything else the same announcer sends then has to stay off the timeline."
+	"An observation is narrowed to one announcement class when a generic subscription records too much.
+	Everything else the same announcer sends then has to stay off the timeline.
+
+	This is the one case that needs two distinct classes, so it uses
+	${class:GtTextEditorExampleAnnouncement}$ for the narrowed one and `Announcement` for the other.
+	`Announcement` is not a kind of it, which is what makes it the right counter example."
 	<gtExample>
 	<return: #GtTextEditorTimelineRecorder>
 	| aRecorder anAnnouncer theEntries |
@@ -63,15 +67,15 @@ GtTextEditorTimelineRecorderExamples >> observingOneAnnouncementClassIgnoresTheO
 	aRecorder isEnabled: true.
 	aRecorder
 		observeAnnouncer: anAnnouncer
-		announcement: GtTextualCoderViewModelAstChanged
+		announcement: GtTextEditorExampleAnnouncement
 		labeled: 'test announcer'.
 
 	aRecorder runDuring: [ anAnnouncer announce: Announcement new.
-		anAnnouncer announce: GtTextualCoderViewModelAstChanged new ].
+		anAnnouncer announce: GtTextEditorExampleAnnouncement new ].
 
 	theEntries := aRecorder timeline select: [ :each | each source = 'test announcer' ].
 	self assert: theEntries size equals: 1.
-	self assert: theEntries first name equals: 'GtTextualCoderViewModelAstChanged'.
+	self assert: theEntries first name equals: 'GtTextEditorExampleAnnouncement'.
 	^ aRecorder
 ]
 
@@ -107,7 +111,13 @@ GtTextEditorTimelineRecorderExamples >> recordingIsOffUntilTheSwitchIsOn [
 
 { #category : 'examples' }
 GtTextEditorTimelineRecorderExamples >> recordsAnnouncementsOfAGivenAnnouncer [
-	"The recorder subscribes generically, so it records an announcer it knows nothing about."
+	"The recorder holds no reference to any announcement class, so it records an announcer it knows
+	nothing about. `Announcement` itself is the strongest way to say that: there is nothing more generic
+	for it to have been taught about in advance.
+
+	That genericity is not a convenience, it is what lets the recorder observe a coder view model without
+	`GToolkit-Editor` depending on the packages that define coder announcements. An example announcing a
+	coder announcement would create exactly that dependency."
 	<gtExample>
 	<return: #GtTextEditorTimelineRecorder>
 	| aRecorder anAnnouncer theEntries |
@@ -115,11 +125,11 @@ GtTextEditorTimelineRecorderExamples >> recordsAnnouncementsOfAGivenAnnouncer [
 	aRecorder := GtTextEditorTimelineRecorder new.
 	aRecorder isEnabled: true.
 	aRecorder observeAnnouncer: anAnnouncer labeled: 'test announcer'.
-	aRecorder runDuring: [ anAnnouncer announce: GtTextualCoderViewModelAstChanged new ].
+	aRecorder runDuring: [ anAnnouncer announce: Announcement new ].
 
 	theEntries := aRecorder timeline select: [ :each | each source = 'test announcer' ].
 	self assert: theEntries size equals: 1.
-	self assert: theEntries first name equals: 'GtTextualCoderViewModelAstChanged'.
+	self assert: theEntries first name equals: 'Announcement'.
 	^ aRecorder
 ]
 
@@ -175,14 +185,14 @@ GtTextEditorTimelineRecorderExamples >> stopUnsubscribesFromTheAnnouncer [
 	aRecorder := GtTextEditorTimelineRecorder new.
 	aRecorder isEnabled: true.
 	aRecorder observeAnnouncer: anAnnouncer labeled: 'test announcer'.
-	aRecorder runDuring: [ anAnnouncer announce: GtTextualCoderViewModelAstChanged new ].
+	aRecorder runDuring: [ anAnnouncer announce: Announcement new ].
 	aCountAfterStop := aRecorder timeline size.
 
 	"The announcement has to have been recorded, or there is nothing here to unsubscribe from."
 	self assert: aCountAfterStop > 0.
 
 	"Announcing after the recorder stopped must not reach it."
-	anAnnouncer announce: GtTextualCoderViewModelAstChanged new.
+	anAnnouncer announce: Announcement new.
 	self assert: aRecorder timeline size equals: aCountAfterStop.
 	^ aRecorder
 ]

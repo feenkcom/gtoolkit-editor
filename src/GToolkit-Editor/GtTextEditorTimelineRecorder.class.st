@@ -57,7 +57,7 @@ GtTextEditorTimelineRecorder >> defaultSignalClasses [
 	"The signals worth putting on one timeline when an editor run is being explained."
 	<return: #Collection>
 	^ {ExceptionSignal.
-		GtCoderAstStylerSignal .
+		GtTextEditorSignal .
 		BrAsyncElementFutureAboutToCancelPromiseSignal.
 		BrAsyncElementFutureSkippedFutureSignal}
 ]

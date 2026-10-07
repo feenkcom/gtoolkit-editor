@@ -6,8 +6,6 @@ The rust editor records asynchronously, so a snapshot taken right after an edit 
 Class {
 	#name : 'GtTextEditorRecordersSnapshotExamples',
 	#superclass : 'Object',
-	#traits : 'TGtTextEditorElementExamples',
-	#classTraits : 'TGtTextEditorElementExamples classTrait',
 	#category : 'GToolkit-Editor-Examples',
 	#package : 'GToolkit-Editor',
 	#tag : 'Examples'
@@ -20,7 +18,6 @@ GtTextEditorRecordersSnapshotExamples >> adornmentEntriesAreSubsetOfCompleteEntr
 	<gtExample>
 	<return: #GtTextEditorRecordersSnapshot>
 	| aSnapshot |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	aSnapshot := self snapshotOfRecordedEdits.
 	aSnapshot adornmentCommands
 		do: [ :eachEntry | self assert: (aSnapshot commands includes: eachEntry) ].
@@ -34,7 +31,6 @@ GtTextEditorRecordersSnapshotExamples >> comparisonAcrossAnExtraEdit [
 	<gtExample>
 	<return: #GtTextEditorRecordersComparison>
 	| anElement aHandle aBefore anAfter aComparison |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	anElement := self elementWithRecordedEdits.
 	aHandle := anElement privateEditorHandle.
 	aBefore := aHandle recordersSnapshotLabeled: 'before extra edit'.
@@ -60,7 +56,6 @@ GtTextEditorRecordersSnapshotExamples >> comparisonDiffView [
 	<gtExample>
 	<return: #GtPhlowDiffView>
 	| aComparison aView |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	aComparison := self comparisonAcrossAnExtraEdit.
 	aView := aComparison gtDiffFor: GtPhlowView empty.
 	self assert: aView class equals: GtPhlowDiffView.
@@ -77,7 +72,6 @@ GtTextEditorRecordersSnapshotExamples >> comparisonInfoView [
 	<gtExample>
 	<return: #GtPhlowDetailsView>
 	| aComparison aView |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	aComparison := self comparisonAcrossAnExtraEdit.
 	aView := aComparison gtInfoFor: GtPhlowView empty.
 	self assert: aView class equals: GtPhlowDetailsView.
@@ -97,7 +91,6 @@ GtTextEditorRecordersSnapshotExamples >> comparisonOfTwoQuietSnapshotsIsIdentica
 	<gtExample>
 	<return: #GtTextEditorRecordersComparison>
 	| aHandle aComparison |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	aHandle := self elementWithRecordedEdits privateEditorHandle.
 	aComparison := GtTextEditorRecordersComparison
 			from: (aHandle recordersSnapshotLabeled: 'first')
@@ -124,7 +117,6 @@ GtTextEditorRecordersSnapshotExamples >> elementWithRecordedEdits [
 	<gtExample>
 	<return: #GtTextEditorElement>
 	| anElement aHandle |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	anElement := self elementWithoutRecorders.
 	aHandle := anElement privateEditorHandle.
 	aHandle enableInMemoryCommandsRecorder.
@@ -138,7 +130,6 @@ GtTextEditorRecordersSnapshotExamples >> elementWithoutRecorders [
 	<gtExample>
 	<return: #GtTextEditorElement>
 	| anElement |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	anElement := GtTextEditorElement new.
 	anElement exact: 200 @ 200.
 	anElement text: 'abcd' asRopedText.
@@ -153,7 +144,6 @@ GtTextEditorRecordersSnapshotExamples >> emptySnapshotWithoutRecorders [
 	<gtExample>
 	<return: #GtTextEditorRecordersSnapshot>
 	| aSnapshot |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	aSnapshot := self elementWithoutRecorders privateEditorHandle
 			recordersSnapshotLabeled: 'not recording'.
 	self assert: aSnapshot isEmpty.
@@ -173,7 +163,6 @@ GtTextEditorRecordersSnapshotExamples >> snapshotDiffStringHasBothSections [
 	<gtExample>
 	<return: #String>
 	| aSnapshot aString theLines |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	aSnapshot := self snapshotOfRecordedEdits.
 	aString := aSnapshot diffString.
 	theLines := aString lines.
@@ -197,7 +186,6 @@ GtTextEditorRecordersSnapshotExamples >> snapshotInfoView [
 	<gtExample>
 	<return: #GtPhlowDetailsView>
 	| aSnapshot aView |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	aSnapshot := self snapshotOfRecordedEdits.
 	aView := aSnapshot gtInfoFor: GtPhlowView empty.
 	self assert: aView class equals: GtPhlowDetailsView.
@@ -213,7 +201,6 @@ GtTextEditorRecordersSnapshotExamples >> snapshotOfRecordedEdits [
 	<gtExample>
 	<return: #GtTextEditorRecordersSnapshot>
 	| aSnapshot |
-	self ifLibEditorExamplesCannotBeExecutedDo: [ ^ nil ].
 	aSnapshot := self elementWithRecordedEdits privateEditorHandle
 			recordersSnapshotLabeled: 'recorded edits'.
 	self assert: aSnapshot label equals: 'recorded edits'.

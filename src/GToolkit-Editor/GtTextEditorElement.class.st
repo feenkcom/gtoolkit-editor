@@ -920,7 +920,7 @@ GtTextEditorElement >> onEditorLayoutReady: aMessage [
 		previousMeasuredExtent: self measuredExtent;
 		emit.
 	
-	(aMessage editorExtent closeTo: self measuredExtent)
+	(aMessage editorExtent closeTo: self measuredExtent precision: 0.01)
     ifTrue: [ self invalidate ]
     ifFalse: [ self privatePreviousMeasurementSpec: nil.
                self invalidate.

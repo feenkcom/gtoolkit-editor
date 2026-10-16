@@ -75,7 +75,6 @@ GtTextEditorOverwritableByStylerExamples >> theFlagCrossesForAReplacingAttribute
 	<gtExample>
 	<return: #Collection>
 	| anElement theCommands |
-	self ifRenderedEditorCannotRunDo: [ ^ #() ].
 	anElement := self renderedEditorWithRecorder.
 
 	self addTo: anElement adornment: [ :anAttribute | anAttribute beReplace ] overwritable: false.
@@ -101,7 +100,6 @@ GtTextEditorOverwritableByStylerExamples >> theFlagCrossesForAnAppendingAttribut
 	<gtExample>
 	<return: #Collection>
 	| anElement theCommands |
-	self ifRenderedEditorCannotRunDo: [ ^ #() ].
 	anElement := self renderedEditorWithRecorder.
 
 	self addTo: anElement adornment: [ :anAttribute | anAttribute beAppend ] overwritable: false.

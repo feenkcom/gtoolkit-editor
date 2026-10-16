@@ -22,33 +22,12 @@ GtTextEditorExternalTextExamples >> aBlTextDocumentIdIsNotARustDocumentId [
 	<gtExample>
 	<return: #GtTextEditorTextSetSignal>
 	| aTextSet |
-	self ifRenderedEditorCannotRunDo: [ ^ GtTextEditorTextSetSignal new ].
 	aTextSet := self recordedTextSetSignalOfARenderedEditor.
 
 	self assert: aTextSet sourceDocumentId isNotNil.
 	self assert: aTextSet targetDocumentId isNotNil.
 	self assert: (aTextSet sourceDocumentId = aTextSet targetDocumentId) not.
 	^ aTextSet
-]
-
-{ #category : 'private' }
-GtTextEditorExternalTextExamples >> ifLibraryIsMissingDo: aBlock [
-	"Guard the examples that need only the library loaded, not a window.
-
-	Deliberately not ${method:GtTextEditorLibrary class>>#canRunExamples}$, which also requires a windowing
-	event loop. A text is a plain rust object with no element, no space and no layout, so it can be
-	exercised in a headless image, which is how examples run on CI. Using the stricter guard would skip
-	these exactly where they are most worth running. A missing library is still reported on stdout by the
-	element based examples in the same run."
-	GtTextEditorLibrary uniqueInstance hasModule ifFalse: [ ^ aBlock value ].
-	^ nil
-]
-
-{ #category : 'private' }
-GtTextEditorExternalTextExamples >> ifRenderedEditorCannotRunDo: aBlock [
-	"Guard the examples that render an editor, which need a windowing event loop as well as the library."
-	GtTextEditorLibrary canRunExamples ifFalse: [ ^ aBlock value ].
-	^ nil
 ]
 
 { #category : 'examples' }
@@ -58,7 +37,6 @@ GtTextEditorExternalTextExamples >> insertingIntoATextAdvancesItsRevision [
 	<gtExample>
 	<return: #Array>
 	| theIds |
-	self ifLibraryIsMissingDo: [ ^ #() ].
 	theIds := GtTextEditorExternalText
 			fromString: 'hello'
 			during: [ :aText | | beforeId |
@@ -109,7 +87,6 @@ GtTextEditorExternalTextExamples >> separatelyBuiltTextsAreDifferentDocuments [
 	<gtExample>
 	<return: #Array>
 	| oneId anotherId |
-	self ifLibraryIsMissingDo: [ ^ #() ].
 	oneId := GtTextEditorExternalText fromString: 'hello world' during: [ :aText | aText documentId ].
 	anotherId := GtTextEditorExternalText fromString: 'hello world' during: [ :aText | aText documentId ].
 
@@ -126,7 +103,6 @@ GtTextEditorExternalTextExamples >> textFromAStringReportsItsOwnDocumentId [
 	<gtExample>
 	<return: #GtTextEditorDocumentId>
 	| aDocumentId |
-	self ifLibraryIsMissingDo: [ ^ GtTextEditorDocumentId new ].
 	aDocumentId := GtTextEditorExternalText
 			fromString: 'hello world'
 			during: [ :aText | aText documentId ].
@@ -150,7 +126,6 @@ GtTextEditorExternalTextExamples >> theEditorAdoptsTheDocumentIdOfTheTextItIsGiv
 	<gtExample>
 	<return: #GtTextEditorDocumentId>
 	| aRecorder aScripter theEntries aTextSet theRequestedIds |
-	self ifRenderedEditorCannotRunDo: [ ^ GtTextEditorDocumentId new ].
 	aRecorder := GtTextEditorTimelineRecorder new.
 	aRecorder isEnabled: true.
 	aScripter := self scripterWithRenderedEditorRecordedBy: aRecorder.

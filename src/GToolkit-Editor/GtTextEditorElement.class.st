@@ -1247,17 +1247,22 @@ GtTextEditorElement >> paintMeAndChildrenOn: aCompositorPainter offset: anOffset
 			aChildElement userData
 				at: #editorAdornmentId
 				ifPresent: [ :anAdornmentTag | 
-					aChildPainter
+					| anAdornmentPayload |
+					anAdornmentPayload := GtTextEditorAdornmentDynamicOffsetPayload
+						fromEditorHandle: editorHandle
+						adornmentTag: anAdornmentTag.
+					[ aChildPainter
 						pushLayer: (BlCompositionDynamicOffsetLayer new
 										setOffsetFn: externalMethods offsetFn
-										payload: (editorHandle primCreateAdornmentDynamicOffset: anAdornmentTag)
+										payload: anAdornmentPayload
 										cloneFn: externalMethods payloadCloneFn
 										freeFn: externalMethods payloadFreeFn)
 						offset: aChildOffset - aChildElement position
 						bounds: self invalidationBounds
 						compositing: aChildElement compositingMode
 						thenPaint: [ :aNewPainter :aNewOffset |
-							aChildElement fullPaintOn: aNewPainter offset: aNewOffset ] ] ]
+							aChildElement fullPaintOn: aNewPainter offset: aNewOffset ] ]
+					ensure: [ anAdornmentPayload release ] ] ]
 ]
 
 { #category : 'api - editing' }

@@ -1,9 +1,9 @@
 {
 	"repositories" : {
-		"github://feenkcom/Brick/src" : "v0.9.178",
+		"github://feenkcom/Brick/src" : "v0.9.179",
 		"github://feenkcom/gt4phlow-rs/src" : "v0.6.23",
-		"github://feenkcom/gtoolkit-phlow/src" : "v0.9.217",
-		"github://feenkcom/gtoolkit-completer/src" : "v0.9.180",
+		"github://feenkcom/gtoolkit-phlow/src" : "v0.9.218",
+		"github://feenkcom/gtoolkit-completer/src" : "v0.9.181",
 		"github://feenkcom/gtoolkit-glutin/src" : "v0.8.164"
 	}
 }

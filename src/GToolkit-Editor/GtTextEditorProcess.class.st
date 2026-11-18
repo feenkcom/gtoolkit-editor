@@ -107,17 +107,17 @@ GtTextEditorProcess >> initialize [
 
 { #category : 'testing' }
 GtTextEditorProcess >> isSuspended [
-	^ editorProcess ifNotNil: #isSuspended ifNil: [ false ]
+	^ editorProcess ifNotNil: [ :v | v isSuspended ] ifNil: [ false ]
 ]
 
 { #category : 'testing' }
 GtTextEditorProcess >> isTerminated [
-	^ editorProcess ifNotNil: #isTerminated ifNil: [ true ]
+	^ editorProcess ifNotNil: [ :v | v isTerminated ] ifNil: [ true ]
 ]
 
 { #category : 'testing' }
 GtTextEditorProcess >> isTerminating [
-	^ editorProcess ifNotNil: #isTerminating ifNil: [ false ]
+	^ editorProcess ifNotNil: [ :v | v isTerminating ] ifNil: [ false ]
 ]
 
 { #category : 'printing' }
@@ -177,8 +177,8 @@ GtTextEditorProcess >> semaphoreIndex [
 
 { #category : 'private' }
 GtTextEditorProcess >> terminate [
-	editorProcess ifNotNil: #terminate.
-	editorProcess := nil.
+	editorProcess ifNotNil: [ :v | v terminate ].
+	editorProcess := nil
 ]
 
 { #category : 'api - process' }

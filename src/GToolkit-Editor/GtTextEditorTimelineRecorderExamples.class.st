@@ -75,7 +75,7 @@ GtTextEditorTimelineRecorderExamples >> observingOneAnnouncementClassIgnoresTheO
 
 	theEntries := aRecorder timeline select: [ :each | each source = 'test announcer' ].
 	self assert: theEntries size equals: 1.
-	self assert: theEntries first name equals: 'GtTextEditorExampleAnnouncement'.
+	self assert: theEntries first name equals: #GtTextEditorExampleAnnouncement.
 	^ aRecorder
 ]
 
@@ -129,7 +129,7 @@ GtTextEditorTimelineRecorderExamples >> recordsAnnouncementsOfAGivenAnnouncer [
 
 	theEntries := aRecorder timeline select: [ :each | each source = 'test announcer' ].
 	self assert: theEntries size equals: 1.
-	self assert: theEntries first name equals: 'Announcement'.
+	self assert: theEntries first name equals: #Announcement.
 	^ aRecorder
 ]
 

@@ -32,7 +32,7 @@ BaselineOfGToolkitEditor >> baseline: spec [
 				spec repository: 'github://feenkcom/Brick:v0.9.186/src' ].
 		spec
 			baseline: 'GToolkitCompleter' with: [
-				spec repository: 'github://feenkcom/gtoolkit-completer:v0.9.188/src' ].
+				spec repository: 'github://feenkcom/gtoolkit-completer:v0.9.189/src' ].
 		spec
 			baseline: 'GToolkitPhlow' with: [
 				spec repository: 'github://feenkcom/gtoolkit-phlow:v0.9.225/src' ].

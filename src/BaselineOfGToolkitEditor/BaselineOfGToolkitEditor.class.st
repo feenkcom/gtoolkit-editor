@@ -29,16 +29,16 @@ BaselineOfGToolkitEditor >> baseline: spec [
 				spec repository: 'github://feenkcom/gt4phlow-rs:v0.6.23/src' ].
 		spec
 			baseline: 'Brick' with: [
-				spec repository: 'github://feenkcom/Brick:v0.9.186/src' ].
+				spec repository: 'github://feenkcom/Brick:v0.9.187/src' ].
 		spec
 			baseline: 'GToolkitCompleter' with: [
-				spec repository: 'github://feenkcom/gtoolkit-completer:v0.9.189/src' ].
+				spec repository: 'github://feenkcom/gtoolkit-completer:v0.9.190/src' ].
 		spec
 			baseline: 'GToolkitPhlow' with: [
-				spec repository: 'github://feenkcom/gtoolkit-phlow:v0.9.225/src' ].
+				spec repository: 'github://feenkcom/gtoolkit-phlow:v0.9.226/src' ].
 		spec
 			baseline: 'Winit' with: [
-				spec repository: 'github://feenkcom/gtoolkit-glutin:v0.8.166/src' ].
+				spec repository: 'github://feenkcom/gtoolkit-glutin:v0.8.167/src' ].
 
 		spec package: 'GToolkit-Editor' with: [
 			spec requires: #(#GToolkitPhlowForRust #Brick #GToolkitCompleter #GToolkitPhlow #Winit) ].

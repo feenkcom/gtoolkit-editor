@@ -209,7 +209,7 @@ GtTextEditorTimelineRecorderExamples >> timelineIsOldestFirst [
 		GtTextEditorTextSetSignal new textSize: 2; emit.
 		GtTextEditorTextSetSignal new textSize: 3; emit ].
 
-	theEntries := aRecorder timeline select: [ :each | each name = 'GtTextEditorTextSetSignal' ].
+	theEntries := aRecorder timeline select: [ :each | each name = #GtTextEditorTextSetSignal ].
 	self assert: (theEntries collect: [ :each | each signal textSize ]) asArray equals: #(1 2 3).
 	self assert: (theEntries collect: [ :each | each sequence ]) asArray equals: #(1 2 3).
 	^ theEntries asArray
